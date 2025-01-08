@@ -1,0 +1,31 @@
+### GET request to example server
+GET http://127.0.0.1:5010/application/
+
+
+### create application
+POST http://127.0.0.1:5010/application/
+Content-Type: application/json
+
+{
+  "name": "testApp",
+  "appType": "BABYLON"
+}
+
+### create application with parent
+POST http://127.0.0.1:5010/application/
+Content-Type: application/json
+
+{
+  "name": "testApp1",
+  "appType": "BABYLON",
+  "parentId": "2"
+}
+
+### create DIR
+POST http://127.0.0.1:5010/application/
+Content-Type: application/json
+
+{
+  "name": "testDIR",
+  "appType": "DIR"
+}

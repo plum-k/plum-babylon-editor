@@ -1,0 +1,8 @@
+{
+  "name": "cos-api",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "cos-js-sdk-v5": "^1.8.7"
+  }
+}

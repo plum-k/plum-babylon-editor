@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Color4, ParticleSystem, Texture, Vector2, Vector3, Viewer,} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 创建粒子系统
+    let particleSystem = new ParticleSystem("particles", 2000, scene);
+
+    // 每个粒子的纹理
+    particleSystem.particleTexture = new Texture("textures/flare.png", scene);
+
+    // 粒子发射位置
+    particleSystem.emitter = Vector3.Zero(); // 起始位置
+    particleSystem.minEmitBox = new Vector3(-1, -1, -1); // 左下前
+    particleSystem.maxEmitBox = new Vector3(1, 1, 1); // 右上后
+
+    // 粒子的颜色 两种颜色在粒子的生命周期内组合
+    particleSystem.color1 = new Color4(0.7, 0.8, 1.0, 1.0);
+    particleSystem.color2 = new Color4(0.2, 0.5, 1.0, 1.0);
+    // 生命周期结束前使用
+    particleSystem.colorDead = new Color4(0, 0, 0.2, 0.0);
+
+    // 粒子大小在两者之间随机
+    particleSystem.minSize = 0.1;
+    particleSystem.maxSize = 0.5;
+
+    // 粒子缩放
+    particleSystem.minScaleX = 0.1;
+    particleSystem.maxScaleX = 0.5;
+
+    particleSystem.minScaleY = 0.2;
+    particleSystem.maxScaleY = 0.4;
+
+    // 粒子生命期
+    particleSystem.minLifeTime = 0.3;
+    particleSystem.maxLifeTime = 1.5;
+
+    // 发射速率
+    particleSystem.emitRate = 1500;
+
+    // 混合模式
+    particleSystem.blendMode = ParticleSystem.BLENDMODE_ONEONE;
+
+    // 重力
+    particleSystem.gravity = new Vector3(0, -9.81, 0);
+
+    // 粒子发射方向
+    particleSystem.direction1 = new Vector3(-7, 8, 3);
+    particleSystem.direction2 = new Vector3(7, 8, -3);
+
+    // 角速度, 控制旋转
+    particleSystem.minAngularSpeed = 0;
+    particleSystem.maxAngularSpeed = Math.PI;
+
+    // 初始化旋转
+    particleSystem.minInitialRotation = 0;
+    particleSystem.maxInitialRotation = Math.PI / 2;
+
+    // 发射功率, 控制发射速度
+    particleSystem.minEmitPower = 1;
+    particleSystem.maxEmitPower = 3;
+    particleSystem.updateSpeed = 0.005;
+
+    // 粒子变化中心, 粒子绕这个中心旋转
+    particleSystem.translationPivot = new Vector2(2, 2);
+
+    // 不持续生成粒子, 只生成指定数量的粒子
+    // particleSystem.manualEmitCount = -1;
+
+    // 启动粒子系统
+    particleSystem.start();
+
+
+    // particleSystem.addSizeGradient(0, 0.1, 0.3); //size range at start of particle lifetime
+    // particleSystem.addSizeGradient(1.0, 1, 2); //size range at end of particle lifetime
+    const PARAMS = {
+        startSize: {x: 0.5, y: 0.5},
+        endSize: {x: 3, y: 3},
+        color1: new Color4(1, 0, 0, 0),
+        color2: new Color4(0, 1, 0, 0),
+        velocity1: 0,
+        velocity2: 1
+
+    };
+    const pane = new Pane();
+
+    const f1 = pane.addFolder({title: '粒子大小'});
+    f1.addBinding(PARAMS, 'startSize', {label: "开始",});
+    f1.addBinding(PARAMS, 'endSize', {label: "结束"});
+    f1.addButton({title: '添加渐变'}).on('click', () => {
+        particleSystem.removeSizeGradient(0);
+        particleSystem.removeSizeGradient(1);
+        particleSystem.addSizeGradient(0, PARAMS.startSize.x, PARAMS.startSize.y);
+        particleSystem.addSizeGradient(1, PARAMS.endSize.x, PARAMS.endSize.y);
+    });
+
+    const f2 = pane.addFolder({title: '颜色'});
+    f2.addBinding(PARAMS, 'color1', {label: "开始",});
+    f2.addBinding(PARAMS, 'color2', {label: "结束"});
+    f2.addButton({title: '添加渐变'}).on('click', () => {
+        particleSystem.removeColorGradient(0);
+        particleSystem.removeColorGradient(1);
+        particleSystem.addColorGradient(0, PARAMS.color1);
+        particleSystem.addColorGradient(1, PARAMS.color2);
+    });
+
+    const f3 = pane.addFolder({title: '速度'});
+    f3.addBinding(PARAMS, 'velocity1', {label: "开始",});
+    f3.addBinding(PARAMS, 'velocity2', {label: "结束"});
+    f3.addButton({title: '添加渐变'}).on('click', () => {
+        particleSystem.removeVelocityGradient(0);
+        particleSystem.removeVelocityGradient(1);
+        particleSystem.addVelocityGradient(0, PARAMS.velocity1);
+        particleSystem.addVelocityGradient(1, PARAMS.velocity2);
+    });
+
+
+</script>
+</body>
+</html>

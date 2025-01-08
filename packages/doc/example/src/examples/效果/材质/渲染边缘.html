@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+
+    const box = MeshBuilder.CreateBox("Box", {size: 1});
+
+    const pane = new Pane();
+    const folder = pane.addFolder({title: '渲染边缘'});
+    const PARAMS = {
+        edgesRendering: false,
+    };
+    folder.addBinding(PARAMS, 'edgesRendering', {label: "渲染边缘"}).on('change', (value) => {
+        if (value) {
+            box.enableEdgesRendering();
+        } else {
+            box.disableEdgesRendering();
+        }
+    });
+    folder.addBinding(box, 'edgesWidth', {label: '边缘宽度'});
+    folder.addBinding(box, 'edgesColor', {label: '边缘颜色', color: {type: 'float'},});
+
+</script>
+</body>
+</html>

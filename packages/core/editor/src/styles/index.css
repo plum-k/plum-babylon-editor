@@ -1,0 +1,146 @@
+@import "ResizeHandle.css";
+@import "FilePane.css";
+@import "SidePane.css";
+@import "SceneTree.css";
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+::backdrop {
+    background-color: white;
+}
+
+
+.viewer-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    canvas {
+        display: block; /* 去除默认的内边距 */
+        margin: 0; /* 去除外边距 */
+        padding: 0; /* 去除内边距 */
+        border: none; /* 去除边框 */
+        overflow: hidden; /* 隐藏滚动条 */
+        position: relative !important;
+        /*z-index: -99;*/
+    }
+}
+
+.plum-tabs {
+    .ant-collapse-content-box {
+        /* 让折叠面板内容区域d的表单对齐 */
+        padding: 0 !important;
+    }
+}
+
+.plum-menu-dropDown {
+    z-index: 10000;
+}
+
+
+/*.plum-menu-dropDown {*/
+/*    background: #181818;*/
+
+/*    ul {*/
+/*        background: #181818 !important;*/
+/*        li {*/
+/*            color: #ffffff !important;*/
+
+/*            .ant-dropdown-menu-title-content{*/
+/*                color: #ffffff !important;*/
+/*            }*/
+/*        }*/
+/*    }*/
+/*}*/
+
+/*.ant-dropdown-menu-submenu{*/
+/*    ul{*/
+/*        background: #181818 !important;*/
+/*        li {*/
+/*            color: #ffffff !important;*/
+
+/*            .ant-dropdown-menu-title-content{*/
+/*                color: #ffffff !important;*/
+/*            }*/
+/*        }*/
+/*    }*/
+/*}*/
+
+
+.fixed-div {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 150px;
+    /*background-color: #f1f1f1;*/
+}
+
+.scrollable-div {
+    /*width: 100%;*/
+    height: 100%;
+    /*width: 300px;*/
+    /*height: 300px;*/
+    overflow: auto;
+    /*background-color: #f5f5f5;*/
+}
+
+.plum-tabs {
+    height: 100%;
+
+    .ant-tabs-content {
+        height: 100%;
+
+        .ant-tabs-tabpane {
+            height: 100%;
+            overflow: auto;
+        }
+    }
+}
+
+
+/*解决col下输入框下边距问题*/
+:where(.ant-col) .ant-form-item {
+    margin-bottom: 0 !important;
+}
+
+/*图标样式*/
+.icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
+/*滚动条样式*/
+::-webkit-scrollbar {
+    width: 13px;
+    height: 13px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.4);
+    background-clip: padding-box;
+    border: 3px solid transparent;
+    border-radius: 7px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+    background-color: #f8fafc;
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        Color3,
+        GreasedLineMeshColorDistributionType,
+        CreateGreasedLine,
+        Viewer,
+        Debug
+    } from "@plum-render/babylon-sdk";
+    import {GreasedLineTools} from "@babylonjs/core";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+    scene.clearColor = new Color4(0, 0, 0, 1)
+
+    const segments = 360
+    const arrowLength = 40
+    const arrowWidth = 3
+    const arrowCount = 4
+    const arrowGap = 10
+
+    const points = GreasedLineTools.GetCircleLinePoints(20, segments)
+    const widths = new Array(segments * 2).fill(1)
+
+    for (let i = 0; i < arrowCount; i++) {
+        let start = (segments * 2) / arrowCount * i
+        let j = start
+        for (let g = 0; g < arrowGap; g++, j++) {
+            widths[j] = 0
+        }
+        for (let w = 0; j < start + arrowLength + arrowGap; j++, w += arrowWidth / arrowLength) {
+            widths[j] = w
+        }
+    }
+
+    const logo = CreateGreasedLine("recycle-logo", {
+        points,
+        widths
+    }, {
+        width: 3,
+        color: Color3.Green()
+    })
+
+    const logoRibbon = CreateGreasedLine("recycle-logo-ribbon", {
+        points,
+        widths,
+        ribbonOptions: {}
+    }, {
+        width: 3,
+        color: Color3.Blue()
+    })
+    logoRibbon.position.y = 50
+
+    scene.onReadyObservable.addOnce(() => {
+        camera.zoomOnFactor = 1.2
+        camera.zoomOn([logo, logoRibbon])
+    })
+
+    scene.onBeforeRenderObservable.add(() => {
+        logo.rotate(Axis.Z, -0.01 * scene.getAnimationRatio())
+        logoRibbon.rotate(Axis.Z, -0.01 * scene.getAnimationRatio())
+        camera.alpha += 0.01 * scene.getAnimationRatio()
+    })
+
+
+</script>
+</body>
+</html>

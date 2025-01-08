@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {AbstractMesh, MeshBuilder, Viewer, Color4} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {});
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    var plane = MeshBuilder.CreatePlane('opaque1', {
+        width: 5,
+        height: 5
+    });
+    plane.position.y = 1;
+    plane.position.z = -2;
+
+    // occlusion sphere
+    let sphere = MeshBuilder.CreateSphere('sphere1', {
+        diameter: 2
+
+    });
+    sphere.position.y = 1;
+    sphere.occlusionQueryAlgorithmType = AbstractMesh.OCCLUSION_ALGORITHM_TYPE_CONSERVATIVE;
+    // 设置默认是被遮挡的
+    sphere.isOccluded = true;
+
+    sphere.occlusionType = AbstractMesh.OCCLUSION_TYPE_STRICT;
+    const ground = MeshBuilder.CreateGround('ground1', {
+        width: 6,
+        height: 6,
+        subdivisions: 2
+    });
+
+    scene.registerBeforeRender(() => {
+        if (sphere.isOccluded) {
+            console.log("被遮挡")
+            scene.clearColor = new Color4(0.5, 0.8, 0.5);
+        } else {
+            console.log("没有被遮挡")
+            scene.clearColor = new Color4(0.1, 0.2, 0.8);
+
+        }
+    });
+
+    // OCCLUSION_TYPE_OPTIMISTIC：如果发生中断，此选项将渲染网格。
+    // OCCLUSION_TYPE_STRICT：此选项将恢复对象的最后状态，无论是可见的、继续为可见的还是隐藏的，继续为隐藏的。
+
+    sphere.occlusionRetryCount = 10;
+    sphere.occlusionType = BABYLON.AbstractMesh.OCCLUSION_TYPE_STRICT;
+
+    console.log(scene.rootNodes)
+
+
+</script>
+</body>
+</html>

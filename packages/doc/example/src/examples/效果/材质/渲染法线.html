@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+    const box = MeshBuilder.CreateBox("Box", {size: 1});
+
+    const pane = new Pane();
+    const folder = pane.addFolder({title: '渲染法线'});
+    const PARAMS = {
+        displayNormals: false,
+    };
+    folder.addBinding(PARAMS, 'displayNormals', {label: "渲染法线"}).on('change', (value) => {
+        NodeTool.displayNormals(box)
+    });
+</script>
+</body>
+</html>

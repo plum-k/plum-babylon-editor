@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+    const scene = viewer.scene;
+
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "盒体"
+    });
+
+    const params = {
+        width: 1,
+        height: 1,
+        depth: 1,
+    };
+    let box;
+
+    // 创建 Box 的函数，支持高度、宽度和深度
+    function createBox() {
+        if (box) {
+            box.dispose();
+        }
+        box = MeshBuilder.CreateBox('box', {width: params.width, height: params.height, depth: params.depth}, scene);
+    }
+
+    createBox();
+
+    folder.addBinding(params, 'width', {min: 0.1, max: 5, step: 0.1, label: "宽度"}).on('change', (value) => {
+        createBox();
+    });
+
+    folder.addBinding(params, 'height', {min: 0.1, max: 5, step: 0.1, label: "高度"}).on('change', (value) => {
+        createBox();
+    });
+
+    folder.addBinding(params, 'depth', {min: 0.1, max: 5, step: 0.1, label: "深度"}).on('change', (value) => {
+        createBox();
+    });
+
+</script>
+</body>
+</html>

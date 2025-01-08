@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Color4, ParticleSystem, Texture, Vector2, Vector3, Viewer,} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 创建粒子系统
+    let particleSystem = new ParticleSystem("particles", 2000, scene);
+
+    // 每个粒子的纹理
+    particleSystem.particleTexture = new Texture("textures/flare.png", scene);
+
+    // 粒子发射位置
+    particleSystem.emitter = Vector3.Zero(); // 起始位置
+    particleSystem.minEmitBox = new Vector3(-1, -1, -1); // 左下前
+    particleSystem.maxEmitBox = new Vector3(1, 1, 1); // 右上后
+
+    // 粒子的颜色 两种颜色在粒子的生命周期内组合
+    particleSystem.color1 = new Color4(0.7, 0.8, 1.0, 1.0);
+    particleSystem.color2 = new Color4(0.2, 0.5, 1.0, 1.0);
+    // 生命周期结束前使用
+    particleSystem.colorDead = new Color4(0, 0, 0.2, 0.0);
+
+    // 粒子大小在两者之间随机
+    particleSystem.minSize = 0.1;
+    particleSystem.maxSize = 0.5;
+
+    // 粒子缩放
+    particleSystem.minScaleX = 0.1;
+    particleSystem.maxScaleX = 0.5;
+
+    particleSystem.minScaleY = 0.2;
+    particleSystem.maxScaleY = 0.4;
+
+    // 粒子生命期
+    particleSystem.minLifeTime = 0.3;
+    particleSystem.maxLifeTime = 1.5;
+
+    // 发射速率
+    particleSystem.emitRate = 1500;
+
+    // 混合模式
+    particleSystem.blendMode = ParticleSystem.BLENDMODE_ONEONE;
+
+    // 重力
+    particleSystem.gravity = new Vector3(0, -9.81, 0);
+
+    // 粒子发射方向
+    particleSystem.direction1 = new Vector3(-7, 8, 3);
+    particleSystem.direction2 = new Vector3(7, 8, -3);
+
+    // 角速度, 控制旋转
+    particleSystem.minAngularSpeed = 0;
+    particleSystem.maxAngularSpeed = Math.PI;
+
+    // 初始化旋转
+    particleSystem.minInitialRotation = 0;
+    particleSystem.maxInitialRotation = Math.PI / 2;
+
+    // 发射功率, 控制发射速度
+    particleSystem.minEmitPower = 1;
+    particleSystem.maxEmitPower = 3;
+    particleSystem.updateSpeed = 0.005;
+
+    // 粒子变化中心, 粒子绕这个中心旋转
+    particleSystem.translationPivot = new Vector2(2, 2);
+
+    // 不持续生成粒子, 只生成指定数量的粒子
+    particleSystem.manualEmitCount = -1;
+
+    // 启动粒子系统
+    particleSystem.start();
+
+    const pane = new Pane();
+
+    const f1 = pane.addFolder({title: '粒子大小'});
+    f1.addBinding(particleSystem, 'minSize', {label: "最小", min: 0, max: 20, step: 0.01});
+    f1.addBinding(particleSystem, 'maxSize', {label: "最大", min: 0, max: 20, step: 0.01});
+    const f2 = pane.addFolder({title: '生命周期'});
+    f2.addBinding(particleSystem, 'minLifeTime', {label: "最小", min: 0, max: 20, step: 0.01});
+    f2.addBinding(particleSystem, 'maxLifeTime', {label: "最大", min: 0, max: 20, step: 0.01});
+    const f3 = pane.addFolder({title: '发射功率'});
+    f3.addBinding(particleSystem, 'minEmitPower', {label: "最小", min: 0, max: 10, step: 0.01});
+    f3.addBinding(particleSystem, 'maxEmitPower', {label: "最大", min: 0, max: 10, step: 0.01});
+    const f4 = pane.addFolder({title: '粒子缩放'});
+    f4.addBinding(particleSystem, 'minScaleX', {label: "最小X", min: 0, max: 20, step: 0.01});
+    f4.addBinding(particleSystem, 'maxScaleX', {label: "最大X", min: 0, max: 20, step: 0.01});
+    f4.addBinding(particleSystem, 'minScaleY', {label: "最小Y", min: 0, max: 20, step: 0.01});
+    f4.addBinding(particleSystem, 'maxScaleY', {label: "最大Y", min: 0, max: 20, step: 0.01});
+    const f5 = pane.addFolder({title: '粒子颜色'});
+    f5.addBinding(particleSystem, 'color1', {label: "颜色1", color: {type: 'float'}});
+    f5.addBinding(particleSystem, 'color2', {label: "颜色1", color: {type: 'float'}});
+    f5.addBinding(particleSystem, 'colorDead', {label: "结束颜色", color: {type: 'float'}});
+    const f6 = pane.addFolder({title: '角速度'});
+    f6.addBinding(particleSystem, 'minAngularSpeed', {label: "最小", min: 0, max: Math.PI, step: 0.01});
+    f6.addBinding(particleSystem, 'maxAngularSpeed', {label: "最大", min: 0, max: Math.PI, step: 0.01});
+    const f7 = pane.addFolder({title: '初始旋转'});
+    f7.addBinding(particleSystem, 'minInitialRotation', {label: "最小", min: 0, max: Math.PI, step: 0.01});
+    f7.addBinding(particleSystem, 'maxInitialRotation', {label: "最大", min: 0, max: Math.PI, step: 0.01});
+    const f8 = pane.addFolder({title: '方向'});
+    f8.addBinding(particleSystem, 'direction1', {label: "方向1"});
+    f8.addBinding(particleSystem, 'direction2', {label: "方向2"});
+    pane.addBinding(particleSystem, 'translationPivot', {label: "旋转中心"});
+    pane.addBinding(particleSystem, 'gravity', {label: "重力"});
+    pane.addBinding(particleSystem, 'emitRate', {label: "发射速率", min: 0, max: 2000, step: 1});
+    pane.addBinding(particleSystem, 'updateSpeed', {label: "更新速度", min: 0, max: 0.1, step: 0.0001});
+    pane.addBinding(particleSystem, 'manualEmitCount', {label: "固定粒子数量数量", min: -1, max: 500, step: 1});
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+
+    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+    let scene = viewer.scene;
+
+    let hero
+
+    let meshAssetTask = viewer.assetsManager.addMeshTask(`add`, "", "/", "Xbot.glb");
+    meshAssetTask.onSuccess = (task) => {
+        console.log("模型加载成功")
+        // 默认第一个网格是模型的根节点
+        // mesh = task.loadedMeshes[0];
+        console.log(task)
+        // animationGroups[0].stop();
+        task.loadedAnimationGroups[0].stop();
+
+        hero = task.loadedMeshes[0];
+
+        scene.activeCamera.target = hero;
+        init();
+    }
+    // 开始加载模型
+    viewer.assetsManager.load();
+
+    // Ground
+    let ground = MeshBuilder.CreateGround("ground", {height: 50, width: 50, subdivisions: 4},);
+    let groundMaterial = new StandardMaterial("groundMaterial",);
+    groundMaterial.specularColor = new Color3(1, 0, 0);
+    ground.material = groundMaterial;
+
+    const pane = new Pane();
+
+
+    function createAnim(name, weight) {
+        const folder = pane.addFolder({title: name});
+        var runAnim = scene.animationGroups.find(a => a.name === name);
+        var runParam = {name: name, anim: runAnim, weight: weight};
+        runAnim.weight = weight;
+        runAnim.play(true);
+        console.log(runAnim)
+        folder.addBinding(runParam, 'weight', {
+            min: 0,
+            max: 1,
+            // readonly: true,
+        }).on('change', (e) => {
+            runAnim.weight = e.value;
+        });
+        return runParam
+    }
+
+    function init() {
+        let idleParam = createAnim("idle", 1);
+        let walkParam = createAnim("walk", 0);
+        let runParam = createAnim("run", 0);
+
+
+        pane.addButton({
+            title: '站立到走',
+        }).on('click', () => {
+            idleParam.weight = 1.0;
+            // idleParam.anim.weight = 1
+            walkParam.weight = 0;
+            // walkParam.anim.weight = 0
+            runParam.weight = 0.0;
+            // runParam.anim.weight = 0
+            walkParam.anim.syncAllAnimationsWith(null);
+            idleParam.anim.syncAllAnimationsWith(walkParam.anim.animatables[0]);
+            let obs = scene.onBeforeAnimationsObservable.add(() => {
+                idleParam.weight -= 0.01;
+                // idleParam.anim.weight -= 0.01;
+                if (idleParam.weight <= 0) {
+                    scene.onBeforeAnimationsObservable.remove(obs);
+                    idleParam.weight = 0;
+                    // idleParam.anim.weight = 0
+                    walkParam.weight = 1;
+                    // walkParam.anim.weight = 1
+                } else {
+                    walkParam.weight = 1.0 - idleParam.weight;
+                    // walkParam.anim.weight = 1.0 - idleParam.anim.weight;
+                }
+            })
+        });
+        pane.addButton({
+            title: '走到站立',
+        }).on('click', () => {
+            idleParam.weight = 0
+            idleParam.anim.weight = 0
+            walkParam.weight = 1
+            walkParam.anim.weight = 1
+            runParam.weight = 0.0;
+            runParam.anim.weight = 0
+            // walkParam.anim.syncAllAnimationsWith(null);
+            // idleParam.anim.syncAllAnimationsWith(walkParam.anim);
+            let obs = scene.onBeforeAnimationsObservable.add(() => {
+                walkParam.weight -= 0.01;
+                walkParam.anim.weight -= 0.01;
+                if (walkParam.weight <= 0) {
+                    scene.onBeforeAnimationsObservable.remove(obs);
+                    walkParam.weight = 0;
+                    walkParam.anim.weight = 0
+                    idleParam.weight = 1;
+                    idleParam.anim.weight = 1
+                } else {
+                    idleParam.weight = 1.0 - walkParam.weight;
+                    idleParam.anim.weight = 1.0 - walkParam.anim.weight;
+                }
+            })
+        });
+
+
+        pane.addButton({
+            title: '走到跑',
+        }).on('click', () => {
+            idleParam.weight = 0;
+            idleParam.anim.weight = 0;
+            walkParam.weight = 1;
+            walkParam.anim.weight = 1;
+            runParam.weight = 0;
+            runParam.anim.weight = 0;
+            // walkParam.anim.syncAllAnimationsWith(null);
+            // idleParam.anim.syncAllAnimationsWith(walkParam.anim);
+            walkParam.anim.syncAllAnimationsWith(runParam.anim.animatables[0]);
+            let obs = scene.onBeforeAnimationsObservable.add(() => {
+                walkParam.weight -= 0.01;
+                walkParam.anim.weight -= 0.01;
+                console.log(walkParam.anim.weight)
+                if (walkParam.weight <= 0) {
+                    scene.onBeforeAnimationsObservable.remove(obs);
+                    walkParam.weight = 0;
+                    walkParam.anim.weight = 0;
+                    runParam.weight = 1;
+                    runParam.anim.weight = 1;
+                } else {
+                    runParam.weight = 1.0 - walkParam.weight;
+                    runParam.anim.weight = 1.0 - walkParam.anim.weight;
+                }
+            })
+        });
+    }
+
+
+</script>
+</body>
+</html>

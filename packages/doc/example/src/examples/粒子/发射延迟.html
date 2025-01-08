@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {ParticleSystem, Texture, Vector3, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 粒子系统
+    const particleSystem = new ParticleSystem("particles", 2000, scene);
+
+    // 设置粒子纹理
+    particleSystem.particleTexture = new Texture("texture/flare.png");
+
+
+    const box = MeshBuilder.CreateBox("box", {});
+    box.position = new Vector3(1, 2, 5);
+
+    // 设置粒子从指定网格发射
+    particleSystem.emitter = box;
+    // 限制粒子发射的范围
+    particleSystem.minEmitBox = new Vector3(-0.2, -0.2, -0.2);
+    particleSystem.maxEmitBox = new Vector3(0.2, 0.2, 0.2);
+
+    // 延迟 3 秒后才发射粒子
+    particleSystem.start(3000);
+    // 或
+    // particleSystem.startDelay = 3000;
+
+</script>
+</body>
+</html>

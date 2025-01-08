@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+    const scene = viewer.scene;
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "圆环",
+    });
+    const params = {
+        diameter: 1,
+        thickness: 0.5,
+        tessellation: 16,
+    };
+
+    let torus;
+
+    // 创建环面的函数
+    function createTorus() {
+        if (torus) {
+            torus.dispose(); // 删除之前的环面
+        }
+        const options = {
+            diameter: params.diameter,
+            thickness: params.thickness,
+            tessellation: params.tessellation,
+        };
+        torus = MeshBuilder.CreateTorus('torus', options, scene);
+    }
+
+
+    folder.addBinding(params, 'diameter', {min: 0.1, max: 5, step: 0.1, label: '直径'}).on('change', () => {
+        createTorus();
+    });
+    folder.addBinding(params, 'thickness', {min: 0.1, max: 2, step: 0.1, label: '厚度'}).on('change', () => {
+        createTorus();
+    });
+    folder.addBinding(params, 'tessellation', {min: 3, max: 64, step: 1, label: '细分'}).on('change', () => {
+        createTorus();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+    new AxesViewer(scene, 8);
+
+    const hermiteQuarternionSpline = (p1, t1, p2, t2, nbPoints) => {
+        const hermite = new Array();
+        const step = 1.0 / nbPoints;
+        for (let i = 0; i <= nbPoints; i++) {
+            const q = Quaternion.Hermite(p1, t1, p2, t2, i * step)
+            q.normalize();
+            if (q.w < 0) {
+                q.scaleInPlace(-1);
+            }
+            const v = new Vector3(q.x / (1 + q.w), q.y / (1 + q.w), q.z / (1 + q.w));
+            hermite.push(v);
+        }
+        return new Curve3(hermite);
+    }
+
+    const pt1 = new Quaternion(1 - 2 * Math.random(), 1 - 2 * Math.random(), 1 - 2 * Math.random(), 0);
+    pt1.normalize();
+
+    const tang1 = new Quaternion(1 - 2 * Math.random(), 1 - 2 * Math.random(), 1 - 2 * Math.random(), 10);
+    tang1.normalize();
+
+    const pt2 = new Quaternion(1 - 2 * Math.random(), 1 - 2 * Math.random(), 1 - 2 * Math.random(), 0);
+    pt2.normalize();
+
+    const tang2 = new Quaternion(1 - 2 * Math.random(), 1 - 2 * Math.random(), 1 - 2 * Math.random(), 15);
+    tang2.normalize();
+
+    const hermiteCurve = hermiteQuarternionSpline(pt1, tang1, pt2, tang2, 100)
+
+    const radius = 10;
+    const hermitePoints = hermiteCurve.getPoints().map((el) => {
+        return el.scale(radius);
+    })
+
+    const hermiteLine = MeshBuilder.CreateLines("hermiteLine", {points: hermitePoints})
+
+    const outerSphere = MeshBuilder.CreateSphere("outerSphere", {diameter: 2 * radius});
+    outerSphere.visibility = 0.25;
+    outerSphere.material = new StandardMaterial("yellow");
+    outerSphere.material.diffuseColor = Color3.Yellow();
+
+</script>
+</body>
+</html>

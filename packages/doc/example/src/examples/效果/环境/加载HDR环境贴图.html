@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, BABYLON} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+
+    let mesh = [];
+    const box = MeshBuilder.CreateBox("Box", {size: 1});
+
+    const pane = new Pane();
+    const folder = pane.addFolder({title: '加载HDR环境贴图'});
+    const PARAMS = {
+        displayVertexColors: false,
+    };
+
+    const btn = folder.addButton({
+        title: '加载HDR环境贴图',
+    });
+
+    btn.on('click', () => {
+        let hDRCubeTextureAssetTask = viewer.assetsManager.addHDRCubeTextureTask(`add`, `/hdr/forest_slope_1k.hdr`, 256, false, true, false, true);
+        hDRCubeTextureAssetTask.onSuccess = (task) => {
+            viewer.scene.environmentTexture = task.texture;
+            viewer?.scene.createDefaultSkybox(viewer?.scene.environmentTexture, true, (viewer.scene.activeCamera.maxZ - viewer.scene.activeCamera.minZ) / 2, 0.3, false)
+        }
+        viewer.assetsManager.load();
+    });
+
+    folder.addButton({
+        title: '删除模型',
+    }).on('click', () => {
+        viewer.scene.lights = []
+    });
+</script>
+</body>
+</html>

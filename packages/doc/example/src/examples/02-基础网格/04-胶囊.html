@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer, Vector3} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+
+    const scene = viewer.scene;
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "胶囊",
+    });
+    const params = {
+        orientation: new Vector3(0, 1, 0), // 默认向上
+        subdivisions: 2,
+        tessellation: 16,
+        height: 1,
+        radius: 0.25,
+        capSubdivisions: 6,
+    };
+
+    let capsule;
+
+    function createCapsule() {
+        if (capsule) {
+            capsule.dispose();
+        }
+        const options = {
+            orientation: params.orientation,
+            subdivisions: params.subdivisions,
+            tessellation: params.tessellation,
+            height: params.height,
+            radius: params.radius,
+            capSubdivisions: params.capSubdivisions,
+        };
+        capsule = MeshBuilder.CreateCapsule('capsule', options, scene);
+    }
+
+    createCapsule()
+
+    folder.addBinding(params, 'subdivisions', {min: 1, max: 10, step: 1, label: '划分'}).on('change', () => {
+        createCapsule();
+    });
+    folder.addBinding(params, 'tessellation', {min: 3, max: 64, step: 1, label: '细分'}).on('change', () => {
+        createCapsule();
+    });
+    folder.addBinding(params, 'height', {min: 0.1, max: 5, step: 0.1, label: '高度'}).on('change', () => {
+        createCapsule();
+    });
+    folder.addBinding(params, 'radius', {min: 0.01, max: 1, step: 0.01, label: '半径'}).on('change', () => {
+        createCapsule();
+    });
+    folder.addBinding(params, 'capSubdivisions', {min: 1, max: 10, step: 1, label: '帽子划分'}).on('change', () => {
+        createCapsule();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {ParticleSystem, ParticleHelper, Vector3, Viewer} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    ParticleHelper.CreateDefault(new Vector3(0, 0.5, 0)).start();
+</script>
+</body>
+</html>

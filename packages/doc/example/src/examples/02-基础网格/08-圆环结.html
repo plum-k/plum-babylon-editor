@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+
+    const scene = viewer.scene;
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "圆面",
+    });
+    const params = {
+        radius: 2,
+        tube: 0.5,
+        radialSegments: 32,
+        tubularSegments: 32,
+        p: 2,
+        q: 3,
+    };
+
+    let torusKnot;
+
+    // 创建环面结的函数
+    function createTorusKnot() {
+        if (torusKnot) {
+            torusKnot.dispose(); // 删除之前的环面结
+        }
+        const options = {
+            radius: params.radius,
+            tube: params.tube,
+            radialSegments: params.radialSegments,
+            tubularSegments: params.tubularSegments,
+            p: params.p,
+            q: params.q,
+        };
+        torusKnot = MeshBuilder.CreateTorusKnot('torusKnot', options, scene);
+    }
+
+    createTorusKnot(); // 默认创建一个环面结
+
+    folder.addBinding(params, 'radius', {min: 0.1, max: 5, step: 0.1, label: '半径'}).on('change', () => {
+        createTorusKnot();
+    });
+    folder.addBinding(params, 'tube', {min: 0.1, max: 2, step: 0.1, label: '管道半径'}).on('change', () => {
+        createTorusKnot();
+    });
+    folder.addBinding(params, 'radialSegments', {min: 3, max: 64, step: 1, label: '径向细分'}).on('change', () => {
+        createTorusKnot();
+    });
+    folder.addBinding(params, 'tubularSegments', {min: 3, max: 64, step: 1, label: '管道细分'}).on('change', () => {
+        createTorusKnot();
+    });
+    folder.addBinding(params, 'p', {min: 1, max: 10, step: 1, label: 'P值'}).on('change', () => {
+        createTorusKnot();
+    });
+    folder.addBinding(params, 'q', {min: 1, max: 10, step: 1, label: 'Q值'}).on('change', () => {
+        createTorusKnot();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Vector3, Color4, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+    const pane = new Pane();
+    let folder = pane.addFolder({
+        title: "虚线"
+    });
+
+    const myPoints = [
+        new Vector3(-2, -1, 0),
+        new Vector3(0, 1, 0),
+        new Vector3(2, -1, 0),
+    ]
+    myPoints.push(myPoints[0]);
+    const options = {
+        points: myPoints,
+        dashSize: 3,
+        gapSize: 1,
+        dashNb: 200,
+        updatable: true
+    }
+    const myColors = [
+        new Color4(1, 0, 0, 1),
+        new Color4(0, 1, 0, 1),
+        new Color4(0, 0, 1, 1),
+        new Color4(1, 1, 0, 1)
+    ]
+    options.colors = myColors;
+
+    let lines;
+
+    function CreateLines() {
+        if (lines) {
+            options.instance = lines;
+        }
+        lines = MeshBuilder.CreateLines("lines", options);
+    }
+
+    folder.addBinding(options, 'dashSize', {min: 0.1, max: 5, step: 0.1, label: '虚线大小'}).on('change', (value) => {
+        CreateLines();
+    });
+
+    folder.addBinding(options, 'gapSize', {min: 0.1, max: 5, step: 0.1, label: '间隙大小'}).on('change', (value) => {
+        CreateLines();
+    });
+
+    folder.addBinding(options, 'dashNb', {min: 100, max: 300, step: 10, label: '虚线数量'}).on('change', (value) => {
+        CreateLines();
+    });
+
+    folder.addButton({
+        title: '更新模型',
+    }).on('click', () => {
+        options.points[0] = new Vector3(-2, 1, -1);
+        options.points[1] = new Vector3(0, -1, 0);
+        options.points[2] = new Vector3(2, 0, 0);
+        options.points[3] = new Vector3(-1, -2, 0);
+        CreateLines()
+    });
+    CreateLines()
+</script>
+</body>
+</html>

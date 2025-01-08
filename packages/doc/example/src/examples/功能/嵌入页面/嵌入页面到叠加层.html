@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .divButton {
+            position: relative;
+            width: 100% !important;
+            height: 100%;
+            background-color: #4CAF50; /* 背景色 */
+            color: white; /* 文字颜色 */
+            display: flex; /* 使用 flexbox */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+            border: none;
+            text-decoration: none; /* 无下划线 */
+            font-size: 16rem; /* 字体大小 */
+            cursor: pointer; /* 鼠标指针 */
+            border-radius: 8rem; /* 圆角 */
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        FitStrategy,
+        HtmlMesh,
+        MeshBuilder,
+        Viewer,
+        ActionManager,
+        ExecuteCodeAction
+    } from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {
+        // packagePath: "",
+        // appName: "12"
+    });
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    //  启用 css 渲染
+    viewer.htmlMeshRendererEnabled = true;
+
+    const scene = viewer.scene;
+
+    let box = MeshBuilder.CreateBox("box", {width: 4, height: 3, depth: 4});
+
+    // 始终在其他场景内容之前渲染
+    // 可以是半透明的
+    // 可以是非矩形
+    // 最常用于将 HTML 内容附加到场景中的网格，而不必自己处理投影和转换
+    const htmlMeshDiv = new HtmlMesh(scene, "html-mesh-div", {
+        isCanvasOverlay: true,
+        fitStrategy: FitStrategy.NONE,
+        // fitStrategy: FitStrategy.CONTAIN,
+        // fitStrategy: FitStrategy.COVER,
+        // fitStrategy: FitStrategy.STRETCH,
+    });
+
+    const div = document.createElement('div');
+
+    const divButton = document.createElement('div');
+    divButton.classList.add('divButton')
+    divButton.innerText = "Hello Word!"
+    div.append(divButton)
+
+
+    htmlMeshDiv.setContent(div, 2, 1);
+    htmlMeshDiv.position.y = 4;
+    // 避免有边框
+    htmlMeshDiv.material.alpha = 0;
+
+</script>
+</body>
+</html>

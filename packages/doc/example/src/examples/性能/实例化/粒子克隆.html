@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Scalar, SolidParticleSystem, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+
+    // 固体粒子系统 （SPS） 不仅仅是生成网格的多个副本，这些副本在 粒子 部分中进行了全面考虑。SPS 将一个网格的多个副本全部放入一个网格中。这意味着单个网格只有一个绘制调用，而不是多个绘制调用。
+    // SPS 是单个可更新的网格，其属性与任何其他 Babylon.js 网格相同。
+
+    let SPS = new SolidParticleSystem("SPS", scene);  //create the SPS
+    const tetra = MeshBuilder.CreatePolyhedron("tetra", {}); //create the mesh
+    SPS.addShape(tetra, 1500);      // add as many copies as you want to the SPS
+    tetra.dispose(); //dispose of the original mesh
+    const spsMesh = SPS.buildMesh();  //builds the SPS mesh
+
+    //Set the function to initialise the particle properties
+    SPS.initParticles = () => {
+        for (let p = 0; p < SPS.nbParticles; p++) {
+            const particle = SPS.particles[p]
+            particle.position.x = Scalar.RandomRange(-50, 50);
+            particle.position.y = Scalar.RandomRange(-50, 50);
+            particle.position.z = Scalar.RandomRange(-50, 50);
+
+            const scale = Scalar.RandomRange(0.5, 1.5);
+            particle.scale.x = scale;
+            particle.scale.y = scale;
+            particle.scale.z = scale;
+
+            particle.rotation.x = Scalar.RandomRange(0, Math.PI);
+            particle.rotation.y = Scalar.RandomRange(0, Math.PI);
+            particle.rotation.z = Scalar.RandomRange(0, Math.PI);
+        }
+    };
+
+
+    SPS.initParticles(); //call the initialising function
+    SPS.setParticles(); //apply the properties and display the mesh
+
+</script>
+</body>
+</html>

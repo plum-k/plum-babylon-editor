@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, HighlightLayer, MeshBuilder, PBRMaterial, Color3} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {
+        engineOptions: {
+            stencil: true,
+        }
+    });
+    viewer.debug(true);
+    const highlightLayer = new HighlightLayer("hl1", viewer.scene);
+
+    const pane = new Pane();
+
+    function createBox(name, pos, color) {
+        const folder = pane.addFolder({title: name});
+        const box = MeshBuilder.CreateBox(name);
+        let material = new PBRMaterial("material");
+        material.albedoColor = new Color3().fromArray(color);
+        box.material = material;
+
+        // emissiveTexture
+        box.position.fromArray(pos);
+        const PARAMS = {
+            isHighlight: false,
+            color: new Color3().fromArray(color),
+        };
+        folder.addBinding(PARAMS, 'isHighlight',).on('change', (e) => {
+            console.log(e.value)
+            if (e.value) {
+                highlightLayer.addMesh(box, PARAMS.color);
+            } else {
+                highlightLayer.removeMesh(box);
+            }
+        });
+        return box;
+    }
+
+    let box1 = createBox("红色", [0, 0, 0], [1, 0, 0]);
+    let box2 = createBox("绿色", [0, 2, 0], [0, 1, 0]);
+
+    const folder1 = pane.addFolder({title: '高亮'});
+    folder1.addBinding(highlightLayer, 'outerGlow',)
+    folder1.addBinding(highlightLayer, 'innerGlow',)
+    folder1.addBinding(highlightLayer, 'blurHorizontalSize',)
+    folder1.addBinding(highlightLayer, 'blurVerticalSize',)
+
+</script>
+</body>
+</html>

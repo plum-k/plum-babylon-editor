@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Vector3, Color4, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 参数对象
+    const params = {
+        width: 1,
+        height: 1,
+        updatable: false,
+        subdivisions: 1,
+    };
+
+    let ground;
+
+    // 创建地面的函数
+    function createGround() {
+        if (ground) {
+            ground.dispose(); // 删除之前的地面
+        }
+        const options = {
+            width: params.width,
+            height: params.height,
+            updatable: params.updatable,
+            subdivisions: params.subdivisions,
+        };
+        ground = MeshBuilder.CreateGround('ground', options, scene);
+    }
+
+    createGround(); // 默认创建一个地面
+
+    const pane = new Pane();
+
+    // 添加控制面板输入
+    pane.addBinding(params, 'width', {min: 0.1, max: 5, step: 0.1}).on('change', () => {
+        createGround();
+    });
+    pane.addBinding(params, 'height', {min: 0.1, max: 5, step: 0.1}).on('change', () => {
+        createGround();
+    });
+    pane.addBinding(params, 'updatable', {options: {true: true, false: false}}).on('change', () => {
+        createGround();
+    });
+    pane.addBinding(params, 'subdivisions', {min: 1, max: 10, step: 1}).on('change', () => {
+        createGround();
+    });
+
+</script>
+</body>
+</html>

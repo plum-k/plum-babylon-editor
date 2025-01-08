@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Color3, StandardMaterial, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    viewer.scene.activeCamera.useAutoRotationBehavior = true;
+
+    var box = MeshBuilder.CreateBox("box", {size: 1}, scene);
+    box.position.y = 1;
+    box.material = new StandardMaterial("boxMat", scene);
+    box.material.diffuseColor = Color3.Blue();
+    //     BILLBOARDMODE_NONE (0):
+    //     说明：物体不受摄像机方向的影响，保持其原始方向。
+    // 用途：用于需要保持固定朝向的物体，如静态背景元素。
+    // BILLBOARDMODE_X (1):
+    //     说明：物体的 X 轴始终面向摄像机，Y 和 Z 轴的方向保持不变。
+    // 用途：适用于需要在水平方向上始终面向摄像机的元素，如某些类型的 UI 元素。
+    // BILLBOARDMODE_Y (2):
+    //     说明：物体的 Y 轴始终面向摄像机，X 和 Z 轴的方向保持不变。
+    // 用途：常用于需要从上方观察的场景元素，比如平面或地面上的标记。
+    // BILLBOARDMODE_Z (4):
+    //     说明：物体的 Z 轴始终面向摄像机，X 和 Y 轴的方向保持不变。
+    // 用途：适用于需要在前后方向上面对摄像机的对象，例如某些类型的地形或平台。
+    // BILLBOARDMODE_ALL (7):
+    //     说明：物体的所有轴（X、Y 和 Z）都始终面向摄像机。
+    // 用途：通常用于需要始终面向观察者的效果，如粒子系统中的粒子或动态的 UI 元素。
+    //BillboardMode ensures a mesh is always facing towards the camera.
+    box.billboardMode = 0;
+
+    // Our built-in 'ground' shape.
+    var ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+    const pane = new Pane();
+    pane.addBinding(box, 'billboardMode', {
+        options: {
+            'None': 0,
+            'X-Axis': 1,
+            'Y-Axis': 2,
+            'Z-Axis': 4,
+            'All Directions': 7
+        }
+    }).on('change', (value) => {
+        box.billboardMode = value; // 更新 box 的 BillboardMode
+    });
+</script>
+</body>
+</html>

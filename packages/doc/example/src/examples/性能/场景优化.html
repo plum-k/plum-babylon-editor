@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Plane, MeshBuilder, Viewer, StandardMaterial} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {});
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    let sphere = MeshBuilder.CreateSphere('sphere1', {
+        diameter: 2
+    });
+    sphere.position.y = 1;
+
+    const ground = MeshBuilder.CreateGround('ground1', {
+        width: 6,
+        height: 6,
+        subdivisions: 2
+    });
+
+    // 禁用材质更新
+    // material.freeze();
+    // material.unfreeze();
+
+    // 禁用矩阵更新
+    // mesh.freezeWorldMatrix();
+    // mesh.unfreezeWorldMatrix();
+
+    // 冻结网格
+    // scene.freezeActiveMeshes();
+    // scene.unfreezeActiveMeshes();
+
+
+    // 冻结边界信息, 影响拾取和碰撞
+    // mesh.doNotSyncBoundingInfo = true;
+
+
+    // 取消移动旋转网格事件
+    // 每次指针移动时，场景都会浏览网格列表，以查看指针下的网格是否需要引发关联的操作/事件。 要避免此过程，您可以设置
+    // scene.skipPointerMovePicking = true
+
+    // 请注意，通过执行此操作，当指针移动时，您在任何网格上都不会有事件（并且即使 也不会更新）。
+    // scene.meshUnderPointerscene.constantlyUpdateMeshUnderPointer === true
+
+    // 提前深度测试
+    // mesh.material.needDepthPrePass = true
+
+
+    // 是否保证材质最新
+    // scene.blockMaterialDirtyMechanism = true;
+
+    // https://doc.babylonjs.com/features/featuresDeepDive/scene/optimize_your_scene/
+    // 场景快速响应
+    // 将选项设置为 将加快场景中的添加和删除速度。useGeometryIdsMaptrueGeometry
+    // 将此选项设置为 '将减少查找绑定网格所花费的时间，从而加快处理速度。useMaterialMeshMaptrueMaterial
+    // 将此选项设置为 将减少查找关联的克隆网格所花费的时间，从而加快处理速度。useClonedMeshMaptrueMesh
+    // scene.blockfreeActiveMeshesAndRenderingGroups = true;
+    // scene.blockfreeActiveMeshesAndRenderingGroups = false;
+
+
+    // 性能优先模式
+
+    // 从 Babylon.js 5.22 开始，您现在可以更改场景在向后兼容性和易用性方面的性能处理方式。
+    //
+    // 向后兼容模式（默认）
+    // 默认情况下，设置为 。在此模式下，根本没有变化。该场景将继续优先考虑易用性和向后兼容性。scene.performancePriorityBABYLON.ScenePerformancePriority.BackwardCompatible
+    //
+    // 中间模式
+    // 如果切换到 ，场景将自动：performancePriorityBABYLON.ScenePerformancePriority.Intermediate
+    //
+    // 准备好后冻结材料。如果您需要更改材质上的某些内容，则必须在进行更改后致电material.markDirty(true)
+    // 新网格的 property 将设为 true。然后，系统将跳过网格的视锥裁剪，并始终将其设置为活动状态（节省复杂的 CPU 操作）。请记住，如果场景受 GPU 限制，请将其关闭alwaysSelectAsActiveMesh
+    // 新网格的 property 将设为 false。拣选和操作管理器将不再工作。如果需要为特定网格进行拾取，您始终可以重新启用该属性isPickable
+    // scene.skipPointerMovePicking 将打开（意味着不会有 OnPointerMove 事件）
+    // scene.autoClear将被关闭
+    // 激进模式
+    // 如果切换到 ，场景将自动：performancePriorityBABYLON.ScenePerformancePriority.Aggressive
+    //
+    // 启用模式的所有功能Intermediate
+    //
+    // 该场景将完全跳过所有视锥体裁剪阶段（将设置为 true）scene.skipFrustumClipping
+    //
+    // 新网格将设置为 truedoNotSyncBoundingInfo
+    //
+    // 管理器不会在帧之间重置（设置为 true）。这意味着，如果网格变得不可见或透明，则直到此布尔值再次设置为 false 之前，它将不可见scene.renderingManager.maintainStateBetweenFrames
+    //
+    // ** 请注意，和 模式不会向后兼容，这意味着我们将来可能会在这些模式中添加更多功能，以首先支持性能**IntermediateAggressive
+    //
+    //
+
+
+</script>
+</body>
+</html>

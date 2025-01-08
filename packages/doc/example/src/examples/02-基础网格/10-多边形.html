@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Mesh, Vector3, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+    const scene = viewer.scene;
+    const shape = [
+        new Vector3(4, 0, -4),
+        new Vector3(2, 0, 0),
+        new Vector3(5, 0, 2),
+        new Vector3(1, 0, 2),
+        new Vector3(-5, 0, 5),
+        new Vector3(-3, 0, 1),
+        new Vector3(-4, 0, -4),
+        new Vector3(-2, 0, -3),
+        new Vector3(2, 0, -3)
+    ];
+
+    const holes = [];
+    holes[0] = [
+        new Vector3(1, 0, -1),
+        new Vector3(1.5, 0, 0),
+        new Vector3(1.4, 0, 1),
+        new Vector3(0.5, 0, 1.5)
+    ];
+
+    holes[1] = [
+        new Vector3(0, 0, -2),
+        new Vector3(0.5, 0, -1),
+        new Vector3(0.4, 0, 0),
+        new Vector3(-1.5, 0, 0.5)
+    ];
+
+    const polygon = MeshBuilder.CreatePolygon("polygon", {
+        shape: shape,
+        holes: holes,
+        sideOrientation: Mesh.DOUBLESIDE
+    });
+
+</script>
+</body>
+</html>

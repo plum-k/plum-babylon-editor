@@ -1,0 +1,9 @@
+database:
+  name:
+  host:
+  user:
+  port:
+  password:
+
+http:
+  port: 5010

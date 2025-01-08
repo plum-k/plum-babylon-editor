@@ -1,0 +1,27 @@
+.sidePane {
+    position: absolute;
+    /*width: 100px;*/
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #181818;
+    z-index: 99;
+    user-select: none;
+
+}
+
+.sidePane-item {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+
+    padding: 5px;
+    z-index: 999;
+    writing-mode: vertical-lr;
+    color: aliceblue;
+
+    border-top: 1px solid #ffffff; /* 上边框 */
+    border-right: 1px solid #ffffff; /* 右边框 */
+    border-bottom: 1px solid #ffffff; /* 下边框 */
+    border-radius: 0 5px 5px 0; /* 右上、右下角有 5px 圆角 */
+}

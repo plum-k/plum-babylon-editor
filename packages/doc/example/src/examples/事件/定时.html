@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {AbstractMesh, MeshBuilder, Viewer, Color4} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {});
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 在动画更新之前触发
+    scene.onBeforeAnimationsObservable.add(() => {
+        console.log("动画更新之前");
+    });
+
+    // 在动画更新之后触发
+    scene.onAfterAnimationsObservable.add(() => {
+        console.log("动画更新之后");
+    });
+
+    // 在物理引擎更新之前触发
+    scene.onBeforePhysicsObservable.add(() => {
+        console.log("物理引擎更新之前");
+    });
+
+    // 在物理引擎更新之后触发
+    scene.onAfterPhysicsObservable.add(() => {
+        console.log("物理引擎更新之后");
+    });
+
+    // 在渲染开始之前触发
+    scene.onBeforeRenderObservable.add(() => {
+        console.log("渲染开始之前");
+    });
+
+    // 在渲染目标之前触发（如纹理）
+    scene.onBeforeRenderTargetsRenderObservable.add(() => {
+        console.log("渲染目标之前");
+    });
+
+    // 在渲染目标之后触发
+    scene.onAfterRenderTargetsRenderObservable.add(() => {
+        console.log("渲染目标之后");
+    });
+
+    // 在相机开始渲染之前触发
+    scene.onBeforeCameraRenderObservable.add(() => {
+        console.log("相机渲染之前");
+    });
+
+    // 在评估活动网格（如碰撞检测）之前触发
+    scene.onBeforeActiveMeshesEvaluationObservable.add(() => {
+        console.log("活动网格评估之前");
+    });
+
+    // 在评估活动网格之后触发
+    scene.onAfterActiveMeshesEvaluationObservable.add(() => {
+        console.log("活动网格评估之后");
+    });
+
+    // 在粒子系统渲染之前触发
+    scene.onBeforeParticlesRenderingObservable.add(() => {
+        console.log("粒子系统渲染之前");
+    });
+
+    // 在粒子系统渲染之后触发
+    scene.onAfterParticlesRenderingObservable.add(() => {
+        console.log("粒子系统渲染之后");
+    });
+
+    // 在绘制阶段之前触发
+    scene.onBeforeDrawPhaseObservable.add(() => {
+        console.log("绘制阶段之前");
+    });
+
+    // 在绘制阶段之后触发
+    scene.onAfterDrawPhaseObservable.add(() => {
+        console.log("绘制阶段之后");
+    });
+
+    // 在相机渲染之后触发
+    scene.onAfterCameraRenderObservable.add(() => {
+        console.log("相机渲染之后");
+    });
+
+    // 在场景渲染之后触发
+    scene.onAfterRenderObservable.add(() => {
+        console.log("场景渲染之后");
+    });
+</script>
+</body>
+</html>

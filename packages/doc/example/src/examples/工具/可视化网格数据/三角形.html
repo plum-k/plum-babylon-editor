@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        StandardMaterial,
+        MeshDebugMode,
+        Color3,
+        MeshBuilder,
+        Viewer,
+        MeshDebugPluginMaterial
+    } from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    let box = MeshBuilder.CreateBox('box', {width: 2, height: 2, depth: 2}, scene);
+    console.log(box)
+    const boxMaterial = new StandardMaterial("boxMaterial", scene);
+    boxMaterial.diffuseColor = new Color3(1, 0, 0); // 红色
+    box.material = boxMaterial;
+    console.log(MeshDebugPluginMaterial)
+    MeshDebugPluginMaterial.PrepareMeshForTrianglesAndVerticesMode(box);
+
+    console.log(box.material)
+    const plugin = new MeshDebugPluginMaterial(box.material, {
+        mode: MeshDebugMode.TRIANGLES,
+    });
+
+</script>
+</body>
+</html>

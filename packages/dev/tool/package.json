@@ -1,0 +1,12 @@
+{
+  "name": "@plum-render/tool",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "typescript": "^5.7.2"
+  }
+}

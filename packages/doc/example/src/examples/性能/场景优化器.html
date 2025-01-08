@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {AbstractMesh, MeshBuilder, Viewer, Color4} from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {});
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // https://doc.babylonjs.com/features/featuresDeepDive/scene/sceneOptimizer/
+
+
+</script>
+</body>
+</html>

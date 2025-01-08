@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, VertexBuffer, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // 这只是创建原始网格的深层副本，并通过共享几何体来节省内存。每个克隆都可以有自己的材质和变换。 绘制调用还是多次
+
+    // 更改模型A的顶点,  模型B 因为顶点是共享的，也会受到影响
+    const box = MeshBuilder.CreateBox("box", {height: 1, width: 0.75, depth: 0.25, updatable: true});
+    const box1 = box.clone("box2");
+    box.position.x = -1;
+    box1.position.x = 1;
+    let positions = box.getVerticesData(VertexBuffer.PositionKind);
+    positions = positions.map((v) => 2 * v);
+    box.updateVerticesData(VertexBuffer.PositionKind, positions)
+
+
+    // 顶点是共享1的, 但是变法是不共享的
+    // const box = MeshBuilder.CreateBox("box", {height: 1, width: 0.75, depth: 0.25, updatable: true});
+    // const box1 = box.clone("box2");
+    // box.position.x = -1;
+    // box1.position.x = 1;
+    // box1.scaling = new Vector3(2, 2, 2);
+
+    // 顶点是共享的, 但是材质是不共享的
+    // const box = MeshBuilder.CreateBox("box", {height: 1, width: 0.75, depth: 0.25, updatable: true});
+    // const box1 = box.clone("box2");
+    // box.position.x = -1;
+    // box.material = new StandardMaterial("mat");
+    // box.material.diffuseTexture = new Texture("textures/grass.png");
+    // box1.position.x = 1;
+    // box1.material = new StandardMaterial("mat1");
+    // box1.material.diffuseTexture = new Texture("textures/crate.png");
+
+</script>
+</body>
+</html>

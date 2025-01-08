@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Vector3, Color4, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "实线"
+    });
+
+    const myPoints = [
+        new Vector3(-2, -1, 0),
+        new Vector3(0, 1, 0),
+        new Vector3(2, -1, 0),
+    ]
+    myPoints.push(myPoints[0]);
+    const options = {
+        points: myPoints,
+        updatable: true
+    }
+    const myColors = [
+        new Color4(1, 0, 0, 1),
+        new Color4(0, 1, 0, 1),
+        new Color4(0, 0, 1, 1),
+        new Color4(1, 1, 0, 1)
+    ]
+    options.colors = myColors;
+
+    let lines = MeshBuilder.CreateLines("lines", options);
+
+    folder.addButton({
+        title: '更新模型',
+    }).on('click', () => {
+        options.points[0] = new Vector3(-2, 1, -1);
+        options.points[1] = new Vector3(0, -1, 0);
+        options.points[2] = new Vector3(2, 0, 0);
+        options.points[3] = new Vector3(-1, -2, 0);
+
+        options.instance = lines;
+
+        lines = MeshBuilder.CreateLines("lines", options);
+    });
+
+
+</script>
+</body>
+</html>

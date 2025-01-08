@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+
+    const scene = viewer.scene;
+    const pane = new Pane();
+    let folder = pane.addFolder({
+        title: "球体"
+    });
+    const params = {
+        segments: 32,
+        diameter: 1,
+        diameterX: 1,
+        diameterY: 1,
+        diameterZ: 1,
+        arc: 1,
+        slice: 1,
+    };
+
+    let sphere;
+
+    function createSphere() {
+        if (sphere) {
+            sphere.dispose(); // 删除之前的球体
+        }
+        const options = {
+            segments: params.segments,
+            diameter: params.diameter,
+            diameterX: params.diameterX,
+            diameterY: params.diameterY,
+            diameterZ: params.diameterZ,
+            arc: params.arc,
+            slice: params.slice,
+        };
+        sphere = MeshBuilder.CreateSphere('sphere', options, scene);
+    }
+
+    createSphere();
+
+    folder.addBinding(params, 'segments', {min: 3, max: 64, step: 1, label: '段数'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'diameter', {min: 0.1, max: 5, step: 0.1, label: '直径'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'diameterX', {min: 0.1, max: 5, step: 0.1, label: 'X轴直径'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'diameterY', {min: 0.1, max: 5, step: 0.1, label: 'Y轴直径'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'diameterZ', {min: 0.1, max: 5, step: 0.1, label: 'Z轴直径'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'arc', {min: 0, max: 1, step: 0.01, label: '弧度'}).on('change', () => {
+        createSphere();
+    });
+    folder.addBinding(params, 'slice', {min: 0, max: 1, step: 0.01, label: '切片'}).on('change', () => {
+        createSphere();
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        ParticleSystem,
+        Texture,
+        Vector3,
+        MeshBuilder,
+        Viewer,
+        StandardMaterial,
+        Color3,
+        Color4,
+        SphereParticleEmitter
+    } from "@plum-render/babylon-sdk";
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    var surfaceParticles = new ParticleSystem("surfaceParticles", 1600, scene);
+
+    // Texture of each particle
+    surfaceParticles.particleTexture = new Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJStextures/master/ParticleSystems/Sun/T_SunSurface.png", scene);
+
+    // Create core sphere
+    var coreSphere = MeshBuilder.CreateSphere("coreSphere", {diameter: 2.01, segments: 64}, scene);
+
+    // Create core material
+    var coreMat = new StandardMaterial("coreMat", scene)
+    coreMat.emissiveColor = new Color3(0.3773, 0.0930, 0.0266);
+
+    // Assign core material to sphere
+    coreSphere.material = coreMat;
+
+    // 设置预热帧数, 0 不预热
+    surfaceParticles.preWarmStepOffset = 10;
+    // 设置预热步长
+    surfaceParticles.preWarmCycles = 100;
+
+    // Initial rotation
+    surfaceParticles.minInitialRotation = -2 * Math.PI;
+    surfaceParticles.maxInitialRotation = 2 * Math.PI;
+
+    // Where the sun particles come from
+    var sunEmitter = new SphereParticleEmitter();
+    sunEmitter.radius = 1;
+    sunEmitter.radiusRange = 0; // emit only from shape surface
+
+    // Assign particles to emitters
+    surfaceParticles.emitter = coreSphere; // the starting object, the emitter
+    surfaceParticles.particleEmitterType = sunEmitter;
+
+    // Color gradient over time
+    surfaceParticles.addColorGradient(0, new Color4(0.8509, 0.4784, 0.1019, 0.0));
+    surfaceParticles.addColorGradient(0.4, new Color4(0.6259, 0.3056, 0.0619, 0.5));
+    surfaceParticles.addColorGradient(0.5, new Color4(0.6039, 0.2887, 0.0579, 0.5));
+    surfaceParticles.addColorGradient(1.0, new Color4(0.3207, 0.0713, 0.0075, 0.0));
+
+    // Size of each particle (random between...
+    surfaceParticles.minSize = 0.4;
+    surfaceParticles.maxSize = 0.7;
+
+    // Life time of each particle (random between...
+    surfaceParticles.minLifeTime = 8.0;
+    surfaceParticles.maxLifeTime = 8.0;
+
+    // Emission rate
+    surfaceParticles.emitRate = 200;
+
+    // Blend mode : BLENDMODE_ONEONE, BLENDMODE_STANDARD, or BLENDMODE_ADD
+    surfaceParticles.blendMode = ParticleSystem.BLENDMODE_ADD;
+
+    // Set the gravity of all particles
+    surfaceParticles.gravity = new Vector3(0, 0, 0);
+
+    // Angular speed, in radians
+    surfaceParticles.minAngularSpeed = -0.4;
+    surfaceParticles.maxAngularSpeed = 0.4;
+
+    // Speed
+    surfaceParticles.minEmitPower = 0;
+    surfaceParticles.maxEmitPower = 0;
+    surfaceParticles.updateSpeed = 0.005;
+
+    // No billboard
+    surfaceParticles.isBillboardBased = false;
+
+    // Start the particle system
+    surfaceParticles.start();
+
+</script>
+</body>
+</html>

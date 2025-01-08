@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, MeshBuilder} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+    const box = MeshBuilder.CreateBox("Box", {size: 1});
+
+    // 创建一个动画, 动画名称为"xSlide",操作哪个属性做动画, 动画类型为浮点型, 动画循环模式为循环
+    const startFrame = 0;
+    const endFrame = 10;
+    const frameRate = 10;
+
+    const xSlide = new Animation("xSlide", "position.x", frameRate, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CONSTANT);
+    console.log("xSlide", xSlide)
+    const keyFrames = [];
+
+    keyFrames.push({
+        frame: startFrame,
+        value: 2,
+    });
+
+    keyFrames.push({
+        frame: endFrame,
+        value: -2,
+    });
+
+    xSlide.setKeys(keyFrames);
+
+    box.animations.push(xSlide);
+
+    const pane = new Pane();
+    const folder = pane.addFolder({title: 'k帧'});
+    const PARAMS = {
+        isReverse: false,
+    };
+
+    folder.addBinding(PARAMS, 'isReverse', {label: "是否反向"});
+    const btn = folder.addButton({
+        title: '开始动画',
+    }).on('click', () => {
+        if (PARAMS.isReverse) {
+            viewer.scene.beginAnimation(box, endFrame, startFrame, false);
+        } else {
+            viewer.scene.beginAnimation(box, startFrame, endFrame, false);
+        }
+    });
+
+    const btn1 = folder.addButton({
+        title: '停止动画',
+    }).on('click', () => {
+
+    });
+</script>
+</body>
+</html>

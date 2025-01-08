@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+    let mesh = [];
+
+    const pane = new Pane();
+    const folder = pane.addFolder({title: '定位到模型'});
+    const PARAMS = {
+        displayVertexColors: false,
+    };
+    viewer.debug(true);
+
+    let meshs = []
+    const btn = folder.addButton({
+        title: '加载模型',
+    }).on('click', () => {
+        let meshAssetTask = viewer.assetsManager.addMeshTask(`add`, "", "/", "aaa.glb");
+        meshAssetTask.onSuccess = (task) => {
+            console.log("模型加载成功")
+            // 默认第一个网格是模型的根节点
+            mesh = task.loadedMeshes[0];
+            meshs = task.loadedMeshes;
+        }
+        // 开始加载模型
+        viewer.assetsManager.load();
+        console.log(viewer.scene.activeCamera)
+    });
+
+    const btn1 = folder.addButton({
+        title: '删除模型',
+    }).on('click', () => {
+        viewer.scene.removeMesh(mesh, true);
+    });
+    folder.addButton({
+        title: '定位到模型',
+    }).on('click', () => {
+        viewer.scene.activeCamera.focusOn(meshs, true);
+        console.log(viewer.scene.activeCamera)
+    });
+
+</script>
+</body>
+</html>

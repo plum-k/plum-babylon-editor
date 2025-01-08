@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Viewer, MeshBuilder, PBRMaterial, Color3} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    const viewer = await Viewer.create("app", {});
+
+    const pane = new Pane();
+
+    function createBox(name, pos, color) {
+        const folder = pane.addFolder({title: name});
+        const box = MeshBuilder.CreateBox(name);
+        let material = new PBRMaterial("material");
+        material.emissiveColor = new Color3().fromArray(color);
+        material.emissiveIntensity = 1;
+        box.material = material;
+        console.log(box.material)
+        folder.addBinding(box.material, 'emissiveColor', {color: {type: 'float'}})
+        folder.addBinding(box.material, 'emissiveIntensity');
+        // emissiveTexture
+        box.position.fromArray(pos);
+
+        const PARAMS = {
+            isGlow: true,
+        };
+        folder.addBinding(PARAMS, 'isGlow',).on('change', (e) => {
+            console.log(e.value)
+            if (e.value) {
+                viewer.postProcessManager.defaultRenderingPipeline.glowLayer.addIncludedOnlyMesh(box);
+            } else {
+                viewer.postProcessManager.defaultRenderingPipeline.glowLayer.removeIncludedOnlyMesh(box);
+            }
+        });
+        return box;
+    }
+
+    let box1 = createBox("红色", [0, 0, 0], [1, 0, 0]);
+    let box2 = createBox("绿色", [0, 2, 0], [0, 1, 0]);
+
+    let intensityContrl;
+    const folder1 = pane.addFolder({title: '发光'});
+    folder1.addBinding(viewer.postProcessManager.defaultRenderingPipeline, 'glowLayerEnabled').on('change', (e) => {
+        console.log(e)
+        if (e.value) {
+            // 会默认把场景中的所有网格都进行高亮
+            viewer.postProcessManager.defaultRenderingPipeline.glowLayer.addIncludedOnlyMesh(box1);
+            viewer.postProcessManager.defaultRenderingPipeline.glowLayer.addIncludedOnlyMesh(box2);
+            intensityContrl = folder1.addBinding(viewer.postProcessManager.defaultRenderingPipeline.glowLayer, 'intensity');
+        } else {
+            folder1.remove(intensityContrl);
+        }
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+
+.address-bar {
+    width: 100px;
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #555;
+    height: 25px;
+    line-height: 25px;
+    padding-left: 5px;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.search-bar input {
+    padding: 5px;
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.view-options button {
+    padding: 5px;
+    margin-left: 5px;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.view-options button:hover {
+    background-color: #666;
+}
+
+.folder-container {
+    overflow: auto;
+    height: 100%;
+}
+
+.folder-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    /*height: 100%;*/
+}
+
+.folder-icon {
+    font-size: 2em;
+    margin-top: 10px;
+}
+
+.folder-name {
+    margin-top: 5px;
+    font-size: 0.9em;
+}

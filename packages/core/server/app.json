@@ -1,0 +1,9 @@
+{
+  "apps": {
+    "name": "server",
+    "script": "./dist/main.js",
+    "env": {
+      "CONFIG_FILE": "main-node.yaml"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "exclude": [
+    "rollup.config.ts"
+  ],
+  "compilerOptions": {
+    "target": "esnext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}

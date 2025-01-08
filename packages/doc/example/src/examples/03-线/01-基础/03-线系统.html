@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {Vector3, Color4, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+
+    const viewer = await Viewer.create("app", {});
+
+
+    const myLines = [
+        [new Vector3(0, 0, 10),
+            new Vector3(10, 0, 10)
+        ],
+        [new Vector3(10, 0, 0),
+            new Vector3(10, 10, 0),
+            new Vector3(0, 10, 0)
+        ]
+    ];
+
+    const myColors = [
+        [new Color4(0, 1, 1, 1),
+            new Color4(1, 0, 0, 1)
+        ],
+        [new Color4(0, 1, 0, 1),
+            new Color4(0, 0, 1, 1),
+            new Color4(1, 1, 0, 1)
+        ]
+    ]
+
+    const linesystem = MeshBuilder.CreateLineSystem("linesystem", {lines: myLines, colors: myColors});
+
+</script>
+</body>
+</html>

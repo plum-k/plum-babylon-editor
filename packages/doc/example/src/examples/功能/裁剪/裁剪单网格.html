@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {FitStrategy, HtmlMesh, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+
+    const viewer = await Viewer.create("app", {});
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+    let sphere = MeshBuilder.CreateSphere('sphere1', {
+        diameter: 2
+
+    });
+    sphere.position.y = 1;
+
+    const ground = MeshBuilder.CreateGround('ground1', {
+        width: 6,
+        height: 6,
+        subdivisions: 2
+    });
+
+    const mat = new StandardMaterial("mat", scene);
+
+    mat.clipPlane = new Plane(1, 0, 0, 0);
+
+    sphere.material = mat;
+
+</script>
+</body>
+</html>

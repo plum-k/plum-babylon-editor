@@ -1,0 +1,15 @@
+{
+  "name": "@plum-common/type",
+  "version": "0.0.1",
+  "main": "build/commonjs/index.js",
+  "module": "build/esm/index.js",
+  "types": "build/types/index.d.ts",
+  "scripts": {
+    "build": "tsc --project tsconfig.esm.json && tsc --project tsconfig.cjs.json"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
