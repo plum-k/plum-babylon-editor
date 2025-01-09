@@ -9,7 +9,7 @@ export interface ArcRotateCameraAttributeProps {
 }
 
 const ArcRotateCameraAttribute: FC<ArcRotateCameraAttributeProps> = (props: ArcRotateCameraAttributeProps) => {
-    const {} = props;
+    
     const selectObject3D = useSelectObject3D();
     let camera = selectObject3D as ArcRotateCamera;
     const viewer = useViewer()

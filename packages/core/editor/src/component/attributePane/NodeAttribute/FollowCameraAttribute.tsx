@@ -5,7 +5,7 @@ import {useSelectObject3D} from "../../../store";
 import CameraAttribute from "./CameraAttribute.tsx";
 
 export default function FollowCameraAttribute() {
-    const {} = props;
+    
     const selectObject3D = useSelectObject3D();
     const items = useMemo(() => {
         const list: CollapseProps['items'] = [];

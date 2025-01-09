@@ -6,7 +6,7 @@ import CameraAttribute from "./CameraAttribute.tsx";
 
 
 export default function FreeCameraAttribute() {
-    const {} = props;
+    
     const selectObject3D = useSelectObject3D();
     const items = useMemo(() => {
         const list: CollapseProps['items'] = [];

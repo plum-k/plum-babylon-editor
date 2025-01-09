@@ -8,7 +8,7 @@ import {Camera} from "@babylonjs/core";
 
 
 export default function CameraAttribute() {
-    const {} = props;
+    
     const form = Form.useFormInstance();
     const viewer = useViewer()
     const [MeshInfo, setMeshInfo] = useState<DescriptionsProps['items']>([]);

@@ -2,7 +2,7 @@ import {Fragment, useEffect, useState} from "react";
 import {Empty, Form, FormProps} from "antd";
 import {useSelectObject3D, useViewer} from "../../../store";
 import {InputItem, ObjectAttributeProvider, TextItem} from "@plum-render/common-ui";
-import {AbstractMesh, fromBabylonObservable, NodeTool} from "@plum-render/babylon-sdk";
+import {AbstractMesh, fromBabylonObservable, isPlumArcRotateCamera, NodeTool} from "@plum-render/babylon-sdk";
 import MeshAttribute from "./MeshAttribute.tsx";
 import DirectionalLightAttribute from "./lights/DirectionalLightAttribute.tsx";
 import SpotLightAttribute from "./lights/SpotLightAttribute.tsx";
@@ -218,7 +218,7 @@ export default function NodeAttribute() {
             return <MeshAttribute/>
         } else if (isTransformNode(selectObject3D)) {
             return <TransformNodeAttribute/>
-        } else if (isArcRotateCamera(selectObject3D)) {
+        } else if (isArcRotateCamera(selectObject3D) || isPlumArcRotateCamera(selectObject3D)) {
             return <ArcRotateCameraAttribute/>
         } else if (isFollowCamera(selectObject3D)) {
             return <FollowCameraAttribute/>

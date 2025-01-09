@@ -226,10 +226,10 @@ export class Select {
             } else if (isCamera(value)) {
                 const activeCamera = this.editor.scene.activeCamera!;
                 if (activeCamera === value) {
-                    return
+                }else {
+                    const cameraGizmo = this.gizmoManager.enableCameraGizmo(value);
+                    this.gizmoManager.attachToNode(cameraGizmo.attachedNode);
                 }
-                const cameraGizmo = this.gizmoManager.enableCameraGizmo(value);
-                this.gizmoManager.attachToNode(cameraGizmo.attachedNode);
             }
         }
 

@@ -4,7 +4,7 @@ import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
 import {IFolder} from "common";
 import {Control} from "../component/SidePane";
-import {Viewer} from "@plum-render/babylon-sdk";
+import {PlumArcRotateCamera, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import PanelCollapsed from "../component/PanelCollapsed.tsx";
@@ -58,6 +58,8 @@ export default function SceneView(props: ISceneViewProps) {
                     toast.done(toastId.current);
                 }
                 setViewer(_viewer);
+                let camera = _viewer.scene.activeCamera! as PlumArcRotateCamera;
+                console.log(camera)
 
                 // testSerialize(_viewer);
                 // testMesh(_viewer)

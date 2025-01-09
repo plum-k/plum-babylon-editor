@@ -1,5 +1,5 @@
 import {BasePlum, IBasePlumOptions} from "../core";
-import {FilesInput, Node, Nullable} from "@babylonjs/core";
+import {FilesInput, Node, Nullable,UtilityLayerRenderer} from "@babylonjs/core";
 import {History} from "./History"
 import {
     AddObjectCommand,
@@ -48,8 +48,8 @@ export class Editor extends BasePlum {
         super(options);
 
         this.history = new History(this);
-
-        this.gizmoManager = new PlumGizmoManager(this.viewer.scene);
+        const scene = this.viewer.scene;
+        this.gizmoManager = new PlumGizmoManager(scene,undefined, new UtilityLayerRenderer(scene), new UtilityLayerRenderer(scene));
         this.gizmoManager.usePointerToAttachGizmos = false;
 
         this.addLightEvent();

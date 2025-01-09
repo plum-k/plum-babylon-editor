@@ -1,3 +1,4 @@
+export * from "./camera";
 export * from "./core";
 export * from "./editor";
 export * from "./enum";

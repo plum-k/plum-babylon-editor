@@ -1,6 +1,5 @@
 import {Key, useEffect, useMemo, useRef, useState} from 'react';
 import {Input, Tree, TreeDataNode, type TreeProps} from 'antd';
-import {EventDataNode} from 'antd/es/tree/index';
 import {Item, ItemParams, Menu as RightMenu, useContextMenu} from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.css';
 import {isNil} from "lodash-es";
@@ -88,13 +87,7 @@ export default function SceneTree() {
         }
     }
 
-    const onSelect = (electedKeys: Key[], info: {
-        event: 'select';
-        selected: boolean;
-        node: EventDataNode<any>;
-        selectedNodes: any[];
-        nativeEvent: MouseEvent;
-    }) => {
+    const onSelect: TreeProps["onSelect"] = (electedKeys) => {
         setSelectKey(electedKeys)
         const length = electedKeys.length;
         if (length > 0) {
@@ -135,10 +128,7 @@ export default function SceneTree() {
         });
         return result;
     }, [baseTreeData, searchState]);
-    const RightClick = (info: {
-        event: React.MouseEvent;
-        node: EventDataNode<any>;
-    }) => {
+    const onRightClick: TreeProps["onRightClick"] = (info) => {
         const {event, node} = info;
         const {key} = node;
         const SceneNode = viewer?.getNodeByUniqueId(key);
@@ -221,7 +211,7 @@ export default function SceneTree() {
         }
     }, [inputValue]);
 
-    const treeRef = useRef<typeof Tree>(null);
+    const treeRef = useRef<Tree>(null);
     const [expandedKeys, setExpandedKeys] = useState<Array<number>>([]); // 初始化展开的节点
 
     // 更新展开的节点
@@ -259,7 +249,7 @@ export default function SceneTree() {
             const currentHeight = treeContainer.current.offsetHeight;
             setHeight(currentHeight - 40); // 更新高度状态
         }
-    }, []); // 空依赖数组，组件挂载时执行
+    }, []);
     const handleVisible = (key: number, value: boolean) => {
         if (viewer) {
             const node = viewer.getNodeByUniqueId(key);
@@ -272,26 +262,38 @@ export default function SceneTree() {
             }
         }
     }
-    return (
-        <div className="bg-white overflow-hidden h-full w-full m-0 pb-5" ref={treeContainer}>
-            <div style={{padding: "5px"}}>
-                <Input.Search placeholder="" onChange={handleChange} allowClear onClear={onClear}
-                              onSearch={searchHandle}/>
-            </div>
+
+    // 渲染右键菜单
+    const RenderRightMenu = () => {
+        const visibleText = () => {
+            if (selectObject3D) {
+                return NodeTool.getVisibleNode(selectObject3D) ? "隐藏" : "显示"
+            }
+            return ""
+        }
+        return (
             <RightMenu id={MENU_ID}>
                 <Item onClick={visible}>
-                    {
-                        NodeTool.getVisibleNode(selectObject3D) ? "隐藏" : "显示"
-                    }
+                    {visibleText()}
                 </Item>
                 <Item onClick={remove}>
                     删除
                 </Item>
             </RightMenu>
+        )
+    }
+
+    return (
+        <div className="bg-white overflow-hidden h-full w-full m-0 pb-5" ref={treeContainer}>
+            <div className="p-2">
+                <Input.Search placeholder="" onChange={handleChange} allowClear onClear={onClear}
+                              onSearch={searchHandle}/>
+            </div>
+            <RenderRightMenu/>
             <Tree
                 ref={treeRef}
-                expandedKeys={expandedKeys} // 控制展开的节点
-                onExpand={onExpand} // 处理展开/收起事件
+                expandedKeys={expandedKeys}
+                onExpand={onExpand}
                 autoExpandParent
                 height={height}
                 onSelect={onSelect}
@@ -313,7 +315,7 @@ export default function SceneTree() {
                 onDrop={onDrop}
                 onDragEnd={onDragEnd}
                 treeData={treeData}
-                onRightClick={RightClick} // 右键菜单
+                onRightClick={onRightClick}
             />
         </div>
     );

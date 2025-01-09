@@ -17,6 +17,8 @@ let viewer = await Viewer.create("app", {
 });
 let scene = viewer.scene;
 
+// finalSize 最终粒子效果
+
 viewer.initSubject.subscribe(() => {
     console.log("场景初始化完成");
 })

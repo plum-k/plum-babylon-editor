@@ -13,3 +13,7 @@ export class PlumArcRotateCamera extends ArcRotateCamera {
 }
 
 RegisterClass("PlumArcRotateCamera", PlumArcRotateCamera);
+
+export function isPlumArcRotateCamera(value: any): value is PlumArcRotateCamera {
+    return value instanceof PlumArcRotateCamera;
+}

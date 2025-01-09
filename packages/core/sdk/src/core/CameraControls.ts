@@ -10,7 +10,7 @@ import {
     UtilityLayerRenderer,
     Vector3
 } from "@babylonjs/core";
-import {MeshBuilder} from "../index";
+import {MeshBuilder, PlumArcRotateCamera} from "../index";
 import {isNil} from "lodash-es";
 
 
@@ -29,49 +29,7 @@ export class CameraControls extends BasePlum {
         super(options);
         const {viewer} = options;
         const {scene, canvas} = viewer
-
         this.createDefaultCamera();
-
-        // this.scene.activeCamera!.position.set(10, 10, 0);
-
-        console.log(this.scene.activeCamera!.position)
-
-        // this.scene.activeCamera!.attachControl();
-        // 禁用平移
-        // this.scene.activeCamera.panningSensibility = 0;
-        // this.scene.activeCamera!.inputs.remove();
-
-        // this.scene.createDefaultCameraOrLight(true, true, true);
-        // @ts-ignore
-        // this.scene.activeCamera.alpha += Math.PI;
-        // this.camera = new FreeCamera("camera", new Vector3(0, 5, -10), scene);
-        // this.camera.setTarget(Vector3.Zero());
-        // this.camera.attachControl(canvas, true);
-        // this.prepareCamera();
-        // @ts-ignore
-        // this.scene.activeCamera.radius = 20;
-
-
-        // const camera = this.scene.activeCamera as ArcRotateCamera;
-
-
-        // 更新 相继位置
-        // window.test = (num)=>{
-        //     console.log(camera.inertialPanningX)
-        //     camera.inertialPanningX += num;
-        // }
-
-
-        // camera.inputs.remove(camera.inputs.attached.pointers)
-        // let customPointersInput  = new CustomPointersInput()
-        // camera.inputs.add(customPointersInput)
-        //
-        // camera.detachControl()
-        // camera.attachControl(canvas, true)
-
-        // camera.zoomToMouseLocation = true;
-        // camera.wheelDeltaPercentage = 0.01
-
         // TODO 调试相机
         // this.debugCamera();
     }
@@ -79,7 +37,7 @@ export class CameraControls extends BasePlum {
     createDefaultCamera(radius = 10) {
         if (isNil(this.scene.activeCamera)) {
             let worldCenter = new Vector3(0, 0, 0);
-            const arcRotateCamera = new ArcRotateCamera("default camera", -(Math.PI / 2), Math.PI / 2, radius, worldCenter, this.scene);
+            const arcRotateCamera = new PlumArcRotateCamera("default camera", -(Math.PI / 2), Math.PI / 2, radius, worldCenter, this.scene);
             arcRotateCamera.lowerRadiusLimit = radius * 0.01;
             arcRotateCamera.wheelPrecision = 100 / radius;
             arcRotateCamera.minZ = radius * 0.01;
@@ -87,6 +45,8 @@ export class CameraControls extends BasePlum {
             arcRotateCamera.speed = radius * 0.2;
             this.scene.activeCamera = arcRotateCamera;
             arcRotateCamera.attachControl();
+            console.log(arcRotateCamera.position)
+            arcRotateCamera.setPosition(new Vector3(10,10,10));
         }
     }
 

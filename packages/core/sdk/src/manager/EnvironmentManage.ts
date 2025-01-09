@@ -1,7 +1,15 @@
-import {BasePlum, IBasePlumOptions} from "../core";
-import {BaseTexture, FilesInput, HDRCubeTexture, Mesh, Nullable} from "@babylonjs/core";
+import {BasePlum, IBasePlumOptions,} from "../core";
+import {BaseTexture, Color3, CubeTexture, FilesInput, HDRCubeTexture, Mesh, Nullable, Scene} from "@babylonjs/core";
 
 export interface IEnvironmentManageOptions extends IBasePlumOptions {
+}
+
+export interface IUpdateFogOptions {
+    fogMode?: typeof Scene.FOGMODE_NONE | typeof Scene.FOGMODE_EXP | typeof Scene.FOGMODE_EXP2 | typeof Scene.FOGMODE_LINEAR;
+    fogColor?: Color3;
+    fogDensity?: number;
+    fogStart?: number;
+    fogEnd?: number;
 }
 
 export const presetsEnvironmentObj = {
@@ -81,9 +89,28 @@ export class EnvironmentManage extends BasePlum {
 
 
     createFromPrefilteredData() {
-        const hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.env", this.scene);
+        const hdrTexture = CubeTexture.CreateFromPrefilteredData("textures/environment.env", this.viewer.scene);
         if (hdrTexture) {
-            this.scene.environmentTexture = hdrTexture;
+            this.viewer.scene.environmentTexture = hdrTexture;
+        }
+    }
+
+    updateFog(options: IUpdateFogOptions) {
+        const {fogMode, fogColor, fogDensity, fogStart, fogEnd} = options;
+        if (fogMode) {
+            this.scene.fogMode = fogMode;
+        }
+        if (fogColor) {
+            this.scene.fogColor = fogColor;
+        }
+        if (fogDensity) {
+            this.scene.fogDensity = fogDensity;
+        }
+        if (fogStart) {
+            this.scene.fogStart = fogStart;
+        }
+        if (fogEnd) {
+            this.scene.fogEnd = fogEnd;
         }
     }
 }

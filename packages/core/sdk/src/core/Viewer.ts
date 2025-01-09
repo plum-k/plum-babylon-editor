@@ -11,7 +11,6 @@ import {AssetContainer, AssetsManager, EventManager, PostProcessManager} from ".
 import {CameraControls} from "./CameraControls";
 import {LightManager} from "./LightManager";
 import {Subject} from "rxjs";
-import {Environment} from "./Environment";
 import {EffectLayer} from "./EffectLayer";
 import {DrawLine} from "./DrawLine";
 import {Statistics} from "./Statistics";
@@ -101,7 +100,6 @@ export class Viewer {
     eventManager!: EventManager; // 事件管理器
     cameraControls!: CameraControls; // 相机控制
     lightManager!: LightManager; // 光源管理
-    environment!: Environment; // 环境设置
     postProcessManager!: PostProcessManager; // 后处理管理
     effectLayer!: EffectLayer; // 特效层
     editor!: Editor; // 编辑器
@@ -236,7 +234,6 @@ export class Viewer {
 
         this.cameraControls = new CameraControls({viewer: this});
         this.lightManager = new LightManager({viewer: this});
-        this.environment = new Environment({viewer: this});
         this.postProcessManager = new PostProcessManager({viewer: this});
 
 
