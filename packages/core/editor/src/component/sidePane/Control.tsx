@@ -3,8 +3,7 @@ import {ArrowsAltOutlined, FullscreenOutlined, RedoOutlined} from "@ant-design/i
 import {Segmented} from "antd";
 import {useIsDebug, useViewer} from "../../store";
 import {GizmoEnum} from "@plum-render/babylon-sdk";
-
-const Control: FC = () => {
+export default function Control() {
     const viewer = useViewer()
     useEffect(() => {
     }, [viewer])
@@ -58,4 +57,3 @@ const Control: FC = () => {
     )
 }
 
-export default Control;

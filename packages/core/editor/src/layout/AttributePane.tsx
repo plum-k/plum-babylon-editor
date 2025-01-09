@@ -12,8 +12,10 @@ import {
     BgColorsOutlined,
     ExperimentOutlined,
     FileTextOutlined,
+    RocketOutlined,
     SlidersOutlined
 } from "@ant-design/icons";
+import PhysicsAttribute from "../component/attributePane/PhysicsAttribute.tsx";
 
 export default function AttributePane() {
     const items = [
@@ -34,6 +36,15 @@ export default function AttributePane() {
             ),
             key: "MaterialAttribute",
             children: <MaterialAttribute/>,
+        },
+        {
+            label: (
+                <Tooltip title="物理" placement={"left"}>
+                    <RocketOutlined/>
+                </Tooltip>
+            ),
+            key: "PhysicsAttribute",
+            children: <PhysicsAttribute/>,
         },
         {
             label: (

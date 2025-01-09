@@ -3,7 +3,7 @@ import {useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
 import {IFolder} from "common";
-import {Control} from "../component/SidePane";
+import {Control} from "../component/sidePane";
 import {PlumArcRotateCamera, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";

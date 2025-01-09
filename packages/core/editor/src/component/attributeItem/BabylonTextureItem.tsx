@@ -26,6 +26,7 @@ export interface BabylonTextureItemProps extends BaseItemProps {
 const initPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 
 
+
 const TextureItem: FC<TextureItemProps> = (props: TextureItemProps) => {
     const {name, width, height, value, onChange,} = {
         width: 32,

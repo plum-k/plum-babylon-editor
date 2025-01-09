@@ -14,8 +14,7 @@ import {invoke, set} from "lodash-es";
 import {HDRCubeTextureAssetTask, Scene} from "@babylonjs/core";
 import {isAggregationColor} from "../../tool/isAggregationColor.ts";
 import type {ItemType} from "rc-collapse/es/interface";
-
-const SceneAttribute: FC = () => {
+export default function SceneAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     const fogMode = Form.useWatch('fogMode', form);
@@ -23,7 +22,6 @@ const SceneAttribute: FC = () => {
     useEffect(() => {
         if (viewer?.scene) {
             updateRenderMode();
-
             viewer?.assetsManager.onTaskSuccessObservable.add((task) => {
                 if (task instanceof HDRCubeTextureAssetTask) {
                     let skybox = form.getFieldValue("skybox") as boolean;
@@ -161,4 +159,3 @@ const SceneAttribute: FC = () => {
     )
 }
 
-export default SceneAttribute;
