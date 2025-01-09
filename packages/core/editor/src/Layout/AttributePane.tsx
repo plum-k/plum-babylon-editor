@@ -37,21 +37,21 @@ export default function AttributePane() {
         },
         {
             label: (
-                <Tooltip title="场景" placement={"left"}>
-                    <ApartmentOutlined/>
-                </Tooltip>
-            ),
-            key: "SceneAttribute",
-            children: <SceneAttribute/>,
-        },
-        {
-            label: (
                 <Tooltip title="后处理" placement={"left"}>
                     <ExperimentOutlined/>
                 </Tooltip>
             ),
             key: "PostProcessAttribute",
             children: <PostProcessAttribute/>,
+        },
+        {
+            label: (
+                <Tooltip title="场景" placement={"left"}>
+                    <ApartmentOutlined/>
+                </Tooltip>
+            ),
+            key: "SceneAttribute",
+            children: <SceneAttribute/>,
         },
         {
             label: (

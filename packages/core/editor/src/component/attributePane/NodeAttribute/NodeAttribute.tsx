@@ -1,5 +1,5 @@
 import {Fragment, useEffect, useState} from "react";
-import {Empty, Form, FormProps} from "antd";
+import {Form, FormProps} from "antd";
 import {useSelectObject3D, useViewer} from "../../../store";
 import {InputItem, ObjectAttributeProvider, TextItem} from "@plum-render/common-ui";
 import {AbstractMesh, fromBabylonObservable, isPlumArcRotateCamera, NodeTool} from "@plum-render/babylon-sdk";
@@ -29,6 +29,7 @@ import {auditTime} from "rxjs";
 import TransformNodeAttribute from "./TransformNodeAttribute.tsx";
 import {get, invoke} from "lodash-es";
 import {isAggregationColor} from "../../../tool/isAggregationColor.ts";
+import EmptyState from "../../Empty.tsx";
 
 export default function NodeAttribute() {
     const viewer = useViewer()
@@ -306,9 +307,7 @@ export default function NodeAttribute() {
                             <RenderAttribute/>
                         </ObjectAttributeProvider>
                     </Form> :
-                    <Empty>
-                        未选择对象
-                    </Empty>
+                    <EmptyState text="未选择对象"/>
             }
         </Fragment>
     )

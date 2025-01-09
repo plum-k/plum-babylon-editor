@@ -1,5 +1,5 @@
 import {Fragment} from "react";
-import Layout from "../Layout/Laout.tsx";
+import Layout from "../Layout/Layout.tsx";
 import Header from "../Layout/header/Header.tsx";
 import {useSelectObject3D, useViewer} from "../store";
 import {useHotkeys} from "react-hotkeys-hook";

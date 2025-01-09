@@ -3,8 +3,3 @@ export {default as EditMenu} from "./EditMenu.tsx";
 export {default as FileMenu} from "./FileMenu.tsx";
 export {default as Header} from "./Header.tsx";
 export {default as MenuItem} from "./MenuItem.tsx";
-export * from "./AddMenu.tsx";
-export * from "./EditMenu.tsx";
-export * from "./FileMenu.tsx";
-export * from "./Header.tsx";
-export * from "./MenuItem.tsx";

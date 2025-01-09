@@ -5,11 +5,8 @@ import {useSelectObject3D, useViewer} from "../../../store";
 import CameraAttribute from "./CameraAttribute.tsx";
 import {ArcRotateCamera} from "@babylonjs/core";
 
-export interface ArcRotateCameraAttributeProps {
-}
+export default function ArcRotateCameraAttribute() {
 
-const ArcRotateCameraAttribute: FC<ArcRotateCameraAttributeProps> = (props: ArcRotateCameraAttributeProps) => {
-    
     const selectObject3D = useSelectObject3D();
     let camera = selectObject3D as ArcRotateCamera;
     const viewer = useViewer()
@@ -84,4 +81,3 @@ const ArcRotateCameraAttribute: FC<ArcRotateCameraAttributeProps> = (props: ArcR
     )
 }
 
-export default ArcRotateCameraAttribute;

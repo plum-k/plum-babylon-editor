@@ -306,13 +306,14 @@ export class SerializeViewer {
     /**
      * 异步导出
      */
-    serializeAsync(): Promise<any> {
+    async serializeAsync(){
         const serializationObject = this.serialize(false);
 
         const promises: Array<Promise<any>> = [];
 
         this.collectPromises(serializationObject, promises);
-        return Promise.all(promises).then(() => serializationObject);
+        await Promise.all(promises);
+        return serializationObject;
     }
 
     collectPromises(obj: any, promises: Array<Promise<any>>): void {

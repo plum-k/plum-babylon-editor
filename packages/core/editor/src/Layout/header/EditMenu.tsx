@@ -15,18 +15,18 @@ export default function EditMenu() {
                 <MenuItem name={'重做'} hotKey={'Ctrl Y'}/>
             )
         },
-        {
-            key: '重做历史',
-            label: (
-                <MenuItem name={'重做历史'}/>
-            )
-        },
-        {
-            key: '偏好设置',
-            label: (
-                <MenuItem name={'偏好设置'} hotKey={'Ctrl ,'}/>
-            )
-        }
+        // {
+        //     key: '重做历史',
+        //     label: (
+        //         <MenuItem name={'重做历史'}/>
+        //     )
+        // },
+        // {
+        //     key: '偏好设置',
+        //     label: (
+        //         <MenuItem name={'偏好设置'} hotKey={'Ctrl ,'}/>
+        //     )
+        // }
     ];
     return <Dropdown menu={{items}} overlayClassName={'plum-menu-dropDown'} placement="bottomLeft">
         <Button type="text">

@@ -42,15 +42,15 @@ export default function PanelCollapsed(props: IPanelCollapsedProps) {
         }
     }
     return (
-        <div className="absolute top-1/2 cursor-pointer z-50"
+        <div className="absolute top-2/3 cursor-pointer z-50"
              style={{
                  left: isLeft ? "0" : undefined,
                  right: isLeft ? undefined : "0",
              }}
              onClick={click}>
             {
-                (isLeft ? panelCollapsed : !panelCollapsed) ? <CaretRightOutlined className="text-3xl"/> :
-                    <CaretLeftOutlined className="text-3xl"/>
+                (isLeft ? panelCollapsed : !panelCollapsed) ? <CaretRightOutlined className="text-3xl" style={{color: "rgba(246, 246, 247, 0.5)"}}/> :
+                    <CaretLeftOutlined className="text-3xl" style={{color: "rgba(246, 246, 247, 0.5)"}}/>
             }
         </div>
     )

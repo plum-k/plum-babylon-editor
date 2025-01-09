@@ -1,5 +1,5 @@
-import {FC, Fragment, useMemo, useState} from "react";
-import {Collapse, CollapseProps, Empty, Form, FormProps} from "antd";
+import {Fragment, useMemo, useState} from "react";
+import {Collapse, CollapseProps, Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
 import {isMesh} from "babylon-is";
 import {useSelectKey, useSelectObject3D, useViewer} from "../../store";
@@ -19,8 +19,9 @@ import BabylonTextureItem from "../attributeItem/BabylonTextureItem.tsx";
 import {isAggregationColor} from "../../tool/isAggregationColor.ts";
 import {get, invoke} from "lodash-es";
 import {useForceUpdate} from "../../hooks/useForceUpdate.ts";
+import EmptyState from "../Empty.tsx";
 
-const MaterialAttribute: FC = () => {
+export default function MaterialAttribute() {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D();
     const selectKey = useSelectKey();
@@ -387,49 +388,54 @@ const MaterialAttribute: FC = () => {
     }, [selectObject3D, forceState])
 
     const [initName, setInitName] = useState<string>('')
+
+    const RenderMaterialList = () => {
+        if (selectObject3D) {
+            if (material) {
+                return <Form
+                    form={form}
+                    onFieldsChange={onFieldsChange}
+                    name="MaterialAttribute"
+                    labelAlign="right"
+                    labelWrap={true}
+                    labelCol={{span: 8}}
+                    wrapperCol={{span: 16}}>
+                    <ObjectAttributeProvider
+                        value={{object: material, change: viewer?.editor.editorEventManager.selectMaterialChanged}}>
+                        <TextItem name={["id"]} label={["id"]}/>
+                        <TextItem name={["uniqueId"]} label={["唯一标识"]}/>
+                        <TextItem label="类型" virtual valueSource={"fun"} funName={"getClassName"}/>
+                        <InputItem name={["name"]} label="名称"
+                                   fieldProps={{
+                                       onFocus: () => {
+                                           setInitName(get(selectObject3D, "name"))
+                                       },
+                                       onBlur: (e) => {
+                                           viewer?.editor.setObjectValueExecute({
+                                               source: "Form",
+                                               object: selectObject3D,
+                                               attributePath: ["name"],
+                                               oldValue: initName,
+                                               newValue: e.target.value,
+                                           })
+                                           viewer?.editor.editorEventManager.sceneGraphChanged.next(true)
+                                       }
+                                   }}
+                        />
+                        <Collapse items={items} bordered={false} ghost defaultActiveKey={['贴图']}/>
+                    </ObjectAttributeProvider>
+                </Form>
+            }
+            return <EmptyState text="当前对象没有材质"/>
+        } else {
+            return <EmptyState text="未选择对象"/>
+        }
+    }
+
     return (
         <Fragment>
-            {
-                selectObject3D ?
-                    <Form
-                        form={form}
-                        onFieldsChange={onFieldsChange}
-                        name="MaterialAttribute"
-                        labelAlign="right"
-                        labelWrap={true}
-                        labelCol={{span: 8}}
-                        wrapperCol={{span: 16}}>
-                        <ObjectAttributeProvider
-                            value={{object: material, change: viewer?.editor.editorEventManager.selectMaterialChanged}}>
-                            <TextItem name={["id"]} label={["id"]}/>
-                            <TextItem name={["uniqueId"]} label={["唯一标识"]}/>
-                            <TextItem label="类型" virtual valueSource={"fun"} funName={"getClassName"}/>
-                            <InputItem name={["name"]} label="名称"
-                                       fieldProps={{
-                                           onFocus: () => {
-                                               setInitName(get(selectObject3D, "name"))
-                                           },
-                                           onBlur: (e) => {
-                                               viewer?.editor.setObjectValueExecute({
-                                                   source: "Form",
-                                                   object: selectObject3D,
-                                                   attributePath: ["name"],
-                                                   oldValue: initName,
-                                                   newValue: e.target.value,
-                                               })
-                                               viewer?.editor.editorEventManager.sceneGraphChanged.next(true)
-                                           }
-                                       }}
-                            />
-                            <Collapse items={items} bordered={false} ghost defaultActiveKey={['贴图']}/>
-                        </ObjectAttributeProvider>
-                    </Form> :
-                    <Empty>
-                        未选择对象
-                    </Empty>
-            }
+            <RenderMaterialList/>
         </Fragment>
     )
 }
 
-export default MaterialAttribute;

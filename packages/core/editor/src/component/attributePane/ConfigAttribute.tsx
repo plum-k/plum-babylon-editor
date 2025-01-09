@@ -3,8 +3,7 @@ import {Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
 import {BoolItem, ObjectAttributeProvider} from "@plum-render/common-ui";
 import {useSetIsDebug, useViewer} from "../../store";
-
-const ConfigAttribute: FC = () => {
+export default function ConfigAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     const setIsDebug = useSetIsDebug();
@@ -56,4 +55,3 @@ const ConfigAttribute: FC = () => {
     )
 }
 
-export default ConfigAttribute;

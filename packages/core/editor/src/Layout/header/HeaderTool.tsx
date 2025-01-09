@@ -21,7 +21,7 @@ export default function HeaderTool() {
         viewer?.cameraControls.focusToScene();
     }
     // 全屏操作
-    const [isFullscreen, {toggleFullscreen, enterFullscreen, exitFullscreen}] = useFullscreen(() => {
+    const [isFullscreen, {enterFullscreen, exitFullscreen}] = useFullscreen(() => {
         return document.body;
     }, {
         pageFullscreen: false,
@@ -54,7 +54,7 @@ export default function HeaderTool() {
 
     return (
         <Fragment>
-            <div className="ml-36">
+            <div className="ml-[30%]">
                 <Tooltip title="聚焦场景">
                     <Button color="default" variant="text" icon={<UngroupOutlined/>} onClick={focusToScene}/>
                 </Tooltip>
@@ -78,7 +78,5 @@ export default function HeaderTool() {
                 }
             </div>
         </Fragment>
-
     )
-
 }

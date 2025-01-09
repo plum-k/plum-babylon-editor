@@ -14,8 +14,7 @@ import {
 import {useViewer} from "../../store";
 import {DepthOfFieldEffectBlurLevel, ImageProcessingConfiguration} from "@babylonjs/core";
 import {set} from "lodash-es";
-
-const PostProcessAttribute: FC = () => {
+export default function PostProcessAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     useEffect(() => {
@@ -184,4 +183,3 @@ const PostProcessAttribute: FC = () => {
     )
 }
 
-export default PostProcessAttribute;

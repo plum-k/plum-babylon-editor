@@ -1,4 +1,4 @@
-import {FC, Fragment} from "react";
+import {Fragment} from "react";
 import {Form} from "antd";
 import BaseItemProps from "./BaseItemProps.ts";
 import useItemUpdate from "./useItemUpdate.ts";
@@ -7,11 +7,22 @@ import {useObjectAttribute} from "../objectAttribute";
 
 export interface ITextItemProps extends BaseItemProps {
     valueSource?: "fun" | "value";
+    /**
+     * 函数名
+     */
     funName?: string;
+    /**
+     * 后缀
+     */
+    suffix?: string;
+    /**
+     * 显示小数点后的位数
+     */
+    decimalSeparator?: number;
 }
 
-const TextItem: FC<ITextItemProps> = (props: ITextItemProps) => {
-    const {funName, virtual, valueSource, ...rest} = {valueSource: "value", ...props};
+export default function TextItem(props: ITextItemProps) {
+    const {funName, virtual, valueSource, suffix, decimalSeparator, ...rest} = {valueSource: "value", ...props};
     const {name} = rest
     const form = Form.useFormInstance();
     const {object} = useObjectAttribute(); // 获取与对象相关的属性
@@ -20,6 +31,9 @@ const TextItem: FC<ITextItemProps> = (props: ITextItemProps) => {
             let value = form.getFieldValue(name)
             if (isBoolean(value)) {
                 value = value ? "开启" : "关闭"
+            }
+            if (decimalSeparator) {
+                value = value.toFixed(decimalSeparator)
             }
             return <Fragment>{value}</Fragment>
         } else {
@@ -34,9 +48,9 @@ const TextItem: FC<ITextItemProps> = (props: ITextItemProps) => {
                 isValue &&
                 <Form.Item {...rest}>
                     <Text/>
+                    {suffix}
                 </Form.Item>}
         </Fragment>
     )
 }
 
-export default TextItem;

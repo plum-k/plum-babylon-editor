@@ -15,7 +15,7 @@ export class Physics extends BasePlum {
     /**
      * 初始化物理引擎
      */
-    async init() {
+    async init(gravity: Vector3 = new Vector3(0, -9.8, 0)) {
         const havokInstance = await HavokPhysics({
             // 设置 wasm 文件路径
             locateFile: (url: string, scriptDirectory: string) => {
@@ -23,7 +23,7 @@ export class Physics extends BasePlum {
             }
         });
         const hk = new HavokPlugin(true, havokInstance);
-        this.scene.enablePhysics(new Vector3(0, -9.8, 0), hk);
+        this.scene.enablePhysics(gravity, hk);
     }
 
 

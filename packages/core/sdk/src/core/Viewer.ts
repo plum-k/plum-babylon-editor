@@ -27,7 +27,6 @@ import {
     WebGPUEngine,
     WebGPUEngineOptions
 } from "@babylonjs/core";
-
 import {isCamera, isLight, isMesh} from "babylon-is";
 import {PScene} from "./PScene";
 import {GridTool} from "../tool/GridTool";
@@ -299,11 +298,9 @@ export class Viewer {
      * @param debugOn
      * @param config
      */
-    debug(debugOn: boolean = true, config?: IInspectorOptions) {
+    async debug(debugOn: boolean = true, config: IInspectorOptions = {overlay: true}) {
         if (debugOn) {
-            this.scene.debugLayer.show(config).then(r => {
-                console.log(r)
-            });
+            const debugLayer = await this.scene.debugLayer.show(config);
         } else {
             this.scene.debugLayer.hide();
         }
@@ -335,10 +332,6 @@ export class Viewer {
     resize() {
         this.engine.resize();
     }
-
-
-    //----------------------- 加载场景
-
 
     /**
      * 初始化场景

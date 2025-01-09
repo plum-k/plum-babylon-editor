@@ -625,16 +625,8 @@ export class ChunkDeserialize implements Deserialize {
 
             //Physics
             if (parsedData.physicsEnabled) {
-                let physicsPlugin;
-                if (parsedData.physicsEngine === "cannon" || parsedData.physicsEngine === CannonJSPlugin.name) {
-                    physicsPlugin = new CannonJSPlugin(undefined, undefined, BabylonFileLoaderConfiguration.LoaderInjectedPhysicsEngine);
-                } else if (parsedData.physicsEngine === "oimo" || parsedData.physicsEngine === OimoJSPlugin.name) {
-                    physicsPlugin = new OimoJSPlugin(undefined, BabylonFileLoaderConfiguration.LoaderInjectedPhysicsEngine);
-                } else if (parsedData.physicsEngine === "ammo" || parsedData.physicsEngine === AmmoJSPlugin.name) {
-                    physicsPlugin = new AmmoJSPlugin(undefined, BabylonFileLoaderConfiguration.LoaderInjectedPhysicsEngine, undefined);
-                }
-                const physicsGravity = parsedData.gravity ? Vector3.FromArray(parsedData.gravity) : parsedData.physicsGravity ? Vector3.FromArray(parsedData.physicsGravity) : null;
-                scene.enablePhysics(physicsGravity, physicsPlugin);
+                const physicsGravity = parsedData.gravity ? Vector3.FromArray(parsedData.gravity) : parsedData.physicsGravity ? Vector3.FromArray(parsedData.physicsGravity) : new Vector3(0, -9.8, 0);
+                await this.viewer.physics.init(physicsGravity);
             }
 
             // Metadata
