@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        Color3,
+        Color4,
+        MeshBuilder,
+        MeshParticleEmitter,
+        ParticleSystem,
+        PhysicsAggregate,
+        PhysicsShapeType,
+        Texture,
+        Vector3,
+        Viewer,
+    } from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+
+    // Move the sphere upward
+    sphere1.position.set(1.5, 5, 0);
+
+    // Our built-in 'sphere' shape.
+    var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+
+    // Move the sphere upward
+    sphere2.position.set(-1.5, 4, 0);
+
+    // Our built-in 'ground' shape.
+    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
+
+    // A box shape lying on the ground.
+    var box = BABYLON.MeshBuilder.CreateBox("box", {width: 8, height: 2, depth: 2}, scene);
+    let redMaterial = new BABYLON.StandardMaterial("box", scene);
+    redMaterial.diffuseColor.set(1,0,0);
+    box.material = redMaterial;
+
+    // initialize plugin
+    var hk = new BABYLON.HavokPlugin();
+    // enable physics in the scene with a gravity
+    scene.enablePhysics(new BABYLON.Vector3(0, -1, 0), hk);
+
+    // Create a sphere shape and the associated body. Size will be determined automatically.
+    var sphere1Aggregate = new BABYLON.PhysicsAggregate(sphere1, BABYLON.PhysicsShapeType.SPHERE, { mass: 1 }, scene);
+
+    var sphere2Aggregate = new BABYLON.PhysicsAggregate(sphere2, BABYLON.PhysicsShapeType.SPHERE, { mass: 1 }, scene);
+
+    // Create a static box shape for the ground.
+    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, { mass: 0 }, scene);
+
+    // Create a static box shape for the box
+    var boxAggregate = new BABYLON.PhysicsAggregate(box, BABYLON.PhysicsShapeType.BOX, { mass: 0 }, scene);
+
+    //filtering happens here
+    const FILTER_GROUP_SPHERE = 1;
+    const FILTER_GROUP_GROUND = 2;
+    const FILTER_GROUP_BOX = 4;
+
+    sphere1Aggregate.body.applyForce(sphere1Aggregate.body.getObjectCenterWorld(), new BABYLON.Vector3(0, 1, 5))
+
+    sphere1Aggregate.shape.filterMembershipMask = FILTER_GROUP_SPHERE;
+    sphere2Aggregate.shape.filterMembershipMask = FILTER_GROUP_SPHERE;
+    groundAggregate.shape.filterMembershipMask = FILTER_GROUP_GROUND;
+    boxAggregate.shape.filterMembershipMask = FILTER_GROUP_BOX;
+
+    //sphere1 collides with ground and box
+    sphere1Aggregate.shape.filterCollideMask = FILTER_GROUP_GROUND | FILTER_GROUP_BOX;
+
+    //sphere2 collides with ground only
+    sphere2Aggregate.shape.filterCollideMask = FILTER_GROUP_GROUND;
+</script>
+</body>
+</html>

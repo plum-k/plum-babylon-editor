@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        Color3,
+        Color4,
+        MeshBuilder,
+        MeshParticleEmitter,
+        ParticleSystem,
+        PhysicsAggregate,
+        PhysicsShapeType,
+        Texture,
+        Vector3,
+        Viewer,
+    } from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    // Our built-in 'sphere' shape.
+    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+
+    // Move the sphere upward 1/2 its height
+    sphere.position.y = 1;
+
+    // Our built-in 'ground' shape.
+    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+
+    sphere.position.y = 4;
+    var hk = new BABYLON.HavokPlugin();
+    scene.enablePhysics(undefined, hk);
+    new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, {mass: 1});
+    new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0, restitution: 1});
+    var triggerShapeRadius = 2;
+    var triggerShape = new BABYLON.PhysicsShapeSphere(new BABYLON.Vector3(0,0,0), triggerShapeRadius, scene);
+    const triggerShapeRepr = BABYLON.MeshBuilder.CreateSphere("triggerShapeRepr", {diameter: triggerShapeRadius*2});
+    triggerShapeRepr.material = new BABYLON.StandardMaterial("mat");
+    triggerShapeRepr.material.alpha = 0.7;
+    triggerShapeRepr.material.diffuseColor = BABYLON.Color3.Red();
+    triggerShape.isTrigger = true;
+    var triggerTransform = new BABYLON.TransformNode("triggerTransform");
+    var triggerBody = new BABYLON.PhysicsBody(triggerTransform, BABYLON.PhysicsMotionType.STATIC, false, scene);
+    triggerBody.shape = triggerShape;
+
+    hk.onTriggerCollisionObservable.add((ev) => {
+        // console.log(ev);
+        console.log(ev.type, ':', ev.collider.transformNode.name, '-', ev.collidedAgainst.transformNode.name);
+    });
+    hk.onCollisionObservable.add((ev) => {
+        console.log(ev.type);
+    });
+
+    hk.onCollisionEndedObservable.add((ev) => {
+        console.log(ev.type);
+    })
+</script>
+</body>
+</html>

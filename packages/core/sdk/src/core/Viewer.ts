@@ -34,6 +34,7 @@ import {GridTool} from "../tool/GridTool";
 import {EnvironmentManage} from "../manager/EnvironmentManage";
 import {getPackage, Package} from "../serializeManage";
 import {HtmlMeshRenderer} from "babylon-htmlmesh";
+import {Physics} from "../manager/Physics";
 
 export interface ISceneLoadProgressEvent {
     type: "unZip";
@@ -126,6 +127,9 @@ export class Viewer {
     cosApi: Nullable<COSApi> = null;
 
     //----------------
+
+    physics = new Physics({viewer: this});
+
     gridTool: GridTool = new GridTool()
     serializer: Package | null = null;
 
@@ -228,6 +232,10 @@ export class Viewer {
         }
 
         this.scene = new PScene(this.engine);
+
+        // this.physics = new Physics({viewer: this});
+
+
         this.eventManager = new EventManager({viewer: this});
         this.assetsManager = new AssetsManager(this);
         this.assetContainer = new AssetContainer(this);

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script async type="module">
+    import {
+        Color3,
+        Color4,
+        MeshBuilder,
+        MeshParticleEmitter,
+        ParticleSystem,
+        PhysicsAggregate,
+        PhysicsShapeType,
+        Texture,
+        Vector3,
+        Viewer,
+    } from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    let scene = viewer.scene;
+
+    viewer.initSubject.subscribe(() => {
+        console.log("场景初始化完成");
+    })
+
+    const shape = new PhysicsShapeSphere(
+        new Vector3(0, 0, 0),   // center of the sphere
+        1,                              // radius of the sphere
+        scene                           // scene of the shape
+    );
+
+    const shape = new PhysicsShapeCylinder(
+        new Vector3(0, -0.5, 0),    // starting point of the cylinder segment
+        new Vector3(0,  0.5, 0),    // ending point of the cylinder segment
+        1,                                  // radius of the cylinder
+        scene                               // scene of the shape
+    );
+
+    const shape = new PhysicsShapeCapsule(
+        new Vector3(0, -0.5, 0),    // starting point of the capsule segment
+        new Vector3(0,  0.5, 0),    // ending point of the capsule segment
+        1,                                  // radius of the capsule
+        scene                               // scene of the shape
+    );
+
+    const shape = new PhysicsShapeBox(
+        new Vector3(0, 0, 0),        // center of the box
+        new Quaternion(0, 0, 0, 1),  // rotation of the box
+        new Vector3(1, 1, 1),        // dimensions of the box
+        scene                                // scene of the shape
+    );
+
+    const shape = new PhysicsShapeConvexHull(
+        mesh,   // mesh from which to produce the convex hull
+        scene   // scene of the shape
+    );
+
+    const shape = new PhysicsShapeMesh(
+        mesh,   // mesh from which to calculate the collisions
+        scene   // scene of the shape
+    );
+
+    const shape = new PhysicsShapeContainer(
+        scene   // scene of the shape
+    )
+</script>
+</body>
+</html>
