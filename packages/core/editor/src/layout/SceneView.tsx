@@ -8,6 +8,7 @@ import {PlumArcRotateCamera, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import PanelCollapsed from "../component/PanelCollapsed.tsx";
+import testPhysics from "../testCore/testPhysics.ts";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -63,6 +64,7 @@ export default function SceneView(props: ISceneViewProps) {
 
                 // testSerialize(_viewer);
                 // testMesh(_viewer)
+                testPhysics(_viewer)
             })
         }
 

@@ -24,7 +24,7 @@ export default function ConfigAttribute() {
         const value = changedField.value;
         const firstName = name[0] as string;
 
-        if (name === "debug") {
+        if (firstName === "debug") {
             if (value) {
                 setIsDebug(true);
                 viewer!.debug(true);

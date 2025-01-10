@@ -14,7 +14,7 @@ export interface IInputNumberItemProps extends BaseItemProps {
 }
 
 const InputNumberItem: FC<IInputNumberItemProps> = (props: IInputNumberItemProps) => {
-    const {syncChange, toDegrees, isQuaternion, ...rest} = props
+    const {syncChange, toDegrees, isQuaternion,virtual, ...rest} = props
     const {object, change} = useObjectAttribute(); // 获取与对象相关的属性
 
     const _convertData = (value) => {

@@ -3,6 +3,7 @@ import {BoundingInfo, Node, Nullable, Quaternion, Vector3} from "@babylonjs/core
 import {isCamera, isLight, isMesh} from "babylon-is";
 import {Editor} from "./index";
 import {GizmoEnum} from "../enum";
+import {PhysicsPrestepType} from "../index";
 
 export class Select {
     selectNode: Nullable<Node> = null
@@ -37,7 +38,6 @@ export class Select {
     }
 
     bindDragObservable() {
-
         this.bindPositionGizmo();
         this.bindRotationGizmo();
         this.bindScaleGizmo();
@@ -48,6 +48,10 @@ export class Select {
             if (this.selectNode) {
                 if ("position" in this.selectNode) {
                     this.oldPosition.copyFrom(this.selectNode?.position as Vector3)
+                }
+                // 开启物理后, 在拖动时, 不允许同步
+                if (isMesh(this.selectNode) && this.selectNode.physicsBody) {
+                    this.selectNode.physicsBody.disableSync = true
                 }
             }
         })
@@ -69,6 +73,12 @@ export class Select {
                     newValue: this.selectNode.position as Vector3,
                     oldValue: this.oldPosition
                 })
+            }
+            // 开启物理后, 在拖动结束时,  允许同步
+            if (isMesh(this.selectNode) && this.selectNode.physicsBody) {
+                this.selectNode.physicsBody.disableSync = false
+                // 拖动后, 同步物理位置
+                this.selectNode.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT);
             }
         })
     }
@@ -226,7 +236,7 @@ export class Select {
             } else if (isCamera(value)) {
                 const activeCamera = this.editor.scene.activeCamera!;
                 if (activeCamera === value) {
-                }else {
+                } else {
                     const cameraGizmo = this.gizmoManager.enableCameraGizmo(value);
                     this.gizmoManager.attachToNode(cameraGizmo.attachedNode);
                 }
