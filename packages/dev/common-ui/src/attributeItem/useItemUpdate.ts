@@ -24,15 +24,9 @@ const useItemUpdate = (props: BaseItemProps, config: IItemUpdateConfig = default
     const [isValue, setIsValue] = useState(false); // 状态，用于跟踪值是否存在
 
     const setValue = (object: any) => {
-        if (isArray(name) && name[0] === "position") {
+        // todo 用于临时调试
+        if (isArray(name) && name[0] === "isEnable") {
             // debugger
-            // console.log(name)
-            // console.log(object)
-            // console.log(object.rotation)
-            // console.log(object.rotationQuaternion)
-            let value = get(object, name); // 获取对象中对应 name 的值
-            // console.log(value)
-            // return
         }
         let value = get(object, name); // 获取对象中对应 name 的值
         if (value == null && config?.setDefaultValue) {
@@ -45,7 +39,6 @@ const useItemUpdate = (props: BaseItemProps, config: IItemUpdateConfig = default
         }
         form.setFieldValue(name, value); // 设置表单字段的值
     }
-
 
     // 更新函数，用于设置表单字段的值
     const update = (object: any) => {
@@ -65,10 +58,14 @@ const useItemUpdate = (props: BaseItemProps, config: IItemUpdateConfig = default
 
     // 使用 useEffect 监听对象的变化
     useEffect(() => {
+        if (isArray(name) && name[0] === "isEnable") {
+            // debugger
+        }
         if (isNil(object)) {
             setIsValue(false); // 如果对象为 null 或 undefined，设置值存在状态为 false
         } else {
             if (virtual) {
+
                 setIsValue(true);
             } else {
                 update(object); // 如果对象存在，则调用更新函数

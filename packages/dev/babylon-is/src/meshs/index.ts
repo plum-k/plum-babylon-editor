@@ -3,3 +3,4 @@ export * from "./isAbstractMesh";
 export * from "./isHtmlMesh";
 export * from "./isMesh";
 export * from "./isTransformNode";
+export * from "./isExtendsTransformNode";
