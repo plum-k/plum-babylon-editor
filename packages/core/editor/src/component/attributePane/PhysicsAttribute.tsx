@@ -118,13 +118,19 @@ export default function PhysicsAttribute() {
         }
     }
 
+
+    const onCancelPhysics = () => {
+
+
+    }
+
     const RenderStateButton = () => {
         if (physicsBody) {
             return <Form.Item label="状态">
                 <Button color="default" variant="filled">
                     重置物理
                 </Button>
-                <Button color="default" variant="filled">
+                <Button color="default" variant="filled" onClick={onCancelPhysics}>
                     取消物理
                 </Button>
             </Form.Item>

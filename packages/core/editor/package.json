@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@turf/turf": "^7.2.0",
     "react-toastify": "^11.0.2",
     "@ant-design/icons": "^5.5.2",
     "@babylonjs/core": "^7.42.0",

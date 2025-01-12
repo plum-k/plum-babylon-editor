@@ -74,7 +74,7 @@ export class EnvironmentManage extends BasePlum {
     }
 
     setSkybox(environmentTexture?: BaseTexture) {
-        this.skyboxMesh = this.scene.createDefaultSkybox(environmentTexture, true, 1000, 0.3, false)
+        this.skyboxMesh = this.scene.createDefaultSkybox(environmentTexture, true, 100000, 0.3, false)
         if (this.skyboxMesh) {
             this.skyboxMesh.doNotSerialize = true;
         }

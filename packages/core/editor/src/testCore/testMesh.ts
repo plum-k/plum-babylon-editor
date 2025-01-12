@@ -11,7 +11,7 @@ const testMesh = (viewer: Viewer, name: string = "testS.glb") => {
         }
     ).then((scene) => {
         window.setTimeout(() => {
-            viewer?.cameraControls.focusToScene();
+            // viewer?.cameraControls.focusToScene();
         }, 500)
     })
 }

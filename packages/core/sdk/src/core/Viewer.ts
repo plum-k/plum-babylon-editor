@@ -117,8 +117,6 @@ export class Viewer {
 
     isWebGPU = false; // 标识是否使用 WebGPU 渲染
 
-    skybox: Nullable<Mesh> = null; // 用于存储天空盒的网格
-
     // 是否初始化完成
     isLoad = false;
 
@@ -235,7 +233,7 @@ export class Viewer {
         // this.physics = new Physics({viewer: this});
 
 
-        this.eventManager = new EventManager({viewer: this});
+        this.eventManager = new EventManager({viewer: this}) ;
         this.assetsManager = new AssetsManager(this);
         this.assetContainer = new AssetContainer(this);
 
@@ -253,7 +251,6 @@ export class Viewer {
         this.eventManager.resizeSubject.subscribe(size => {
             this.resize();
         });
-
 
         this.drawLine = new DrawLine({viewer: this});
         this.effectLayer = new EffectLayer({viewer: this});

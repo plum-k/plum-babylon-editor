@@ -1,4 +1,4 @@
-import {HavokPlugin, IPhysicsEnginePluginV2, MeshBuilder, PhysicsAggregate,
+import {HavokPlugin, initReservedDataStore, IPhysicsEnginePluginV2, MeshBuilder, PhysicsAggregate,
     PhysicsPrestepType, PhysicsShapeType, Quaternion, Vector3, Viewer} from "@plum-render/babylon-sdk";
 
 export default async function testPhysics(viewer: Viewer,) {
@@ -12,9 +12,11 @@ export default async function testPhysics(viewer: Viewer,) {
 
     // 给球体添加物理, 并设置其形状为球体,质量为1, 摩擦为0.75
     const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, {mass: 1, restitution: 0.75}, scene);
+    initReservedDataStore(sphereAggregate)
+
     // 给地面添加物理, 并设置其形状为球体,质量为0, 摩擦为0.75
     const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, scene);
-
+    initReservedDataStore(sphereAggregate)
 
     // console.log(sphere)
     //  这个属性已经被废弃了
@@ -22,19 +24,4 @@ export default async function testPhysics(viewer: Viewer,) {
     console.log(sphere.physicsBody)
 
     console.log(sphereAggregate)
-
-    window.test = ()=>{
-        sphere.position.y = 4;
-    }
-    window.test1 = (a=1)=>{
-        sphere.physicsBody.setPrestepType(PhysicsPrestepType.TELEPORT);
-        // sphere.physicsBody.setTargetTransform(new Vector3(0,a,0),new Quaternion());
-        console.log(sphere.physicsBody.getPrestepType())
-        sphere.position.y = 4;
-        (scene.getPhysicsEngine().getPhysicsPlugin() as HavokPlugin).setPhysicsBodyTransformation(sphere.physicsBody,sphere);
-        // sphere.position.y = 4;
-        // sphere.physicsBody.setLinearVelocity(BABYLON.Vector3.Zero());
-    }
-    // sphere.physicsBody.disableSync = true
-
 }

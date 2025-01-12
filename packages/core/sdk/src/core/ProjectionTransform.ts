@@ -1,55 +1,28 @@
-import * as d3 from 'd3-geo';
-
-// 定义投影类型的枚举
-export enum ProjectionType {
-    MERCATOR ,
-    EQUIRECTANGULAR ,
-    ORTHOGRAPHIC ,
-};
+import * as turf from "@turf/turf";
 
 /**
  * 地理坐标投影变换
  */
 export class ProjectionTransform {
-    projection: d3.GeoProjection;
+    private centerPoint: Array<number> = [0, 0];
 
-    constructor(projectionType = ProjectionType.MERCATOR, scale = 1000, translate: [number, number] = [0, 0]) {
-        // 根据传入的类型创建投影
-        switch (projectionType) {
-            case ProjectionType.MERCATOR:
-                this.projection = d3.geoMercator();
-                break;
-            case ProjectionType.EQUIRECTANGULAR:
-                this.projection = d3.geoEquirectangular();
-                break;
-            case ProjectionType.ORTHOGRAPHIC:
-                this.projection = d3.geoOrthographic();
-                break;
-            default:
-                throw new Error('Unsupported projection type');
-        }
-
-        this.projection.scale(scale).translate(translate);
+    constructor(center: [number, number] = [0, 0]) {
+        // 定义中心经纬度
+        const point = turf.point(center);
+        this.centerPoint = turf.toMercator(point).geometry.coordinates
     }
 
     // 将经纬度投影到平面坐标
     project(lon: number, lat: number) {
-        const point = this.projection([lon, lat]);
-        if (point) {
-            const x = point[0];
-            const y = point[1];
-            return {x, y};
-        }
-        return {x: 0, y: 0};
+        const point = turf.point([lon, lat]);
+        let mercator = turf.toMercator(point);
+
+        mercator.geometry.coordinates[0] -= this.centerPoint[0];
+        mercator.geometry.coordinates[1] -= this.centerPoint[1];
+        return mercator.geometry.coordinates;
     }
 
-    // 设置缩放比例
-    setScale(scale: number) {
-        this.projection.scale(scale);
-    }
-
-    // 设置平面坐标的原点
-    setTranslate(point: [number, number]) {
-        this.projection.translate(point);
+    // 将平面坐标转换为经纬度
+    invert(x: number, y: number) {
     }
 }
