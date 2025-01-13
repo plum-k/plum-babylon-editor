@@ -43,10 +43,24 @@ export class CameraControls extends BasePlum {
             arcRotateCamera.minZ = radius * 0.01;
             arcRotateCamera.maxZ = radius * 1000;
             arcRotateCamera.speed = radius * 0.2;
+            // 禁用双击恢复视角
+            arcRotateCamera.useInputToRestoreState=false;
+
             this.scene.activeCamera = arcRotateCamera;
             arcRotateCamera.attachControl();
             console.log(arcRotateCamera.position)
             arcRotateCamera.setPosition(new Vector3(10,10,10));
+
+            // Object.defineProperty(arcRotateCamera, 'radius', {
+            //     get: ()=> {
+            //         return 10
+            //     },
+            //     set: (newValue) =>{
+            //         console.log(new Error())
+            //         // arcRotateCamera.radius = newValue;
+            //         console.log('属性 prop 发生了变化，新值为:', newValue);
+            //     }
+            // });
         }
     }
 
@@ -113,8 +127,6 @@ export class CameraControls extends BasePlum {
     focusToScene() {
         const camera = this.scene.activeCamera! as unknown as ArcRotateCamera;
 
-        // Enable camera's behaviors
-        // todo 双击会重置位置
         camera.useFramingBehavior = true;
 
         const framingBehavior = camera.getBehaviorByName("Framing") as FramingBehavior;

@@ -18,6 +18,7 @@ export default function HeaderTool() {
     const viewer = useViewer();
     // 焦点到场景
     const focusToScene = () => {
+        debugger
         viewer?.cameraControls.focusToScene();
     }
     // 全屏操作

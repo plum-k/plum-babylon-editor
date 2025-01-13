@@ -5,7 +5,7 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 // import {HtmlMeshRenderer} from "@babylonjs/addons/htmlMesh/htmlMeshRenderer.js";
 //--------
-import {defaultsDeep, isNil, isString} from "lodash-es";
+import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
 import {Editor} from "../editor";
 import {AssetContainer, AssetsManager, EventManager, PostProcessManager} from "../manager";
 import {CameraControls} from "./CameraControls";
@@ -17,12 +17,13 @@ import {Statistics} from "./Statistics";
 import COSApi, {ICOSApiOptions} from "cos-api";
 import {
     AbstractEngine,
+    AbstractMesh,
     EngineFactory,
     EngineOptions,
     IInspectorOptions,
-    Mesh,
     Node,
     Nullable,
+    PBRMaterial,
     SceneLoader,
     WebGPUEngine,
     WebGPUEngineOptions
@@ -233,7 +234,7 @@ export class Viewer {
         // this.physics = new Physics({viewer: this});
 
 
-        this.eventManager = new EventManager({viewer: this}) ;
+        this.eventManager = new EventManager({viewer: this});
         this.assetsManager = new AssetsManager(this);
         this.assetContainer = new AssetContainer(this);
 
@@ -273,6 +274,22 @@ export class Viewer {
         this.loadScene();
 
         this.run();
+
+        // 监听新增网格, 如果网格没有材质, 设置默认材质
+        this.scene.onNewMeshAddedObservable.add((mesh) => {
+            this.setDefaultMaterial(mesh);
+        });
+    }
+    /**
+     * 设置默认材质
+     */
+    setDefaultMaterial(mesh: AbstractMesh) {
+        const material = mesh.material;
+        if (material === null) {
+            let material  = new PBRMaterial(uniqueId("default"), mesh.getScene());
+            material.metallic = 1;
+            material.roughness = 1;
+        }
     }
 
     setInitState() {

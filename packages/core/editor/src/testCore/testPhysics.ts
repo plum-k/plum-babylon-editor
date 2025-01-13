@@ -29,6 +29,6 @@ export default async function testPhysics(viewer: Viewer,) {
 
     const box = MeshBuilder.CreateBox("box", {}, scene);
     box.position.z = 4;
-
-
+    box.position.y = 4;
+    // const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.SPHERE, {mass: 1, restitution: 0.75}, scene);
 }
