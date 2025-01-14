@@ -7,7 +7,8 @@
     "pnpm": ">=9.15.0"
   },
   "scripts": {
-    "remove": "bun run remove.ts"
+    "remove": "bun run remove.ts",
+    "update-pack": "ncu -u -ws"
   },
   "workspaces": [
     "packages/*",
@@ -15,6 +16,9 @@
     "packages/dev/*",
     "packages/doc/*"
   ],
+  "dependencies": {
+    "npm-check-updates": "^17.1.13"
+  },
   "overrides": {
     "rollup": "4.30.1"
   }

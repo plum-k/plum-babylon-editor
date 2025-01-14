@@ -15,17 +15,17 @@
     "@turf/turf": "^7.2.0",
     "react-toastify": "^11.0.2",
     "@ant-design/icons": "^5.5.2",
-    "@babylonjs/core": "^7.42.0",
+    "@babylonjs/core": "^7.43.0",
     "@microlink/react-json-view": "^1.24.0",
     "@plum-render/babylon-sdk": "workspace:*",
     "@plum-render/common-ui": "workspace:*",
     "@plum-render/tool": "workspace:*",
     "ahooks": "^3.8.4",
-    "antd": "^5.23.0",
+    "antd": "^5.23.1",
     "auto-zustand-selectors-hook": "^3.0.1",
     "axios": "^1.7.9",
     "babylon-is": "workspace:*",
-    "babylonjs-loaders": "^7.42.0",
+    "babylonjs-loaders": "^7.43.0",
     "classnames": "^2.5.1",
     "common": "workspace:*",
     "cos-api": "workspace:*",
@@ -38,15 +38,15 @@
     "react-resizable-panels": "^2.1.7",
     "react-router-dom": "^7.1.1",
     "rxjs": "^7.8.1",
-    "zustand": "5.0.2"
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "@types/react": "^19.0.3",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "rc-field-form": "^2.7.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "^6.0.7"
   }
 }

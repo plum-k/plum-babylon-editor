@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "dependencies": {
     "@ant-design/happy-work-theme": "^1.0.0",
-    "antd": "^5.23.0",
+    "antd": "^5.23.1",
     "axios": "^1.7.9",
     "classnames": "^2.5.1",
     "cos-js-sdk-v5": "^1.8.7",
@@ -15,9 +15,9 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "@types/react": "^19.0.3",
-    "@types/react-dom": "^19.0.2",
-    "@types/three": "^0.171.0",
-    "typescript": "^5.7.2"
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
+    "@types/three": "^0.172.0",
+    "typescript": "^5.7.3"
   }
 }

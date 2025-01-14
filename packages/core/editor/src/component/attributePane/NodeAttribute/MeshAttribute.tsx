@@ -12,8 +12,8 @@ import {
 } from "@plum-render/common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
 import {isInstancedMesh, isMesh} from "babylon-is";
-import {AbstractMesh, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
-import {isNil} from "lodash-es";
+import {AbstractMesh, AnimationGroup, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
+import {isArray, isNil} from "lodash-es";
 
 export default function MeshAttribute() {
     const form = Form.useFormInstance();
@@ -265,6 +265,32 @@ export default function MeshAttribute() {
 
         return list;
     }, [selectObject3D]);
+
+    const renderAnimations = () => {
+        if (selectObject3D && selectObject3D.reservedDataStore && isArray(selectObject3D.reservedDataStore.animations)) {
+            const animations = selectObject3D.reservedDataStore.animations as AnimationGroup[];
+
+            let obj = {
+                key: '动画',
+                label: '动画',
+                children: <Fragment>
+                    {
+                        animations.map((item, index) => {
+                            return <Fragment key={index}>
+                                <div>{item.name}</div>
+
+                            </Fragment>
+                        })
+                    }
+                </Fragment>
+            }
+
+            return obj;
+        }
+
+    }
+
+
     return (
         <Fragment>
             <BoolItem label="是否启用" name={["isEnabled"]}/>

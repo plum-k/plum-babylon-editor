@@ -4,6 +4,6 @@
   "main": "src/index.ts",
   "dependencies": {
     "babylon-htmlmesh": "^2.0.1",
-    "@babylonjs/core": "^7.42.0"
+    "@babylonjs/core": "^7.43.0"
   }
 }

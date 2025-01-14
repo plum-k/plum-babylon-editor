@@ -11,6 +11,16 @@ import "../styles/SceneTree.css";
 import {NodeTool, Viewer} from '@plum-render/babylon-sdk';
 import {Node} from "@babylonjs/core";
 
+export interface ITreeNode {
+    title: string;
+    name: string;
+    uniqueId: number;
+    key: number;
+    children: Array<ITreeNode>;
+    visible: boolean;
+    isShowVisibleIcon: boolean;
+}
+
 const getTree = (objects: Array<Node>) => {
     const nodes: Array<any> = [];
     for (let i = 0, l = objects.length; i < l; i++) {
@@ -20,9 +30,10 @@ const getTree = (objects: Array<Node>) => {
         const visible = NodeTool.getVisibleNode(node)
         const isShowVisibleIcon = !isTransformNode(node);
 
-        let nodeInfo: any = {
+        let nodeInfo: ITreeNode = {
             title: name,
             name: name,
+            uniqueId:uniqueId,
             key: uniqueId,
             children: [],
             visible: visible,
@@ -301,12 +312,11 @@ export default function SceneTree() {
                 showLine
                 showIcon
                 icon={(props) => {
-                    // @ts-ignore
-                    let {visible, isShowVisibleIcon, key} = props;
+                    let {visible, isShowVisibleIcon, uniqueId} = props as unknown as ITreeNode;
 
                     if (isShowVisibleIcon) {
-                        return visible ? <EyeOutlined onClick={() => handleVisible(key, false)}/> :
-                            <EyeInvisibleOutlined onClick={() => handleVisible(key, true)}/>
+                        return visible ? <EyeOutlined onClick={() => handleVisible(uniqueId, false)}/> :
+                            <EyeInvisibleOutlined onClick={() => handleVisible(uniqueId, true)}/>
                     }
                 }}
                 draggable

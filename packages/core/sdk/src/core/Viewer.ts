@@ -7,7 +7,7 @@ import "@babylonjs/inspector";
 //--------
 import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
 import {Editor} from "../editor";
-import {AssetContainer, AssetsManager, EventManager, PostProcessManager} from "../manager";
+import {PlumAssetsManager, PlumAssetContainer, EventManager, PostProcessManager} from "../manager";
 import {CameraControls} from "./CameraControls";
 import {LightManager} from "./LightManager";
 import {Subject} from "rxjs";
@@ -17,7 +17,7 @@ import {Statistics} from "./Statistics";
 import COSApi, {ICOSApiOptions} from "cos-api";
 import {
     AbstractEngine,
-    AbstractMesh,
+    AbstractMesh, AssetContainer,
     EngineFactory,
     EngineOptions,
     IInspectorOptions,
@@ -94,8 +94,8 @@ export class Viewer {
     htmlMeshRenderer: Nullable<HtmlMeshRenderer> = null; // 用于渲染 HTML 网格的渲染器
 
     //----------- 扩展原生对象
-    assetsManager!: AssetsManager; // 资源管理器
-    assetContainer!: AssetContainer; // 资产容器
+    assetsManager!: PlumAssetsManager; // 资源管理器
+    assetContainer!: PlumAssetContainer; // 资产容器
 
     //---------- 对象
     eventManager!: EventManager; // 事件管理器
@@ -235,8 +235,8 @@ export class Viewer {
 
 
         this.eventManager = new EventManager({viewer: this});
-        this.assetsManager = new AssetsManager(this);
-        this.assetContainer = new AssetContainer(this);
+        this.assetsManager = new PlumAssetsManager(this);
+        this.assetContainer = new PlumAssetContainer(this);
 
         this.cameraControls = new CameraControls({viewer: this});
         this.lightManager = new LightManager({viewer: this});

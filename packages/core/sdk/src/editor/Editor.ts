@@ -93,7 +93,7 @@ export class Editor extends BasePlum {
                 case 'glb': {
                     let meshAssetTask = assetsManager.addMeshTask(`${uniqueId(name)}`, "", "file:", file);
                     meshAssetTask.onSuccess = (task) => {
-                        task.loadedMeshes[0].name = name;
+
                     }
                     assetsManager.load();
                     break;
