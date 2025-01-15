@@ -43,12 +43,22 @@ export class PlumMeshAssetTask extends MeshAssetTask {
             this.extension
         ).then((result) => {
             const {meshes, particleSystems, skeletons, animationGroups, transformNodes} = result;
-            console.log("meshes",meshes)
             // 修改根节点名称未文件名,
             const rootMesh = meshes[0];
             rootMesh.name = this.name;
             initReservedDataStore(rootMesh);
+
+            // 存储相关动画
             rootMesh.reservedDataStore.animations = animationGroups;
+            if (animationGroups.length > 0) {
+                animationGroups[0].stop();
+            }
+
+            // 存储相关骨骼1
+            rootMesh.reservedDataStore.skeletons = skeletons;
+            if (skeletons.length > 0) {
+                rootMesh.reservedDataStore.skeleton = skeletons[0];
+            }
 
             this.loadedMeshes = meshes;
             this.loadedTransformNodes = transformNodes;

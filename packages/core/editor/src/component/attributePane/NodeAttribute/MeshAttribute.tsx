@@ -14,6 +14,7 @@ import {useSelectObject3D, useViewer} from "../../../store";
 import {isInstancedMesh, isMesh} from "babylon-is";
 import {AbstractMesh, AnimationGroup, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
 import {isArray, isNil} from "lodash-es";
+import {PauseCircleOutlined, PlayCircleOutlined} from "@ant-design/icons";
 
 export default function MeshAttribute() {
     const form = Form.useFormInstance();
@@ -120,7 +121,6 @@ export default function MeshAttribute() {
         updateDebugFields(value)
     }
 
-
     const updateDebugFields = (mesh: AbstractMesh) => {
         if (!mesh.reservedDataStore) {
             mesh.reservedDataStore = {};
@@ -145,7 +145,6 @@ export default function MeshAttribute() {
         // const fields = getMeshAttributeFields(value);
         // form.setFields(fields)
     }
-
 
     const items = useMemo(() => {
         const list: CollapseProps['items'] = [];
@@ -266,38 +265,13 @@ export default function MeshAttribute() {
         return list;
     }, [selectObject3D]);
 
-    const renderAnimations = () => {
-        if (selectObject3D && selectObject3D.reservedDataStore && isArray(selectObject3D.reservedDataStore.animations)) {
-            const animations = selectObject3D.reservedDataStore.animations as AnimationGroup[];
-
-            let obj = {
-                key: '动画',
-                label: '动画',
-                children: <Fragment>
-                    {
-                        animations.map((item, index) => {
-                            return <Fragment key={index}>
-                                <div>{item.name}</div>
-
-                            </Fragment>
-                        })
-                    }
-                </Fragment>
-            }
-
-            return obj;
-        }
-
-    }
-
-
     return (
         <Fragment>
             <BoolItem label="是否启用" name={["isEnabled"]}/>
             <BoolItem label="是否锁定" name={["isPickable"]}/>
             <InputNumberItem label="网格id" name={["geometryUniqueId"]}/>
             {isInstancedMesh(selectObject3D) && <TextItem label="实例源" name={["sourceMesh", "name"]}/>}
-            <Collapse items={items} bordered={false} ghost defaultActiveKey={['变换']}/>
+            <Collapse items={[...items]} bordered={false} ghost defaultActiveKey={['变换']}/>
             {/*<JsonItem itemProps={{label: "自定义数据", name: "metadata"}}/>*/}
             <Descriptions title="统计信息" items={MeshInfo}/>
         </Fragment>

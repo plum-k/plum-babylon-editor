@@ -226,6 +226,7 @@ export default function NodeAttribute() {
         } else if (isFreeCamera(selectObject3D)) {
             return <FreeCameraAttribute/>
         } else if (isMesh(selectObject3D)) {
+
             if (selectObject3D.getTotalVertices() > 0) {
                 return <MeshAttribute/>
             } else {

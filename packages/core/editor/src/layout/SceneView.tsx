@@ -10,6 +10,7 @@ import {ImperativePanelHandle} from "react-resizable-panels";
 import PanelCollapsed from "../component/PanelCollapsed.tsx";
 import testPhysics from "../testCore/testPhysics.ts";
 import tesProjection from "../testCore/tesProjection.ts";
+import testMesh from "../testCore/testMesh.ts";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -64,7 +65,7 @@ export default function SceneView(props: ISceneViewProps) {
                 console.log(camera)
 
                 // testSerialize(_viewer);
-                // testMesh(_viewer)
+                testMesh(_viewer,"Xbot.glb")
                 testPhysics(_viewer)
 
                 // tesProjection(_viewer)

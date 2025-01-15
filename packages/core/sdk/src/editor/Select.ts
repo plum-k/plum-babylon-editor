@@ -85,9 +85,7 @@ export class Select {
 
     bindRotationGizmo() {
         this.gizmoManager.gizmos?.rotationGizmo?.onDragStartObservable.add(() => {
-
             if (this.selectNode) {
-
                 const rotationQuaternion = get(this.selectNode, "rotationQuaternion") as unknown as Quaternion | null;
                 if (!isNil(rotationQuaternion)) {
                     this.oldQuaternion.copyFrom(rotationQuaternion)

@@ -91,7 +91,7 @@ export class Editor extends BasePlum {
                 case "obj":
                 case "gltf":
                 case 'glb': {
-                    let meshAssetTask = assetsManager.addMeshTask(`${uniqueId(name)}`, "", "file:", file);
+                    let meshAssetTask = assetsManager.addPlumMeshTask(`${uniqueId(name)}`, "", "file:", file);
                     meshAssetTask.onSuccess = (task) => {
 
                     }
