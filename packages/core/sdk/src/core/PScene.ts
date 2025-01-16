@@ -17,4 +17,13 @@ export class PScene extends BabylonScene {
             return this.cameras.includes(node);
         }
     }
+
+    /**
+     * 获取场景中所有的网格形成的包围盒. 排除隐藏和未启用的网格
+     */
+    getAllSceneExtends(){
+         return  this.getWorldExtends((mesh) => {
+            return mesh.isVisible && mesh.isEnabled();
+        });
+    }
 }

@@ -8,7 +8,6 @@ export class PlumArcRotateCamera extends ArcRotateCamera {
         this.inputs.add(new PlumArcRotateCameraPointersInput());
         this.wheelDeltaPercentage = 0.01;
         this.panningSensibility = 5000;
-        console.log(this)
     }
 }
 

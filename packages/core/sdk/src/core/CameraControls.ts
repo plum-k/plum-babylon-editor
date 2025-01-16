@@ -4,8 +4,9 @@ import {
     AbstractMesh,
     ArcRotateCamera,
     Color3,
-    FramingBehavior,
     Mesh,
+    Nullable,
+    Observer,
     PBRMaterial,
     UtilityLayerRenderer,
     Vector3
@@ -23,7 +24,6 @@ export class CameraControls extends BasePlum {
     // height: number;
     // camera: FreeCamera
 
-    debugBox: Mesh | null = null;
 
     constructor(options: ICameraControlsOptions) {
         super(options);
@@ -44,12 +44,12 @@ export class CameraControls extends BasePlum {
             arcRotateCamera.maxZ = radius * 1000;
             arcRotateCamera.speed = radius * 0.2;
             // 禁用双击恢复视角
-            arcRotateCamera.useInputToRestoreState=false;
+            arcRotateCamera.useInputToRestoreState = false;
 
             this.scene.activeCamera = arcRotateCamera;
             arcRotateCamera.attachControl();
             console.log(arcRotateCamera.position)
-            arcRotateCamera.setPosition(new Vector3(10,10,10));
+            arcRotateCamera.setPosition(new Vector3(10, 10, 10));
 
             // Object.defineProperty(arcRotateCamera, 'radius', {
             //     get: ()=> {
@@ -63,6 +63,8 @@ export class CameraControls extends BasePlum {
             // });
         }
     }
+    debugBox: Mesh | null = null;
+    debugCameraObserver: Nullable<Observer<any>> = null;
 
     initDebugBox() {
         const backScene = UtilityLayerRenderer.DefaultKeepDepthUtilityLayer.utilityLayerScene;
@@ -70,56 +72,57 @@ export class CameraControls extends BasePlum {
         const boxMaterial = new PBRMaterial("material", backScene);
         boxMaterial.albedoColor = new Color3(1, 0, 0);
         boxMaterial.disableDepthWrite = false;
-
         this.debugBox.material = boxMaterial;
     }
 
-
-    debugCamera() {
-        this.scene.onAfterCameraRenderObservable.add(() => {
-            const camera = this.scene.activeCamera as ArcRotateCamera;
-            const target = camera.target;
-            if (this.debugBox) {
-                this.debugBox.position = target;
-            } else {
-                this.initDebugBox();
-            }
-        })
-    }
-
-
-    zoomOn(meshes: AbstractMesh[], doNotUpdateMaxZ = true) {
-        let camera = this.scene.activeCamera;
-        if (isArcRotateCamera(camera)) {
-            camera.zoomOn(meshes, doNotUpdateMaxZ);
-            // this.zoomOnBoundingInfo(mesh[0])
+    debugCameraCallback() {
+        const camera = this.scene.activeCamera as ArcRotateCamera;
+        const target = camera.target;
+        if (this.debugBox) {
+            this.debugBox.position = target;
+        } else {
+            this.initDebugBox();
         }
     }
 
     /**
-     * 聚焦到指定的网格
+     * 调试相机, 在相机目标位置创建一个调试盒
+     */
+    debugCamera(debug = true) {
+        if (debug) {
+            this.debugCameraObserver = this.scene.onAfterCameraRenderObservable.add(this.debugCameraCallback.bind(this))
+        } else {
+            this.scene.onAfterCameraRenderObservable.remove(this.debugCameraObserver)
+            if (this.debugBox) {
+                this.scene.removeMesh(this.debugBox);
+                this.debugBox.dispose();
+            }
+        }
+    }
+
+
+    /**
+     * 聚焦到指定的网格, 相机半径也会修改
+     * @param meshes 网格
+     * @param doNotUpdateMaxZ
+     */
+    zoomOn(meshes: AbstractMesh[], doNotUpdateMaxZ = true) {
+        let camera = this.scene.activeCamera;
+        if (isArcRotateCamera(camera)) {
+            camera.zoomOn(meshes, doNotUpdateMaxZ);
+        }
+    }
+
+    /**
+     * 聚焦到指定的网格, 相机半径不会变
      * @param meshes 网格
      * @param doNotUpdateMaxZ
      */
     focusOn(meshes: AbstractMesh[], doNotUpdateMaxZ = true) {
         let camera = this.scene.activeCamera;
         if (isArcRotateCamera(camera)) {
-            // todo 裁剪距离被修改, 但半径不会被修改
             camera.focusOn(meshes, doNotUpdateMaxZ);
-            // this.zoomOnBoundingInfo(mesh[0])
         }
-    }
-
-    zoomOnBoundingInfo(mesh: AbstractMesh) {
-        // const worldExtends = this.scene.getWorldExtends(function (mesh) {
-        //     return mesh.isVisible && mesh.isEnabled();
-        // });
-
-        const worldExtends = mesh.getBoundingInfo().boundingBox;
-
-        const camera = this.scene.activeCamera! as unknown as ArcRotateCamera;
-        const framingBehavior = camera.getBehaviorByName("Framing") as FramingBehavior;
-        framingBehavior.zoomOnBoundingInfo(worldExtends.minimumWorld, worldExtends.maximumWorld);
     }
 
 
@@ -129,15 +132,15 @@ export class CameraControls extends BasePlum {
 
         camera.useFramingBehavior = true;
 
-        const framingBehavior = camera.getBehaviorByName("Framing") as FramingBehavior;
+        const framingBehavior = camera.framingBehavior!
+        // 设置动画时间
         framingBehavior.framingTime = 0;
         framingBehavior.elevationReturnTime = -1;
+        // 不自动调整相机范围和敏感度
+        framingBehavior.autoCorrectCameraLimitsAndSensibility = false;
+        // camera.lowerRadiusLimit = null;
 
-        camera.lowerRadiusLimit = null;
-
-        const worldExtends = this.scene.getWorldExtends((mesh) => {
-            return mesh.isVisible && mesh.isEnabled();
-        });
+        const worldExtends = this.scene.getAllSceneExtends();
         framingBehavior.zoomOnBoundingInfo(worldExtends.min, worldExtends.max);
     }
 }

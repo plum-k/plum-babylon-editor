@@ -3,11 +3,11 @@ import {Form, Select} from "antd";
 import {SelectProps} from "antd/es/select";
 import useItemUpdate from "./useItemUpdate.ts";
 import BaseItemProps from "./BaseItemProps.ts";
+import {INumberSliderItemProps} from "./NumberSliderItem.tsx";
 
-export interface ISelectItemProps extends BaseItemProps<SelectProps> {
+export interface  ISelectItemProps extends BaseItemProps<SelectProps> {
 }
-
-const SelectItem: FC<ISelectItemProps> = (props: ISelectItemProps) => {
+export default function SelectItem(props: ISelectItemProps) {
     const {fieldProps, virtual, ...rest} = props
     const {isValue} = useItemUpdate(props);
     return (
@@ -23,4 +23,3 @@ const SelectItem: FC<ISelectItemProps> = (props: ISelectItemProps) => {
     )
 }
 
-export default SelectItem;

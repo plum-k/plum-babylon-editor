@@ -11,9 +11,10 @@ export class PlumArcRotateCameraPointersInput extends ArcRotateCameraPointersInp
         const distance = Vector3.Distance(this.camera.position, this.camera.target);
         // @ts-ignore
         if (this.panningSensibility !== 0 && ((this._ctrlKey && this.camera._useCtrlForPanning) || this._isPanClick)) {
+
+            // 设置相机平移时, 考虑相机到目标的位置
             this.camera.inertialPanningX += (-offsetX * distance) / this.panningSensibility;
             this.camera.inertialPanningY += (offsetY * distance) / this.panningSensibility;
-            // this.camera.inertialPanningY += offsetY / this.panningSensibility;
         } else {
             this.camera.inertialAlphaOffset -= offsetX / this.angularSensibilityX;
             this.camera.inertialBetaOffset -= offsetY / this.angularSensibilityY;

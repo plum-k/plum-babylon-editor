@@ -94,34 +94,6 @@ export default function AddMenu() {
                     object: sphere
                 });
                 break;
-            // case "dodecahedron":
-            //     const dodecahedron = MeshBuilder.CreatePolyhedron("Dodecahedron", {type: 0, size: 1}, );
-            //     viewer.editor.addObjectCommandExecute({
-            //         source: "editor",
-            //         object: dodecahedron
-            //     });
-            //     break;
-            // case "icosahedron":
-            //     const icosahedron = MeshBuilder.CreatePolyhedron("Icosahedron", {type: 1, size: 1}, );
-            //     viewer.editor.addObjectCommandExecute({
-            //         source: "editor",
-            //         object: icosahedron
-            //     });
-            //     break;
-            // case "octahedron":
-            //     const octahedron = MeshBuilder.CreatePolyhedron("Octahedron", {type: 2, size: 1}, );
-            //     viewer.editor.addObjectCommandExecute({
-            //         source: "editor",
-            //         object: octahedron
-            //     });
-            //     break;
-            // case "tetrahedron":
-            //     const tetrahedron = MeshBuilder.CreatePolyhedron("Tetrahedron", {type: 3, size: 1}, );
-            //     viewer.editor.addObjectCommandExecute({
-            //         source: "editor",
-            //         object: tetrahedron
-            //     });
-            //     break;
             case "torus":
                 const torus = MeshBuilder.CreateTorus("Torus", {diameter: 1, thickness: 0.2},);
                 viewer.editor.addObjectCommandExecute({
@@ -129,18 +101,6 @@ export default function AddMenu() {
                     object: torus
                 });
                 break;
-            // case "torusknot":
-            //     const torusKnot = MeshBuilder.CreateTorusKnot("TorusKnot", {
-            //         radius: 0.5,
-            //         tube: 0.1,
-            //         tubularSegments: 64,
-            //         radialSegments: 8
-            //     }, );
-            //     viewer.editor.addObjectCommandExecute({
-            //         source: "editor",
-            //         object: torusKnot
-            //     });
-            //     break;
             case "tube":
                 const tube = MeshBuilder.CreateTube("Tube", {
                     path: [new Vector3(-1, 0, 0), new Vector3(-0.5, 1, 0), new Vector3(0.5, 1, 0), new Vector3(1, 0, 0)],

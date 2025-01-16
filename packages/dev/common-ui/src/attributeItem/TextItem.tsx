@@ -2,7 +2,7 @@ import {Fragment} from "react";
 import {Form} from "antd";
 import BaseItemProps from "./BaseItemProps.ts";
 import useItemUpdate from "./useItemUpdate.ts";
-import {isBoolean} from "lodash-es";
+import {invoke, isBoolean} from "lodash-es";
 import {useObjectAttribute} from "../objectAttribute";
 
 export interface ITextItemProps extends BaseItemProps {
@@ -37,7 +37,7 @@ export default function TextItem(props: ITextItemProps) {
             }
             return <Fragment>{value}</Fragment>
         } else {
-            let value = object[funName]();
+            let value =  invoke(object,funName as string);
             return <Fragment>{value}</Fragment>
         }
     }

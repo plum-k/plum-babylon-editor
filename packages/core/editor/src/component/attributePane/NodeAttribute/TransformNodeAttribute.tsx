@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 import {BoolItem, InputNumberItem, Vector3Item} from "@plum-render/common-ui";
-import {Button, Collapse, Flex, Space} from "antd";
+import {Button, Checkbox, Collapse, Flex, Form, Space} from "antd";
 import {isArray} from "lodash-es";
 import {AnimationGroup, Skeleton} from "@babylonjs/core";
 import {PauseCircleOutlined, PlayCircleOutlined, StopOutlined} from "@ant-design/icons";
@@ -44,8 +44,8 @@ export default function TransformNodeAttribute() {
                         animations.map((item, index) => {
                             const {isPlaying} = item;
                             return <Flex key={index} justify={"center"} align={"center"}>
-                                <div className={"w-1/2 text-2xl"}>{item.name}</div>
-                                <div className={"w-1/2 text-2xl cursor-pointer"}>
+                                <div className={"w-1/2 text-xl"}>{item.name}</div>
+                                <div className={"w-1/2 text-xl cursor-pointer"}>
                                     <Space>
                                         {
                                             isPlaying ? <PauseCircleOutlined onClick={() => onPause(item)}/> :
@@ -57,9 +57,11 @@ export default function TransformNodeAttribute() {
                             </Flex>
                         })
                     }
-                    <Button color="default" variant="filled" onClick={()=>onReset(animations)}>
-                        回到初始姿态
-                    </Button>
+                    <Form.Item valuePropName="checked" label={"骨骼姿态"}>
+                        <Button color="default" variant="filled" onClick={()=>onReset(animations)}>
+                            重置
+                        </Button>
+                    </Form.Item>
                 </div>
             }
             return obj;

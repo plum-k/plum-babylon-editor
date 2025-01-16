@@ -3,6 +3,7 @@ import {Col, Form, InputNumber, Row, Slider} from "antd";
 import useItemUpdate from "./useItemUpdate.ts";
 import BaseItemProps from "./BaseItemProps.ts";
 import {Tools} from "@babylonjs/core";
+import {IJsonItemProps} from "./JsonItem.tsx";
 
 export interface INumberSliderItemProps extends BaseItemProps {
     max?: number;
@@ -11,8 +12,7 @@ export interface INumberSliderItemProps extends BaseItemProps {
     // 值转为度数
     toDegrees?: boolean;
 }
-
-const NumberSliderItem: FC<INumberSliderItemProps> = (props: INumberSliderItemProps) => {
+export default function NumberSliderItem(props: INumberSliderItemProps) {
     const {syncChange, name, min, max, step, toDegrees, ...rest} = props;
     const {isValue} = useItemUpdate({
         ...props,
@@ -47,4 +47,3 @@ const NumberSliderItem: FC<INumberSliderItemProps> = (props: INumberSliderItemPr
     )
 }
 
-export default NumberSliderItem;

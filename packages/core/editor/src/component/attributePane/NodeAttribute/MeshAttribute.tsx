@@ -1,6 +1,5 @@
-import {Fragment, useEffect, useMemo, useState} from "react";
-import {Collapse, CollapseProps, Descriptions, Form} from "antd";
-import {DescriptionsProps} from "antd/lib";
+import {Fragment, useEffect, useMemo} from "react";
+import {Collapse, CollapseProps, Form} from "antd";
 import {
     BoolItem,
     ColorItem,
@@ -11,116 +10,39 @@ import {
     Vector3Item
 } from "@plum-render/common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
-import {isInstancedMesh, isMesh} from "babylon-is";
-import {AbstractMesh, AnimationGroup, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
-import {isArray, isNil} from "lodash-es";
-import {PauseCircleOutlined, PlayCircleOutlined} from "@ant-design/icons";
+import {isInstancedMesh} from "babylon-is";
+import {AbstractMesh, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
+import {isNil} from "lodash-es";
 
 export default function MeshAttribute() {
     const form = Form.useFormInstance();
     const viewer = useViewer()
-    const [MeshInfo, setMeshInfo] = useState<DescriptionsProps['items']>([]);
     const selectObject3D = useSelectObject3D();
     useEffect(() => {
         if (selectObject3D) {
             update(selectObject3D)
         }
     }, [selectObject3D])
-    const updateMeshInfo = (node: Mesh) => {
-        if (!isMesh(node)) {
-            return []
-        }
-        const items: DescriptionsProps['items'] = [
-            {
-                key: '0',
-                label: 'Id',
-                children: node.id
-            },
-            {
-                key: '1',
-                label: '类型',
-                children: node.getClassName(),
-            },
-            {
-                key: '2',
-                label: '顶点数',
-                children: node.getTotalVertices().toString()
-            },
-            {
-                key: '3',
-                label: '面数',
-                children: (node.getTotalIndices() / 3).toFixed(0)
-            },
-            {
-                key: '4',
-                label: '子网格数',
-                children: node.subMeshes ? node.subMeshes.length.toString() : "0"
-            },
-            {
-                key: '5',
-                label: '网格id',
-                children: node.geometry?.uniqueId.toString()
-            },
 
-        ];
-        setMeshInfo(items);
-    }
-    const getMeshAttributeFields = (node: Mesh) => {
-        if (!isMesh(node)) {
-            return []
-        }
-        let fields = [
-            {
-                name: "metadata",
-                value: node.metadata
-            },
-            {
-                name: "HasMatrixIndices",
-                value: node.isVerticesDataPresent(VertexBuffer.MatricesIndicesKind) ? "Yes" : "No"
-            },
-            // todo 转为详细信息
-            {
-                name: "HasNormals",
-                value: node.isVerticesDataPresent(VertexBuffer.NormalKind) ? "Yes" : "No"
-            },
-            {
-                name: "HasVertexColors",
-                value: node.isVerticesDataPresent(VertexBuffer.ColorKind) ? "Yes" : "No"
-            },
-            {
-                name: "HasUVSet0",
-                value: node.isVerticesDataPresent(VertexBuffer.UVKind) ? "Yes" : "No"
-            },
-            {
-                name: "HasUVSet1",
-                value: node.isVerticesDataPresent(VertexBuffer.UV2Kind) ? "Yes" : "No"
-            },
-            {
-                name: "HasUVSet1",
-                value: node.isVerticesDataPresent(VertexBuffer.UV2Kind) ? "Yes" : "No"
-            },
-            {
-                name: "HasTangents",
-                value: node.isVerticesDataPresent(VertexBuffer.TangentKind) ? "Yes" : "No"
-            },
-            {
-                name: "HasMatrixWeights",
-                value: node.isVerticesDataPresent(VertexBuffer.MatricesWeightsKind) ? "Yes" : "No"
-            },
-            {
-                name: "HasMatrixIndices",
-                value: node.isVerticesDataPresent(VertexBuffer.MatricesIndicesKind) ? "Yes" : "No"
-            },
-        ]
-        return fields;
-    }
     const update = (value: any) => {
         updateMeshInfo(value)
-        const fields = getMeshAttributeFields(value);
-        form.setFields(fields)
         updateDebugFields(value)
     }
+    const updateMeshInfo = (node: Mesh) => {
+        form.setFieldValue("totalVertices", node.getTotalVertices().toString())
+        form.setFieldValue("totalFace", (node.getTotalIndices() / 3).toFixed(0))
+        form.setFieldValue("subMeshesNum", node.subMeshes ? node.subMeshes.length.toString() : "0")
 
+        form.setFieldValue("HasNormals", node.isVerticesDataPresent(VertexBuffer.NormalKind) ? "有" : "无")
+        form.setFieldValue("HasVertexColors", node.isVerticesDataPresent(VertexBuffer.ColorKind) ? "有" : "无")
+        form.setFieldValue("HasUVSet0", node.isVerticesDataPresent(VertexBuffer.UVKind) ? "有" : "无")
+        form.setFieldValue("HasUVSet1", node.isVerticesDataPresent(VertexBuffer.UV2Kind) ? "有" : "无")
+        form.setFieldValue("HasUVSet2", node.isVerticesDataPresent(VertexBuffer.UV3Kind) ? "有" : "无")
+        form.setFieldValue("HasUVSet3", node.isVerticesDataPresent(VertexBuffer.UV4Kind) ? "有" : "无")
+        form.setFieldValue("HasTangents", node.isVerticesDataPresent(VertexBuffer.TangentKind) ? "有" : "无")
+        form.setFieldValue("HasMatrixWeights", node.isVerticesDataPresent(VertexBuffer.MatricesWeightsKind) ? "有" : "无")
+        form.setFieldValue("HasMatrixIndices", node.isVerticesDataPresent(VertexBuffer.MatricesIndicesKind) ? "有" : "无")
+    }
     const updateDebugFields = (mesh: AbstractMesh) => {
         if (!mesh.reservedDataStore) {
             mesh.reservedDataStore = {};
@@ -142,8 +64,6 @@ export default function MeshAttribute() {
         form.setFieldValue(["reservedDataStore", "displayVertexColors"], mesh.reservedDataStore.displayVertexColors)
         form.setFieldValue(["reservedDataStore", "renderNormalVectors"], mesh.reservedDataStore.renderNormalVectors)
         form.setFieldValue(["reservedDataStore", "renderWireframeOver"], mesh.reservedDataStore.renderWireframeOver)
-        // const fields = getMeshAttributeFields(value);
-        // form.setFields(fields)
     }
 
     const items = useMemo(() => {
@@ -261,7 +181,23 @@ export default function MeshAttribute() {
                 <BoolItem name={["reservedDataStore", "renderWireframeOver"]} label="渲染线框" virtual/>
             </Fragment>
         });
-
+        list.push({
+            key: '统计',
+            label: '统计',
+            children: <Fragment>
+                <TextItem name={["totalVertices"]} label="顶点数" virtual/>
+                <TextItem name={["totalFace"]} label="面数" virtual/>
+                <TextItem name={["subMeshesNum"]} label="子网格数" virtual/>
+                <TextItem name={["HasNormals"]} label="法线" virtual/>
+                <TextItem name={["HasVertexColors"]} label="顶点颜色" virtual/>
+                <TextItem name={["HasUVSet0"]} label="UV 集 0" virtual/>
+                <TextItem name={["HasUVSet1"]} label="UV 集 1" virtual/>
+                <TextItem name={["HasUVSet2"]} label="UV 集 2" virtual/>
+                <TextItem name={["HasTangents"]} label="切线" virtual/>
+                <TextItem name={["HasMatrixWeights"]} label="矩阵权重" virtual/>
+                <TextItem name={["HasMatrixIndices"]} label="矩阵索引" virtual/>
+            </Fragment>
+        });
         return list;
     }, [selectObject3D]);
 
@@ -273,7 +209,6 @@ export default function MeshAttribute() {
             {isInstancedMesh(selectObject3D) && <TextItem label="实例源" name={["sourceMesh", "name"]}/>}
             <Collapse items={[...items]} bordered={false} ghost defaultActiveKey={['变换']}/>
             {/*<JsonItem itemProps={{label: "自定义数据", name: "metadata"}}/>*/}
-            <Descriptions title="统计信息" items={MeshInfo}/>
         </Fragment>
     )
 }

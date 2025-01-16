@@ -4,12 +4,12 @@ import type {ColorPickerProps} from "antd/es/color-picker/interface";
 import useItemUpdate from "./useItemUpdate.ts";
 import BaseItemProps from "./BaseItemProps.ts";
 import {AggregationColor} from "antd/es/color-picker/color";
+import {IBoolItemProps} from "./BoolItem.tsx";
 
 export interface IColorItemProps extends BaseItemProps<ColorPickerProps> {
     okHandle?: (oldValue: string, value: AggregationColor, attributePath: string) => void;
 }
-
-const ColorItem: FC<IColorItemProps> = (props: IColorItemProps) => {
+export default function ColorItem(props: IColorItemProps) {
     const {convertData, fieldProps, okHandle, ...rest} = props
     const {isValue} = useItemUpdate({
         ...props,
@@ -46,5 +46,3 @@ const ColorItem: FC<IColorItemProps> = (props: IColorItemProps) => {
         </Fragment>
     )
 }
-
-export default ColorItem;

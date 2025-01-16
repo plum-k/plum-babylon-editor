@@ -1,7 +1,7 @@
 import {Col, Form, Row} from "antd";
 import BaseItemProps from "./BaseItemProps.ts";
 import {FC, Fragment} from "react";
-import {InputNumberItem} from "./index.ts";
+import {InputNumberItem, IVector2ItemProps} from "./index.ts";
 import useItemUpdate from "./useItemUpdate.ts";
 
 export interface IVector3ItemProps extends BaseItemProps {
@@ -12,8 +12,7 @@ export interface IVector3ItemProps extends BaseItemProps {
     // 是四元数
     isQuaternion?: boolean
 }
-
-const Vector3Item: FC<IVector3ItemProps> = (props: IVector3ItemProps) => {
+export default function Vector3Item(props: IVector3ItemProps) {
     const {basePropertyName, convertData, isVertical, toDegrees, isQuaternion, ...rest} = {isVertical: true, ...props}
     const {isValue} = useItemUpdate(props);
 
@@ -50,6 +49,4 @@ const Vector3Item: FC<IVector3ItemProps> = (props: IVector3ItemProps) => {
         </Fragment>
     )
 }
-
-export default Vector3Item;
 

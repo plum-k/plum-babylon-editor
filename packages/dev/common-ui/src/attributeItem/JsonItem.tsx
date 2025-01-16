@@ -22,8 +22,7 @@ const JsonWrapper: FC<JsonWrapperProps> = (props: JsonWrapperProps) => {
 export interface IJsonItemProps extends BaseItemProps {
 
 }
-
-const JsonItem: FC<IJsonItemProps> = (props: IJsonItemProps) => {
+export default function JsonItem(props: IJsonItemProps) {
     const {} = props
     const {isValue} = useItemUpdate(props, {
         setDefaultValue: () => {
@@ -43,4 +42,3 @@ const JsonItem: FC<IJsonItemProps> = (props: IJsonItemProps) => {
     )
 }
 
-export default JsonItem;

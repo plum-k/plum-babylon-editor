@@ -1,14 +1,13 @@
 import {Col, Form, Row} from "antd";
 import BaseItemProps from "./BaseItemProps.ts";
 import {FC, Fragment} from "react";
-import {InputNumberItem} from "./index.ts";
+import {InputNumberItem, ISliderItemProps} from "./index.ts";
 import useItemUpdate from "./useItemUpdate.ts";
 
 export interface IVector2ItemProps extends BaseItemProps {
 
 }
-
-const Vector2Item: FC<IVector2ItemProps> = (props: IVector2ItemProps) => {
+export default function Vector2Item(props: IVector2ItemProps) {
     const {basePropertyName, convertData, isVertical, ...rest} = {isVertical: true, ...props}
     const {isValue} = useItemUpdate(props);
     return (
@@ -36,5 +35,4 @@ const Vector2Item: FC<IVector2ItemProps> = (props: IVector2ItemProps) => {
     )
 }
 
-export default Vector2Item;
 

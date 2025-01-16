@@ -33,7 +33,7 @@ const getTree = (objects: Array<Node>) => {
         let nodeInfo: ITreeNode = {
             title: name,
             name: name,
-            uniqueId:uniqueId,
+            uniqueId: uniqueId,
             key: uniqueId,
             children: [],
             visible: visible,
@@ -195,11 +195,10 @@ export default function SceneTree() {
     const onDragEnd: TreeProps['onDragEnd'] = (info) => {
 
     };
-    const onDoubleClick: TreeProps['onDoubleClick'] = (info) => {
-        if (viewer) {
-            if (isMesh(selectObject3D)) {
-                viewer.cameraControls.focusOn([selectObject3D]); // 适应选中的对象
-            }
+    // 双击聚焦到指定对象
+    const onDoubleClick: TreeProps['onDoubleClick'] = () => {
+        if (viewer && isMesh(selectObject3D)) {
+            viewer.cameraControls.zoomOn([selectObject3D]);
         }
     };
 

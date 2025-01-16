@@ -2,11 +2,11 @@ import {FC, Fragment} from "react";
 import {Checkbox, Form} from "antd";
 import useItemUpdate from "./useItemUpdate.ts";
 import BaseItemProps from "./BaseItemProps.ts";
+import {IVector3ItemProps} from "./Vector3Item.tsx";
 
 export interface IBoolItemProps extends BaseItemProps {
 }
-
-const BoolItem: FC<IBoolItemProps> = (props: IBoolItemProps) => {
+export default function BoolItem(props: IBoolItemProps) {
     const {virtual, ...rest} = props;
     const {isValue} = useItemUpdate(props);
     return (
@@ -21,4 +21,3 @@ const BoolItem: FC<IBoolItemProps> = (props: IBoolItemProps) => {
     )
 }
 
-export default BoolItem;
