@@ -1,5 +1,5 @@
 import {AbstractMesh, AnimationGroup, Mesh, Node, TransformNode} from "@babylonjs/core";
-import {isMesh, isTransformNode} from "babylon-is";
+import {isMesh, isTransformNode} from "@plum-render/babylon-type-guard";
 import {includes, isArray, max, split} from "lodash-es";
 import {Subject} from "rxjs";
 import pako from "pako";

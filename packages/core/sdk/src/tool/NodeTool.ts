@@ -8,7 +8,7 @@ import {
     Vector3,
     VertexBuffer
 } from "@babylonjs/core";
-import {isAbstractMesh, isCamera, isLight} from "babylon-is";
+import {isAbstractMesh, isCamera, isLight} from "@plum-render/babylon-type-guard";
 import {NormalMaterial} from "@babylonjs/materials";
 
 export class NodeTool {

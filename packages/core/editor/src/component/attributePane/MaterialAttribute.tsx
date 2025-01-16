@@ -1,7 +1,7 @@
 import {Fragment, useMemo, useState} from "react";
 import {Collapse, CollapseProps, Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
-import {isMesh} from "babylon-is";
+import {isMesh} from "@plum-render/babylon-type-guard";
 import {useSelectKey, useSelectObject3D, useViewer} from "../../store";
 import {
     BoolItem,

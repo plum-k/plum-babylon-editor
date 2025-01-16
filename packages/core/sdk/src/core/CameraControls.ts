@@ -1,5 +1,5 @@
 import {BasePlum, IBasePlumOptions} from "./BasePlum";
-import {isArcRotateCamera} from "babylon-is";
+import {isArcRotateCamera} from "@plum-render/babylon-type-guard";
 import {
     AbstractMesh,
     ArcRotateCamera,

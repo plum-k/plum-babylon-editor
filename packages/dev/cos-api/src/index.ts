@@ -18,6 +18,10 @@ export default class COSApi {
         this.cos = new COS(options.COSOptions);
     }
 
+    /**
+     * 上传文件
+     * @param value
+     */
     uploadFile(value: {
         Body?: any,
         Key: string;
@@ -52,6 +56,10 @@ export default class COSApi {
     //     }
     //     list.push(node);
     // }
+    /**
+     * 获取文件夹
+     * @param value
+     */
     getBucket(value: {
         Prefix: string,
         // "/"
@@ -65,7 +73,10 @@ export default class COSApi {
         })
     }
 
-    // 对象是否存在
+    /**
+     * 对象是否存在
+     * @param Key
+     */
     headObject(Key: string) {
         return this.cos.headObject({
             ...this.bucketParams,
@@ -73,6 +84,10 @@ export default class COSApi {
         });
     }
 
+    /**
+     * 获取对象
+     * @param params
+     */
     getObject(params: Partial<COS.GetObjectParams>) {
         return this.cos.getObject(<COS.GetObjectParams>{
             ...this.bucketParams,
@@ -81,6 +96,10 @@ export default class COSApi {
     }
 
 
+    /**
+     * 获取对象链接
+     * @param Key
+     */
     getObjectUrl(Key: string): Promise<string> {
         return new Promise((resolve, reject) => {
             this.cos.getObjectUrl(

@@ -1,5 +1,5 @@
 {
-  "name": "babylon-is",
+  "name": "@plum-render/babylon-type-guard",
   "version": "0.0.1",
   "main": "src/index.ts",
   "dependencies": {

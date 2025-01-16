@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {Form} from "antd";
 import BaseItemProps from "./BaseItemProps.ts";
 import {useObjectAttribute} from "../objectAttribute";
-import {isCamera} from "babylon-is";
+import {isCamera} from "@plum-render/babylon-type-guard";
 
 export interface IItemUpdateConfig {
     setDefaultValue?: () => any; // 可选的转换数据配置函数

@@ -1,5 +1,5 @@
 import {AbstractEngine, Node, Scene as BabylonScene, SceneOptions} from "@babylonjs/core";
-import {isCamera, isLight, isMesh} from "babylon-is";
+import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
 
 
 export class PScene extends BabylonScene {

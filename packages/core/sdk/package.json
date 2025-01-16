@@ -21,7 +21,7 @@
     "@glowjs/core": "2025.1.9",
     "@plum-render/tool": "workspace:*",
     "@zip.js/zip.js": "^2.7.54",
-    "babylon-is": "workspace:*",
+    "@plum-render/babylon-type-guard": "workspace:*",
     "babylonjs-mapping": "^1.1.42",
     "cos-api": "workspace:*",
     "dexie": "^4.0.10",

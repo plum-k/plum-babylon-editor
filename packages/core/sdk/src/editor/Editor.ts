@@ -16,7 +16,7 @@ import {uniqueId} from "lodash-es";
 import {loadFiles, loadItemList} from "@plum-render/tool";
 import {EditorEventManager, Select} from "./index";
 import {PlumGizmoManager} from "../manager";
-import {isMesh} from "babylon-is";
+import {isMesh} from "@plum-render/babylon-type-guard";
 import {ISetObjectVector3Command} from "./commands/SetObjectValueCommand/SetObjectVector3Command";
 import {ISetObjectValueCommand, SetObjectValueCommand} from "./commands/SetObjectValueCommand/SetObjectValueCommand";
 import {SetPositionCommand} from "./commands/SetObjectValueCommand/SetPositionCommand";

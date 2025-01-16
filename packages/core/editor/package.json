@@ -24,7 +24,7 @@
     "antd": "^5.23.1",
     "auto-zustand-selectors-hook": "^3.0.1",
     "axios": "^1.7.9",
-    "babylon-is": "workspace:*",
+    "@plum-render/babylon-type-guard": "workspace:*",
     "babylonjs-loaders": "^7.43.0",
     "classnames": "^2.5.1",
     "common": "workspace:*",

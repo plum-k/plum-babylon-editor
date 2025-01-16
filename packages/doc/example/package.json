@@ -1,5 +1,5 @@
 {
-  "name": "plum-babylon-example",
+  "name": "@plum-render/babylon-sdk-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",

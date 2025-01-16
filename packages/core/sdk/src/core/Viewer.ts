@@ -28,7 +28,7 @@ import {
     WebGPUEngine,
     WebGPUEngineOptions
 } from "@babylonjs/core";
-import {isCamera, isLight, isMesh} from "babylon-is";
+import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
 import {PScene} from "./PScene";
 import {GridTool} from "../tool/GridTool";
 import {EnvironmentManage} from "../manager/EnvironmentManage";

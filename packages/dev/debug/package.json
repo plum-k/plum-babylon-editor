@@ -1,20 +1,8 @@
 {
-  "name": "plum-babylon-debug",
+  "name": "@plum-render/babylon-debug",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "files": [
-    "dist",
-    "index.d.ts"
-  ],
-  "main": "./dist/counter.umd.cjs",
-  "module": "./dist/counter.js",
-  "types": "./index.d.ts",
-  "exports": {
-    "types": "./index.d.ts",
-    "import": "./dist/counter.js",
-    "require": "./dist/counter.umd.cjs"
-  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build"

@@ -6,7 +6,7 @@ import {isNil} from "lodash-es";
 import {EyeInvisibleOutlined, EyeOutlined} from '@ant-design/icons';
 import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} from "../store";
 import {useToggle} from "ahooks";
-import {isMesh, isTransformNode} from 'babylon-is';
+import {isMesh, isTransformNode} from '@plum-render/babylon-type-guard';
 import "../styles/SceneTree.css";
 import {NodeTool, Viewer} from '@plum-render/babylon-sdk';
 import {Node} from "@babylonjs/core";

@@ -1,7 +1,5 @@
-## @babylonjs/addons
+## @plum-render/babylon-sdk
 
-需要修该安装包中的导出
+对 `babylon` 的简单封装, 可以快速创建三维应用
 
-```ts
-export * from "./htmlMesh/index.js";
-```
+
