@@ -21,9 +21,7 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
+
     let sphere = MeshBuilder.CreateSphere('sphere1', {
         diameter: 2
 

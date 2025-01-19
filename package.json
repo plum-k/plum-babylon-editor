@@ -17,7 +17,7 @@
     "packages/doc/*"
   ],
   "dependencies": {
-    "npm-check-updates": "^17.1.13"
+    "npm-check-updates": "^17.1.14"
   },
   "overrides": {
     "rollup": "4.30.1"

@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions} from "../core";
+import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 
 export interface IPlumSceneSerializerOptions extends IBasePlumOptions {
 }

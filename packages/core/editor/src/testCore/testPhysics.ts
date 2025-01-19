@@ -1,5 +1,13 @@
-import {HavokPlugin, initReservedDataStore, IPhysicsEnginePluginV2, MeshBuilder, PhysicsAggregate,
-    PhysicsPrestepType, PhysicsShapeType, Quaternion, Vector3, Viewer} from "@plum-render/babylon-sdk";
+import {
+    initReservedDataStore,
+    MeshBuilder,
+    PhysicsAggregate,
+    PhysicsPrestepType,
+    PhysicsShapeType,
+    Quaternion,
+    Vector3,
+    Viewer
+} from "@plum-render/babylon-sdk";
 
 export default async function testPhysics(viewer: Viewer,) {
     const scene = viewer.scene;

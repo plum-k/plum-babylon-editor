@@ -15,12 +15,12 @@ const year = new Date().getFullYear();
 const time = new Date().toLocaleString()
 
 export default defineConfig({
-    input: "./src/index.ts",
+    input: "../../../node_modules/@babylonjs/core/index.js",
     output: [
         {
             // dir: "dist",
             // name: "plum-render-babylon-sdk",
-            file: "dist/plum-render-babylon-sdk.js",
+            file: "dist/aaa.js",
 
             format: "module",
             // inlineDynamicImports:true,
@@ -52,7 +52,7 @@ export default defineConfig({
             open: false, // 自动打开生成的报告
         })
     ],
-    external: ["@babylonjs/havok", "babylon-htmlmesh", "@babylonjs/core", "@babylonjs/inspector", "@babylonjs/loaders", "@babylonjs/materials", "@babylonjs/serializers"],
+    // external: ["@babylonjs/havok", "babylon-htmlmesh", "@babylonjs/core", "@babylonjs/inspector", "@babylonjs/loaders", "@babylonjs/materials", "@babylonjs/serializers"],
     // watch: {
     //     include: "src/**", // 监听的文件
     //     clearScreen: false, // 设置为 false 以防止每次重建时清屏

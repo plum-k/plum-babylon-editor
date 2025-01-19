@@ -1,12 +1,14 @@
-import {AbstractMesh, AnimationGroup, Mesh, Node, TransformNode} from "@babylonjs/core";
+import {AbstractMesh, AnimationGroup, Mesh, Node, SceneSerializer, TransformNode} from "@babylonjs/core";
 import {isMesh, isTransformNode} from "@plum-render/babylon-type-guard";
 import {includes, isArray, max, split} from "lodash-es";
 import {Subject} from "rxjs";
 import pako from "pako";
 import {BlobReader, BlobWriter, Uint8ArrayReader, Uint8ArrayWriter, ZipReader, ZipWriter} from "@zip.js/zip.js";
 import {Package} from "./Package";
-import {IBasePlumOptions, SceneSerializeObject, SceneSerializer, SerializerTool,} from "../index";
 import {SerializeViewer} from "./serialize";
+import { IBasePlumOptions } from "../core";
+import { SceneSerializeObject } from "./SerializeJsonType";
+import { SerializerTool } from "./SerializerTool";
 
 export interface ISerializeSubject {
     blob: Blob;

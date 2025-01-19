@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions,} from "../core";
+import {BasePlum, IBasePlumOptions,} from "../core/BasePlum";
 import {BaseTexture, Color3, CubeTexture, FilesInput, HDRCubeTexture, Mesh, Nullable, Scene} from "@babylonjs/core";
 
 export interface IEnvironmentManageOptions extends IBasePlumOptions {

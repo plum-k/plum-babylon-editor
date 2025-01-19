@@ -21,9 +21,7 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
+
     const f = new Vector3(-0.5 + Math.random(), -0.5 + Math.random(), -0.5 + Math.random()).scale(20);
     const s = new Vector3(-0.5 + Math.random(), -0.5 + Math.random(), -0.5 + Math.random()).scale(20);
     const t = new Vector3(-0.5 + Math.random(), -0.5 + Math.random(), -0.5 + Math.random()).scale(20);

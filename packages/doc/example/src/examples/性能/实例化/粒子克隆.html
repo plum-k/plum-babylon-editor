@@ -21,10 +21,6 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
-
 
     // 固体粒子系统 （SPS） 不仅仅是生成网格的多个副本，这些副本在 粒子 部分中进行了全面考虑。SPS 将一个网格的多个副本全部放入一个网格中。这意味着单个网格只有一个绘制调用，而不是多个绘制调用。
     // SPS 是单个可更新的网格，其属性与任何其他 Babylon.js 网格相同。

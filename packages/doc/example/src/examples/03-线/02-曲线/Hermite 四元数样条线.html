@@ -21,9 +21,7 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
+
     new AxesViewer(scene, 8);
 
     const hermiteQuarternionSpline = (p1, t1, p2, t2, nbPoints) => {

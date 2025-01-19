@@ -37,9 +37,6 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
     sphere.position.y = 4;

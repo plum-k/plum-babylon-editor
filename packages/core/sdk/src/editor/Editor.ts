@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions} from "../core";
+import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 import {FilesInput, Node, Nullable,UtilityLayerRenderer} from "@babylonjs/core";
 import {History} from "./History"
 import {
@@ -14,7 +14,6 @@ import {
 } from "./commands";
 import {uniqueId} from "lodash-es";
 import {loadFiles, loadItemList} from "@plum-render/tool";
-import {EditorEventManager, Select} from "./index";
 import {PlumGizmoManager} from "../manager";
 import {isMesh} from "@plum-render/babylon-type-guard";
 import {ISetObjectVector3Command} from "./commands/SetObjectValueCommand/SetObjectVector3Command";
@@ -29,6 +28,8 @@ import {
     SetObjectQuaternionCommand
 } from "./commands/SetObjectValueCommand/SetObjectQuaternionCommand";
 import {GridTool} from "../tool/GridTool";
+import {Select} from "./Select";
+import { EditorEventManager } from "./EditorEventManager";
 
 export interface IEditorOptions extends IBasePlumOptions {
 }

@@ -21,9 +21,7 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
+
     var hermite = Curve3.CreateHermiteSpline(
         Vector3.Zero(),
         new Vector3(-30, 30, -140),

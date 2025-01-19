@@ -21,9 +21,6 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     // 这只是创建原始网格的深层副本，并通过共享几何体来节省内存。每个克隆都可以有自己的材质和变换。 绘制调用还是多次
 

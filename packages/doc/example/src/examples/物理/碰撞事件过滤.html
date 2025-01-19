@@ -37,9 +37,6 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
 
@@ -58,7 +55,7 @@
     // A box shape lying on the ground.
     var box = BABYLON.MeshBuilder.CreateBox("box", {width: 8, height: 2, depth: 2}, scene);
     let redMaterial = new BABYLON.StandardMaterial("box", scene);
-    redMaterial.diffuseColor.set(1,0,0);
+    redMaterial.diffuseColor.set(1, 0, 0);
     box.material = redMaterial;
 
     // initialize plugin
@@ -67,15 +64,15 @@
     scene.enablePhysics(new BABYLON.Vector3(0, -1, 0), hk);
 
     // Create a sphere shape and the associated body. Size will be determined automatically.
-    var sphere1Aggregate = new BABYLON.PhysicsAggregate(sphere1, BABYLON.PhysicsShapeType.SPHERE, { mass: 1 }, scene);
+    var sphere1Aggregate = new BABYLON.PhysicsAggregate(sphere1, BABYLON.PhysicsShapeType.SPHERE, {mass: 1}, scene);
 
-    var sphere2Aggregate = new BABYLON.PhysicsAggregate(sphere2, BABYLON.PhysicsShapeType.SPHERE, { mass: 1 }, scene);
+    var sphere2Aggregate = new BABYLON.PhysicsAggregate(sphere2, BABYLON.PhysicsShapeType.SPHERE, {mass: 1}, scene);
 
     // Create a static box shape for the ground.
-    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, { mass: 0 }, scene);
+    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
 
     // Create a static box shape for the box
-    var boxAggregate = new BABYLON.PhysicsAggregate(box, BABYLON.PhysicsShapeType.BOX, { mass: 0 }, scene);
+    var boxAggregate = new BABYLON.PhysicsAggregate(box, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
 
     //filtering happens here
     const FILTER_GROUP_SPHERE = 1;

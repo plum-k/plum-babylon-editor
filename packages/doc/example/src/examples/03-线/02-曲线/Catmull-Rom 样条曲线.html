@@ -21,9 +21,7 @@
 
     const viewer = await Viewer.create("app", {});
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
+
     var catmullRom = Curve3.CreateCatmullRomSpline(
         [Vector3.Zero(),
             new Vector3(10, 1, 5),

@@ -1,5 +1,5 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import {BasePlum, IBasePlumOptions} from "../core";
+import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 import {Node, Nullable, PBRMaterial} from "@babylonjs/core";
 import {PropertyPath} from "lodash-es";
 

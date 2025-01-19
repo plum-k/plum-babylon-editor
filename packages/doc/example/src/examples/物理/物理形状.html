@@ -37,9 +37,6 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     const shape = new PhysicsShapeSphere(
         new Vector3(0, 0, 0),   // center of the sphere
@@ -49,14 +46,14 @@
 
     const shape = new PhysicsShapeCylinder(
         new Vector3(0, -0.5, 0),    // starting point of the cylinder segment
-        new Vector3(0,  0.5, 0),    // ending point of the cylinder segment
+        new Vector3(0, 0.5, 0),    // ending point of the cylinder segment
         1,                                  // radius of the cylinder
         scene                               // scene of the shape
     );
 
     const shape = new PhysicsShapeCapsule(
         new Vector3(0, -0.5, 0),    // starting point of the capsule segment
-        new Vector3(0,  0.5, 0),    // ending point of the capsule segment
+        new Vector3(0, 0.5, 0),    // ending point of the capsule segment
         1,                                  // radius of the capsule
         scene                               // scene of the shape
     );

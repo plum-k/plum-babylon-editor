@@ -26,9 +26,6 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     // 创建粒子系统
     let particleSystem = new ParticleSystem("particles", 2000, scene);

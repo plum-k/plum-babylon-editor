@@ -4,15 +4,15 @@ import {
     AbstractMesh,
     ArcRotateCamera,
     Color3,
-    Mesh,
+    Mesh, MeshBuilder,
     Nullable,
     Observer,
     PBRMaterial,
     UtilityLayerRenderer,
     Vector3
 } from "@babylonjs/core";
-import {MeshBuilder, PlumArcRotateCamera} from "../index";
 import {isNil} from "lodash-es";
+import { PlumArcRotateCamera } from "../camera";
 
 
 export interface ICameraControlsOptions extends IBasePlumOptions {
@@ -20,11 +20,6 @@ export interface ICameraControlsOptions extends IBasePlumOptions {
 
 
 export class CameraControls extends BasePlum {
-    // width: number;
-    // height: number;
-    // camera: FreeCamera
-
-
     constructor(options: ICameraControlsOptions) {
         super(options);
         const {viewer} = options;

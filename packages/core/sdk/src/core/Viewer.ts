@@ -1,23 +1,12 @@
 // glTF导入
 import "@babylonjs/loaders/glTF";
-// 调试模式
+// 调试模式 todo 动态导入
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
-// import {HtmlMeshRenderer} from "@babylonjs/addons/htmlMesh/htmlMeshRenderer.js";
 //--------
-import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
-import {Editor} from "../editor";
-import {PlumAssetsManager, PlumAssetContainer, EventManager, PostProcessManager} from "../manager";
-import {CameraControls} from "./CameraControls";
-import {LightManager} from "./LightManager";
-import {Subject} from "rxjs";
-import {EffectLayer} from "./EffectLayer";
-import {DrawLine} from "./DrawLine";
-import {Statistics} from "./Statistics";
-import COSApi, {ICOSApiOptions} from "cos-api";
 import {
     AbstractEngine,
-    AbstractMesh, AssetContainer,
+    AbstractMesh,
     EngineFactory,
     EngineOptions,
     IInspectorOptions,
@@ -28,12 +17,22 @@ import {
     WebGPUEngine,
     WebGPUEngineOptions
 } from "@babylonjs/core";
+import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
+import COSApi, {ICOSApiOptions} from "cos-api";
+import {HtmlMeshRenderer} from "babylon-htmlmesh";
 import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
+import {Editor} from "../editor/Editor";
+import {EventManager, PlumAssetContainer, PlumAssetsManager, PlumPostProcessManager} from "../manager";
+import {CameraControls} from "./CameraControls";
+import {LightManager} from "./LightManager";
+import {Subject} from "rxjs";
+import {EffectLayer} from "./EffectLayer";
+import {DrawLine} from "./DrawLine";
+import {Statistics} from "./Statistics";
 import {PScene} from "./PScene";
 import {GridTool} from "../tool/GridTool";
 import {EnvironmentManage} from "../manager/EnvironmentManage";
 import {getPackage, Package} from "../serializeManage";
-import {HtmlMeshRenderer} from "babylon-htmlmesh";
 import {Physics} from "../manager/Physics";
 
 export interface ISceneLoadProgressEvent {
@@ -101,7 +100,7 @@ export class Viewer {
     eventManager!: EventManager; // 事件管理器
     cameraControls!: CameraControls; // 相机控制
     lightManager!: LightManager; // 光源管理
-    postProcessManager!: PostProcessManager; // 后处理管理
+    postProcessManager!: PlumPostProcessManager; // 后处理管理
     effectLayer!: EffectLayer; // 特效层
     editor!: Editor; // 编辑器
     drawLine!: DrawLine; // 绘制线条的工具
@@ -240,7 +239,7 @@ export class Viewer {
 
         this.cameraControls = new CameraControls({viewer: this});
         this.lightManager = new LightManager({viewer: this});
-        this.postProcessManager = new PostProcessManager({viewer: this});
+        this.postProcessManager = new PlumPostProcessManager({viewer: this});
 
 
         this.environmentManage = new EnvironmentManage({viewer: this})
@@ -280,13 +279,14 @@ export class Viewer {
             this.setDefaultMaterial(mesh);
         });
     }
+
     /**
      * 设置默认材质
      */
     setDefaultMaterial(mesh: AbstractMesh) {
         const material = mesh.material;
         if (material === null) {
-            let material  = new PBRMaterial(uniqueId("default"), mesh.getScene());
+            let material = new PBRMaterial(uniqueId("default"), mesh.getScene());
             material.metallic = 1;
             material.roughness = 1;
         }

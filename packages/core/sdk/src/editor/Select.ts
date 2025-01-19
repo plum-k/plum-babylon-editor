@@ -1,9 +1,8 @@
 import {get, isNil} from "lodash-es";
-import {BoundingInfo, Node, Nullable, Quaternion, Vector3} from "@babylonjs/core";
+import {BoundingInfo, Node, Nullable, PhysicsPrestepType, Quaternion, Vector3} from "@babylonjs/core";
 import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
 import {Editor} from "./index";
 import {GizmoEnum} from "../enum";
-import {PhysicsPrestepType} from "../index";
 
 export class Select {
     selectNode: Nullable<Node> = null

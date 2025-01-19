@@ -37,18 +37,15 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     // Our built-in 'sphere' shape.
-    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 2, segments: 32 }, scene);
+    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
 
     // Move the sphere upward at 4 units
     sphere.position.y = 4;
 
     // Our built-in 'ground' shape.
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 10, height: 10 }, scene);
+    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
 
     // initialize plugin
     var hk = new BABYLON.HavokPlugin();
@@ -56,10 +53,13 @@
     scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), hk);
 
     // Create a sphere shape and the associated body. Size will be determined automatically.
-    var sphereAggregate = new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.75 }, scene);
+    var sphereAggregate = new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, {
+        mass: 1,
+        restitution: 0.75
+    }, scene);
 
     // Create a static box shape.
-    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, { mass: 0 }, scene);
+    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
 
     //When clicking the display, sphere will jump.
     scene.onPointerDown = function () {

@@ -37,9 +37,6 @@
     });
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     // Our built-in 'sphere' shape.
     var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
@@ -56,8 +53,8 @@
     new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, {mass: 1});
     new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0, restitution: 1});
     var triggerShapeRadius = 2;
-    var triggerShape = new BABYLON.PhysicsShapeSphere(new BABYLON.Vector3(0,0,0), triggerShapeRadius, scene);
-    const triggerShapeRepr = BABYLON.MeshBuilder.CreateSphere("triggerShapeRepr", {diameter: triggerShapeRadius*2});
+    var triggerShape = new BABYLON.PhysicsShapeSphere(new BABYLON.Vector3(0, 0, 0), triggerShapeRadius, scene);
+    const triggerShapeRepr = BABYLON.MeshBuilder.CreateSphere("triggerShapeRepr", {diameter: triggerShapeRadius * 2});
     triggerShapeRepr.material = new BABYLON.StandardMaterial("mat");
     triggerShapeRepr.material.alpha = 0.7;
     triggerShapeRepr.material.diffuseColor = BABYLON.Color3.Red();

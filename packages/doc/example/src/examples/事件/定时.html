@@ -22,9 +22,6 @@
     let viewer = await Viewer.create("app", {});
     let scene = viewer.scene;
 
-    viewer.initSubject.subscribe(() => {
-        console.log("场景初始化完成");
-    })
 
     // 在动画更新之前触发
     scene.onBeforeAnimationsObservable.add(() => {

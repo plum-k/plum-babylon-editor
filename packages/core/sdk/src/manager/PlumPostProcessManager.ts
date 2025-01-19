@@ -1,10 +1,10 @@
-import {BasePlum, IBasePlumOptions} from "../core";
+import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 import {DefaultRenderingPipeline} from "@babylonjs/core";
 
 export interface IThreeCameraControls extends IBasePlumOptions {
 }
 
-export class PostProcessManager extends BasePlum {
+export class PlumPostProcessManager extends BasePlum {
     defaultRenderingPipeline: DefaultRenderingPipeline;
 
     constructor(options: IThreeCameraControls) {

@@ -1,7 +1,6 @@
 import HavokPhysics from "@babylonjs/havok";
-import {HavokPlugin, TransformNode, Vector3} from "@babylonjs/core";
-import {BasePlum, IBasePlumOptions} from "../core";
-import {Debug} from "@babylonjs/core/Legacy/legacy";
+import {HavokPlugin, TransformNode, Vector3,PhysicsViewer} from "@babylonjs/core";
+import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 
 export interface IPhysicsOptions extends IBasePlumOptions {
 }
@@ -31,7 +30,7 @@ export class Physics extends BasePlum {
      * 调试物理引擎
      */
     debug() {
-        const physicsViewer = new Debug.PhysicsViewer();
+        const physicsViewer = new PhysicsViewer();
         for (const mesh of this.viewer.scene.rootNodes) {
             let physicsBody = (mesh as TransformNode).physicsBody
             if (physicsBody) {

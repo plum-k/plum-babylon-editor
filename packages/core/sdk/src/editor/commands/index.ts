@@ -1,6 +1,5 @@
 export * from "./AddObjectCommand";
 export * from "./Command";
-export * from "./index";
 export * from "./MoveObjectCommand";
 export * from "./RemoveObjectCommand";
 export * from "./SetMaterialValueCommand/SetMaterialColor3Command";
