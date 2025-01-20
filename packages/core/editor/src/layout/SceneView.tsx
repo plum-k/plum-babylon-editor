@@ -65,7 +65,7 @@ export default function SceneView(props: ISceneViewProps) {
                 console.log(camera)
 
                 // testSerialize(_viewer);
-                testMesh(_viewer,"Xbot.glb")
+                testMesh(_viewer,"scene.glb")
                 testPhysics(_viewer)
 
                 // tesProjection(_viewer)

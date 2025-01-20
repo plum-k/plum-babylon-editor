@@ -1,5 +1,5 @@
-import {FreeCamera} from "@babylonjs/core";
-
+import {type FreeCamera} from "@babylonjs/core";
+import { invoke} from "lodash-es";
 export function isFreeCamera(value: any): value is FreeCamera {
-    return value instanceof FreeCamera;
+    return invoke(value, "getClassName") === "FreeCamera";
 }

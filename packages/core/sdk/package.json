@@ -3,17 +3,16 @@
   "version": "0.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "buildtest": "rollup --config rollup.babylon.ts --configPlugin esbuild",
     "build": "rollup --config rollup.config.ts --configPlugin esbuild",
-    "build:watch": "concurrently \"rollup --config rollup.config.ts --configPlugin esbuild --watch\" \"http-server ./dist -p 4000 -c-1 --cors\"",
+    "build:watch": "concurrently \"rollup --config rollup.config.ts --configPlugin esbuild --watch\" \"http-server ./public -p 4000 -c-1 --cors\"",
     "build:tsc": "tsc --project tsconfig.d.json",
     "build:all": "pnpm run build && pnpm run build:tsc"
   },
   "keywords": [],
   "license": "ISC",
   "dependencies": {
+    "@babylonjs/addons": "^7.44.0",
     "@babylonjs/havok": "^1.3.10",
-    "babylon-htmlmesh": "^2.0.1",
     "@babylonjs/core": "^7.44.0",
     "@babylonjs/inspector": "7.44.0",
     "@babylonjs/loaders": "^7.44.0",

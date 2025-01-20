@@ -1,7 +1,7 @@
-import {TransformNode} from "@babylonjs/core";
-
+import {type TransformNode} from "@babylonjs/core";
+import { invoke} from "lodash-es";
 export function isTransformNode(value: any): value is TransformNode {
-    return value instanceof TransformNode && value.getClassName() === "TransformNode";
+    return invoke(value, "getClassName") === "TransformNode";
 }
 
 

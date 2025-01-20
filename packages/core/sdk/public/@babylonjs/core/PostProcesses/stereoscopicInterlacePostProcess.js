@@ -1,0 +1,71 @@
+import { Vector2 } from "../Maths/math.vector.js";
+import { PostProcess } from "./postProcess.js";
+import "../Shaders/stereoscopicInterlace.fragment.js";
+/**
+ * StereoscopicInterlacePostProcessI used to render stereo views from a rigged camera with support for alternate line interlacing
+ */
+export class StereoscopicInterlacePostProcessI extends PostProcess {
+    /**
+     * Gets a string identifying the name of the class
+     * @returns "StereoscopicInterlacePostProcessI" string
+     */
+    getClassName() {
+        return "StereoscopicInterlacePostProcessI";
+    }
+    /**
+     * Initializes a StereoscopicInterlacePostProcessI
+     * @param name The name of the effect.
+     * @param rigCameras The rig cameras to be applied to the post process
+     * @param isStereoscopicHoriz If the rendered results are horizontal or vertical
+     * @param isStereoscopicInterlaced If the rendered results are alternate line interlaced
+     * @param samplingMode The sampling mode to be used when computing the pass. (default: 0)
+     * @param engine The engine which the post process will be applied. (default: current engine)
+     * @param reusable If the post process can be reused on the same frame. (default: false)
+     */
+    constructor(name, rigCameras, isStereoscopicHoriz, isStereoscopicInterlaced, samplingMode, engine, reusable) {
+        super(name, "stereoscopicInterlace", ["stepSize"], ["camASampler"], 1, rigCameras[1], samplingMode, engine, reusable, isStereoscopicInterlaced ? "#define IS_STEREOSCOPIC_INTERLACED 1" : isStereoscopicHoriz ? "#define IS_STEREOSCOPIC_HORIZ 1" : undefined);
+        this._passedProcess = rigCameras[0]._rigPostProcess;
+        this._stepSize = new Vector2(1 / this.width, 1 / this.height);
+        this.onSizeChangedObservable.add(() => {
+            this._stepSize = new Vector2(1 / this.width, 1 / this.height);
+        });
+        this.onApplyObservable.add((effect) => {
+            effect.setTextureFromPostProcess("camASampler", this._passedProcess);
+            effect.setFloat2("stepSize", this._stepSize.x, this._stepSize.y);
+        });
+    }
+}
+/**
+ * StereoscopicInterlacePostProcess used to render stereo views from a rigged camera
+ */
+export class StereoscopicInterlacePostProcess extends PostProcess {
+    /**
+     * Gets a string identifying the name of the class
+     * @returns "StereoscopicInterlacePostProcess" string
+     */
+    getClassName() {
+        return "StereoscopicInterlacePostProcess";
+    }
+    /**
+     * Initializes a StereoscopicInterlacePostProcess
+     * @param name The name of the effect.
+     * @param rigCameras The rig cameras to be applied to the post process
+     * @param isStereoscopicHoriz If the rendered results are horizontal or vertical
+     * @param samplingMode The sampling mode to be used when computing the pass. (default: 0)
+     * @param engine The engine which the post process will be applied. (default: current engine)
+     * @param reusable If the post process can be reused on the same frame. (default: false)
+     */
+    constructor(name, rigCameras, isStereoscopicHoriz, samplingMode, engine, reusable) {
+        super(name, "stereoscopicInterlace", ["stepSize"], ["camASampler"], 1, rigCameras[1], samplingMode, engine, reusable, isStereoscopicHoriz ? "#define IS_STEREOSCOPIC_HORIZ 1" : undefined);
+        this._passedProcess = rigCameras[0]._rigPostProcess;
+        this._stepSize = new Vector2(1 / this.width, 1 / this.height);
+        this.onSizeChangedObservable.add(() => {
+            this._stepSize = new Vector2(1 / this.width, 1 / this.height);
+        });
+        this.onApplyObservable.add((effect) => {
+            effect.setTextureFromPostProcess("camASampler", this._passedProcess);
+            effect.setFloat2("stepSize", this._stepSize.x, this._stepSize.y);
+        });
+    }
+}
+//# sourceMappingURL=stereoscopicInterlacePostProcess.js.map

@@ -1,0 +1,42 @@
+// Do not edit.
+import { ShaderStore } from "../../Engines/shaderStore.js";
+const name = "pbrBlockAnisotropic";
+const shader = `#ifdef ANISOTROPIC
+struct anisotropicOutParams
+{float anisotropy;vec3 anisotropicTangent;vec3 anisotropicBitangent;vec3 anisotropicNormal;
+#if DEBUGMODE>0 && defined(ANISOTROPIC_TEXTURE)
+vec3 anisotropyMapData;
+#endif
+};
+#define pbr_inline
+anisotropicOutParams anisotropicBlock(
+in vec3 vAnisotropy,
+in float roughness,
+#ifdef ANISOTROPIC_TEXTURE
+in vec3 anisotropyMapData,
+#endif
+in mat3 TBN,
+in vec3 normalW,
+in vec3 viewDirectionW
+)
+{anisotropicOutParams outParams;float anisotropy=vAnisotropy.b;vec3 anisotropyDirection=vec3(vAnisotropy.xy,0.);
+#ifdef ANISOTROPIC_TEXTURE
+anisotropy*=anisotropyMapData.b;
+#if DEBUGMODE>0
+outParams.anisotropyMapData=anisotropyMapData;
+#endif
+anisotropyMapData.rg=anisotropyMapData.rg*2.0-1.0;
+#ifdef ANISOTROPIC_LEGACY
+anisotropyDirection.rg*=anisotropyMapData.rg;
+#else
+anisotropyDirection.xy=mat2(anisotropyDirection.x,anisotropyDirection.y,-anisotropyDirection.y,anisotropyDirection.x)*normalize(anisotropyMapData.rg);
+#endif
+#endif
+mat3 anisoTBN=mat3(normalize(TBN[0]),normalize(TBN[1]),normalize(TBN[2]));vec3 anisotropicTangent=normalize(anisoTBN*anisotropyDirection);vec3 anisotropicBitangent=normalize(cross(anisoTBN[2],anisotropicTangent));outParams.anisotropy=anisotropy;outParams.anisotropicTangent=anisotropicTangent;outParams.anisotropicBitangent=anisotropicBitangent;outParams.anisotropicNormal=getAnisotropicBentNormals(anisotropicTangent,anisotropicBitangent,normalW,viewDirectionW,anisotropy,roughness);return outParams;}
+#endif
+`;
+// Sideeffect
+ShaderStore.IncludesShadersStore[name] = shader;
+/** @internal */
+export const pbrBlockAnisotropic = { name, shader };
+//# sourceMappingURL=pbrBlockAnisotropic.js.map

@@ -18,29 +18,22 @@ export default defineConfig({
     input: "./src/index.ts",
     output: [
         {
-            // dir: "dist",
-            // name: "plum-render-babylon-sdk",
-            file: "dist/plum-render-babylon-sdk.js",
-
+            file: "public/plum-render-babylon-sdk.js",
             format: "module",
-            // inlineDynamicImports:true,
-            // plugins: [
-            // terser()
-            // ]
-            // banner
+            // inlineDynamicImports: true,
         },
-        // {
-        //     // globals: {
-        //     //   "class-validator": "class-validator" // 指明 global.vue 即是外部依赖 vue
-        //     // },
-        //     format: "module",
-        //     file: `lib/plum-render-api-babylon.${pkg.version}.min.js`,
-        //     plugins: [
-        //         // terser()
-        //     ]
-        // },
     ],
     plugins: [
+        {
+            name: 'exclude-plugin',
+            resolveId(source) {
+                // console.log(    source)
+                if (source.includes('@babylonjs/loaders/glTF/index.js')) {
+                    return { id: source, external: true }; // 将其标记为外部
+                }
+                return null; // 继续解析其他模块
+            }
+        },
         commonjs(),
         json(),
         resolve(),
@@ -48,15 +41,16 @@ export default defineConfig({
             // minify: true
             // tsconfig: path.resolve(__dirname, "./tsconfig.json"),
         }),
-        visualizer({
-            open: false, // 自动打开生成的报告
-        })
+        // visualizer({
+        //     open: false, // 自动打开生成的报告
+        // })
     ],
-    external: ["@babylonjs/havok", "babylon-htmlmesh", "@babylonjs/core", "@babylonjs/inspector", "@babylonjs/loaders", "@babylonjs/materials", "@babylonjs/serializers"],
-    // watch: {
-    //     include: "src/**", // 监听的文件
-    //     clearScreen: false, // 设置为 false 以防止每次重建时清屏
-    // },
+
+    external: ["@babylonjs/havok", "@babylonjs/addons", "@babylonjs/core", "@babylonjs/inspector", "@babylonjs/loaders", "@babylonjs/materials", "@babylonjs/serializers"],
+    watch: {
+        include: "src/**", // 监听的文件
+        clearScreen: false, // 设置为 false 以防止每次重建时清屏
+    },
 });
 
 

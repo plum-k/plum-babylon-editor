@@ -1,7 +1,7 @@
-import {PointLight} from "@babylonjs/core";
-
+import {type PointLight} from "@babylonjs/core";
+import { invoke} from "lodash-es";
 export function isPointLight(value: any): value is PointLight {
-    return value instanceof PointLight;
+    return invoke(value, "getClassName") === "PointLight";
 }
 
 

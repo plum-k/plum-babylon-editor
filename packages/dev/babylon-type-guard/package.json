@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "src/index.ts",
   "dependencies": {
-    "babylon-htmlmesh": "^2.0.1",
-    "@babylonjs/core": "^7.44.0"
+    "@babylonjs/core": "^7.44.0",
+    "lodash-es": "^4.17.21"
   }
 }

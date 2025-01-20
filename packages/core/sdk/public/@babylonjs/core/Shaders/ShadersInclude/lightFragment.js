@@ -1,0 +1,297 @@
+// Do not edit.
+import { ShaderStore } from "../../Engines/shaderStore.js";
+const name = "lightFragment";
+const shader = `#ifdef LIGHT{X}
+#if defined(SHADOWONLY) || defined(LIGHTMAP) && defined(LIGHTMAPEXCLUDED{X}) && defined(LIGHTMAPNOSPECULAR{X})
+#else
+vec4 diffuse{X}=light{X}.vLightDiffuse;
+#define CUSTOM_LIGHT{X}_COLOR 
+#ifdef PBR
+#ifdef SPOTLIGHT{X}
+preInfo=computePointAndSpotPreLightingInfo(light{X}.vLightData,viewDirectionW,normalW,vPositionW);
+#elif defined(POINTLIGHT{X})
+preInfo=computePointAndSpotPreLightingInfo(light{X}.vLightData,viewDirectionW,normalW,vPositionW);
+#elif defined(HEMILIGHT{X})
+preInfo=computeHemisphericPreLightingInfo(light{X}.vLightData,viewDirectionW,normalW);
+#elif defined(DIRLIGHT{X})
+preInfo=computeDirectionalPreLightingInfo(light{X}.vLightData,viewDirectionW,normalW);
+#endif
+preInfo.NdotV=NdotV;
+#ifdef SPOTLIGHT{X}
+#ifdef LIGHT_FALLOFF_GLTF{X}
+preInfo.attenuation=computeDistanceLightFalloff_GLTF(preInfo.lightDistanceSquared,light{X}.vLightFalloff.y);
+#ifdef IESLIGHTTEXTURE{X}
+preInfo.attenuation*=computeDirectionalLightFalloff_IES(light{X}.vLightDirection.xyz,preInfo.L,iesLightTexture{X});
+#else
+preInfo.attenuation*=computeDirectionalLightFalloff_GLTF(light{X}.vLightDirection.xyz,preInfo.L,light{X}.vLightFalloff.z,light{X}.vLightFalloff.w);
+#endif
+#elif defined(LIGHT_FALLOFF_PHYSICAL{X})
+preInfo.attenuation=computeDistanceLightFalloff_Physical(preInfo.lightDistanceSquared);
+#ifdef IESLIGHTTEXTURE{X}
+preInfo.attenuation*=computeDirectionalLightFalloff_IES(light{X}.vLightDirection.xyz,preInfo.L,iesLightTexture{X});
+#else
+preInfo.attenuation*=computeDirectionalLightFalloff_Physical(light{X}.vLightDirection.xyz,preInfo.L,light{X}.vLightDirection.w);
+#endif
+#elif defined(LIGHT_FALLOFF_STANDARD{X})
+preInfo.attenuation=computeDistanceLightFalloff_Standard(preInfo.lightOffset,light{X}.vLightFalloff.x);
+#ifdef IESLIGHTTEXTURE{X}
+preInfo.attenuation*=computeDirectionalLightFalloff_IES(light{X}.vLightDirection.xyz,preInfo.L,iesLightTexture{X});
+#else
+preInfo.attenuation*=computeDirectionalLightFalloff_Standard(light{X}.vLightDirection.xyz,preInfo.L,light{X}.vLightDirection.w,light{X}.vLightData.w);
+#endif
+#else
+preInfo.attenuation=computeDistanceLightFalloff(preInfo.lightOffset,preInfo.lightDistanceSquared,light{X}.vLightFalloff.x,light{X}.vLightFalloff.y);
+#ifdef IESLIGHTTEXTURE{X}
+preInfo.attenuation*=computeDirectionalLightFalloff_IES(light{X}.vLightDirection.xyz,preInfo.L,iesLightTexture{X});
+#else
+preInfo.attenuation*=computeDirectionalLightFalloff(light{X}.vLightDirection.xyz,preInfo.L,light{X}.vLightDirection.w,light{X}.vLightData.w,light{X}.vLightFalloff.z,light{X}.vLightFalloff.w);
+#endif 
+#endif
+#elif defined(POINTLIGHT{X})
+#ifdef LIGHT_FALLOFF_GLTF{X}
+preInfo.attenuation=computeDistanceLightFalloff_GLTF(preInfo.lightDistanceSquared,light{X}.vLightFalloff.y);
+#elif defined(LIGHT_FALLOFF_PHYSICAL{X})
+preInfo.attenuation=computeDistanceLightFalloff_Physical(preInfo.lightDistanceSquared);
+#elif defined(LIGHT_FALLOFF_STANDARD{X})
+preInfo.attenuation=computeDistanceLightFalloff_Standard(preInfo.lightOffset,light{X}.vLightFalloff.x);
+#else
+preInfo.attenuation=computeDistanceLightFalloff(preInfo.lightOffset,preInfo.lightDistanceSquared,light{X}.vLightFalloff.x,light{X}.vLightFalloff.y);
+#endif
+#else
+preInfo.attenuation=1.0;
+#endif
+#ifdef HEMILIGHT{X}
+preInfo.roughness=roughness;
+#else
+preInfo.roughness=adjustRoughnessFromLightProperties(roughness,light{X}.vLightSpecular.a,preInfo.lightDistance);
+#endif
+#ifdef IRIDESCENCE
+preInfo.iridescenceIntensity=iridescenceIntensity;
+#endif
+#ifdef HEMILIGHT{X}
+info.diffuse=computeHemisphericDiffuseLighting(preInfo,diffuse{X}.rgb,light{X}.vLightGround);
+#elif defined(SS_TRANSLUCENCY)
+info.diffuse=computeDiffuseAndTransmittedLighting(preInfo,diffuse{X}.rgb,subSurfaceOut.transmittance);
+#else
+info.diffuse=computeDiffuseLighting(preInfo,diffuse{X}.rgb);
+#endif
+#ifdef SPECULARTERM
+#ifdef ANISOTROPIC
+info.specular=computeAnisotropicSpecularLighting(preInfo,viewDirectionW,normalW,anisotropicOut.anisotropicTangent,anisotropicOut.anisotropicBitangent,anisotropicOut.anisotropy,clearcoatOut.specularEnvironmentR0,specularEnvironmentR90,AARoughnessFactors.x,diffuse{X}.rgb);
+#else
+info.specular=computeSpecularLighting(preInfo,normalW,clearcoatOut.specularEnvironmentR0,specularEnvironmentR90,AARoughnessFactors.x,diffuse{X}.rgb);
+#endif
+#endif
+#ifdef SHEEN
+#ifdef SHEEN_LINKWITHALBEDO
+preInfo.roughness=sheenOut.sheenIntensity;
+#else
+#ifdef HEMILIGHT{X}
+preInfo.roughness=sheenOut.sheenRoughness;
+#else
+preInfo.roughness=adjustRoughnessFromLightProperties(sheenOut.sheenRoughness,light{X}.vLightSpecular.a,preInfo.lightDistance);
+#endif
+#endif
+info.sheen=computeSheenLighting(preInfo,normalW,sheenOut.sheenColor,specularEnvironmentR90,AARoughnessFactors.x,diffuse{X}.rgb);
+#endif
+#ifdef CLEARCOAT
+#ifdef HEMILIGHT{X}
+preInfo.roughness=clearcoatOut.clearCoatRoughness;
+#else
+preInfo.roughness=adjustRoughnessFromLightProperties(clearcoatOut.clearCoatRoughness,light{X}.vLightSpecular.a,preInfo.lightDistance);
+#endif
+info.clearCoat=computeClearCoatLighting(preInfo,clearcoatOut.clearCoatNormalW,clearcoatOut.clearCoatAARoughnessFactors.x,clearcoatOut.clearCoatIntensity,diffuse{X}.rgb);
+#ifdef CLEARCOAT_TINT
+absorption=computeClearCoatLightingAbsorption(clearcoatOut.clearCoatNdotVRefract,preInfo.L,clearcoatOut.clearCoatNormalW,clearcoatOut.clearCoatColor,clearcoatOut.clearCoatThickness,clearcoatOut.clearCoatIntensity);info.diffuse*=absorption;
+#ifdef SPECULARTERM
+info.specular*=absorption;
+#endif
+#endif
+info.diffuse*=info.clearCoat.w;
+#ifdef SPECULARTERM
+info.specular*=info.clearCoat.w;
+#endif
+#ifdef SHEEN
+info.sheen*=info.clearCoat.w;
+#endif
+#endif
+#else
+#ifdef SPOTLIGHT{X}
+#ifdef IESLIGHTTEXTURE{X}
+info=computeIESSpotLighting(viewDirectionW,normalW,light{X}.vLightData,light{X}.vLightDirection,diffuse{X}.rgb,light{X}.vLightSpecular.rgb,diffuse{X}.a,glossiness,iesLightTexture{X});
+#else
+info=computeSpotLighting(viewDirectionW,normalW,light{X}.vLightData,light{X}.vLightDirection,diffuse{X}.rgb,light{X}.vLightSpecular.rgb,diffuse{X}.a,glossiness);
+#endif
+#elif defined(HEMILIGHT{X})
+info=computeHemisphericLighting(viewDirectionW,normalW,light{X}.vLightData,diffuse{X}.rgb,light{X}.vLightSpecular.rgb,light{X}.vLightGround,glossiness);
+#elif defined(POINTLIGHT{X}) || defined(DIRLIGHT{X})
+info=computeLighting(viewDirectionW,normalW,light{X}.vLightData,diffuse{X}.rgb,light{X}.vLightSpecular.rgb,diffuse{X}.a,glossiness);
+#endif
+#endif
+#ifdef PROJECTEDLIGHTTEXTURE{X}
+info.diffuse*=computeProjectionTextureDiffuseLighting(projectionLightTexture{X},textureProjectionMatrix{X},vPositionW);
+#endif
+#endif
+#ifdef SHADOW{X}
+#ifdef SHADOWCSM{X}
+for (int i=0; i<SHADOWCSMNUM_CASCADES{X}; i++) 
+{
+#ifdef SHADOWCSM_RIGHTHANDED{X}
+diff{X}=viewFrustumZ{X}[i]+vPositionFromCamera{X}.z;
+#else
+diff{X}=viewFrustumZ{X}[i]-vPositionFromCamera{X}.z;
+#endif
+if (diff{X}>=0.) {index{X}=i;break;}}
+#ifdef SHADOWCSMUSESHADOWMAXZ{X}
+if (index{X}>=0)
+#endif
+{
+#if defined(SHADOWPCF{X})
+#if defined(SHADOWLOWQUALITY{X})
+shadow=computeShadowWithCSMPCF1(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#elif defined(SHADOWMEDIUMQUALITY{X})
+shadow=computeShadowWithCSMPCF3(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#else
+shadow=computeShadowWithCSMPCF5(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWPCSS{X})
+#if defined(SHADOWLOWQUALITY{X})
+shadow=computeShadowWithCSMPCSS16(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#elif defined(SHADOWMEDIUMQUALITY{X})
+shadow=computeShadowWithCSMPCSS32(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#else
+shadow=computeShadowWithCSMPCSS64(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#endif
+#else
+shadow=computeShadowCSM(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#ifdef SHADOWCSMDEBUG{X}
+shadowDebug{X}=vec3(shadow)*vCascadeColorsMultiplier{X}[index{X}];
+#endif
+#ifndef SHADOWCSMNOBLEND{X}
+float frustumLength=frustumLengths{X}[index{X}];float diffRatio=clamp(diff{X}/frustumLength,0.,1.)*cascadeBlendFactor{X};if (index{X}<(SHADOWCSMNUM_CASCADES{X}-1) && diffRatio<1.)
+{index{X}+=1;float nextShadow=0.;
+#if defined(SHADOWPCF{X})
+#if defined(SHADOWLOWQUALITY{X})
+nextShadow=computeShadowWithCSMPCF1(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#elif defined(SHADOWMEDIUMQUALITY{X})
+nextShadow=computeShadowWithCSMPCF3(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#else
+nextShadow=computeShadowWithCSMPCF5(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWPCSS{X})
+#if defined(SHADOWLOWQUALITY{X})
+nextShadow=computeShadowWithCSMPCSS16(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#elif defined(SHADOWMEDIUMQUALITY{X})
+nextShadow=computeShadowWithCSMPCSS32(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#else
+nextShadow=computeShadowWithCSMPCSS64(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w,lightSizeUVCorrection{X}[index{X}],depthCorrection{X}[index{X}],penumbraDarkness{X});
+#endif
+#else
+nextShadow=computeShadowCSM(float(index{X}),vPositionFromLight{X}[index{X}],vDepthMetric{X}[index{X}],shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+shadow=mix(nextShadow,shadow,diffRatio);
+#ifdef SHADOWCSMDEBUG{X}
+shadowDebug{X}=mix(vec3(nextShadow)*vCascadeColorsMultiplier{X}[index{X}],shadowDebug{X},diffRatio);
+#endif
+}
+#endif
+}
+#elif defined(SHADOWCLOSEESM{X})
+#if defined(SHADOWCUBE{X})
+shadow=computeShadowWithCloseESMCube(vPositionW,light{X}.vLightData.xyz,shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.z,light{X}.depthValues);
+#else
+shadow=computeShadowWithCloseESM(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.z,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWESM{X})
+#if defined(SHADOWCUBE{X})
+shadow=computeShadowWithESMCube(vPositionW,light{X}.vLightData.xyz,shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.z,light{X}.depthValues);
+#else
+shadow=computeShadowWithESM(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.z,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWPOISSON{X})
+#if defined(SHADOWCUBE{X})
+shadow=computeShadowWithPoissonSamplingCube(vPositionW,light{X}.vLightData.xyz,shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.x,light{X}.depthValues);
+#else
+shadow=computeShadowWithPoissonSampling(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWPCF{X})
+#if defined(SHADOWLOWQUALITY{X})
+shadow=computeShadowWithPCF1(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#elif defined(SHADOWMEDIUMQUALITY{X})
+shadow=computeShadowWithPCF3(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#else
+shadow=computeShadowWithPCF5(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.yz,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#elif defined(SHADOWPCSS{X})
+#if defined(SHADOWLOWQUALITY{X})
+shadow=computeShadowWithPCSS16(vPositionFromLight{X},vDepthMetric{X},depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#elif defined(SHADOWMEDIUMQUALITY{X})
+shadow=computeShadowWithPCSS32(vPositionFromLight{X},vDepthMetric{X},depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#else
+shadow=computeShadowWithPCSS64(vPositionFromLight{X},vDepthMetric{X},depthTexture{X},shadowTexture{X},light{X}.shadowsInfo.y,light{X}.shadowsInfo.z,light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#else
+#if defined(SHADOWCUBE{X})
+shadow=computeShadowCube(vPositionW,light{X}.vLightData.xyz,shadowTexture{X},light{X}.shadowsInfo.x,light{X}.depthValues);
+#else
+shadow=computeShadow(vPositionFromLight{X},vDepthMetric{X},shadowTexture{X},light{X}.shadowsInfo.x,light{X}.shadowsInfo.w);
+#endif
+#endif
+#ifdef SHADOWONLY
+#ifndef SHADOWINUSE
+#define SHADOWINUSE
+#endif
+globalShadow+=shadow;shadowLightCount+=1.0;
+#endif
+#else
+shadow=1.;
+#endif
+aggShadow+=shadow;numLights+=1.0;
+#ifndef SHADOWONLY
+#ifdef CUSTOMUSERLIGHTING
+diffuseBase+=computeCustomDiffuseLighting(info,diffuseBase,shadow);
+#ifdef SPECULARTERM
+specularBase+=computeCustomSpecularLighting(info,specularBase,shadow);
+#endif
+#elif defined(LIGHTMAP) && defined(LIGHTMAPEXCLUDED{X})
+diffuseBase+=lightmapColor.rgb*shadow;
+#ifdef SPECULARTERM
+#ifndef LIGHTMAPNOSPECULAR{X}
+specularBase+=info.specular*shadow*lightmapColor.rgb;
+#endif
+#endif
+#ifdef CLEARCOAT
+#ifndef LIGHTMAPNOSPECULAR{X}
+clearCoatBase+=info.clearCoat.rgb*shadow*lightmapColor.rgb;
+#endif
+#endif
+#ifdef SHEEN
+#ifndef LIGHTMAPNOSPECULAR{X}
+sheenBase+=info.sheen.rgb*shadow;
+#endif
+#endif
+#else
+#ifdef SHADOWCSMDEBUG{X}
+diffuseBase+=info.diffuse*shadowDebug{X};
+#else 
+diffuseBase+=info.diffuse*shadow;
+#endif
+#ifdef SPECULARTERM
+specularBase+=info.specular*shadow;
+#endif
+#ifdef CLEARCOAT
+clearCoatBase+=info.clearCoat.rgb*shadow;
+#endif
+#ifdef SHEEN
+sheenBase+=info.sheen.rgb*shadow;
+#endif
+#endif
+#endif
+#endif
+`;
+// Sideeffect
+ShaderStore.IncludesShadersStore[name] = shader;
+/** @internal */
+export const lightFragment = { name, shader };
+//# sourceMappingURL=lightFragment.js.map

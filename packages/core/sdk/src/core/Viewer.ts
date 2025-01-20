@@ -1,9 +1,3 @@
-// glTF导入
-import "@babylonjs/loaders/glTF";
-// 调试模式 todo 动态导入
-import "@babylonjs/core/Debug/debugLayer";
-import "@babylonjs/inspector";
-//--------
 import {
     AbstractEngine,
     AbstractMesh,
@@ -19,7 +13,7 @@ import {
 } from "@babylonjs/core";
 import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
 import COSApi, {ICOSApiOptions} from "cos-api";
-import {HtmlMeshRenderer} from "babylon-htmlmesh";
+import {HtmlMeshRenderer} from "@babylonjs/addons";
 import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
 import {Editor} from "../editor/Editor";
 import {EventManager, PlumAssetContainer, PlumAssetsManager, PlumPostProcessManager} from "../manager";
@@ -137,14 +131,18 @@ export class Viewer {
 
         const {engineOptions} = this.options;
 
-        // 根据不同环境创建不同的引擎
-        EngineFactory.CreateAsync(this.canvas, engineOptions).then((engine) => {
-            this.engine = engine;
-            if (this.engine instanceof WebGPUEngine) {
-                this.isWebGPU = true;
-            }
-            this.initComponent();
-        });
+        // 动态加载 gltf 模块
+       import("@babylonjs/loaders/glTF/index.js").then((gltf) => {
+           console.log("gltf",gltf)
+           // 根据不同环境创建不同的引擎
+           EngineFactory.CreateAsync(this.canvas, engineOptions).then((engine) => {
+               this.engine = engine;
+               if (this.engine instanceof WebGPUEngine) {
+                   this.isWebGPU = true;
+               }
+               this.initComponent();
+           });
+       })
     }
 
     /**
@@ -232,7 +230,6 @@ export class Viewer {
 
         // this.physics = new Physics({viewer: this});
 
-
         this.eventManager = new EventManager({viewer: this});
         this.assetsManager = new PlumAssetsManager(this);
         this.assetContainer = new PlumAssetContainer(this);
@@ -313,6 +310,10 @@ export class Viewer {
      * @param config
      */
     async debug(debugOn: boolean = true, config: IInspectorOptions = {overlay: true}) {
+        // todo
+        // import "@babylonjs/core/Debug/debugLayer";
+        // import "@babylonjs/inspector";
+
         if (debugOn) {
             const debugLayer = await this.scene.debugLayer.show(config);
         } else {

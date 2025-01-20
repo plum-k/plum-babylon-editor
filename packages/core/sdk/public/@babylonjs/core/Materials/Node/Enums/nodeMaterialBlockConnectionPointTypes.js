@@ -1,0 +1,31 @@
+/**
+ * Defines the kind of connection point for node based material
+ */
+export var NodeMaterialBlockConnectionPointTypes;
+(function (NodeMaterialBlockConnectionPointTypes) {
+    /** Float */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Float"] = 1] = "Float";
+    /** Int */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Int"] = 2] = "Int";
+    /** Vector2 */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Vector2"] = 4] = "Vector2";
+    /** Vector3 */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Vector3"] = 8] = "Vector3";
+    /** Vector4 */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Vector4"] = 16] = "Vector4";
+    /** Color3 */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Color3"] = 32] = "Color3";
+    /** Color4 */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Color4"] = 64] = "Color4";
+    /** Matrix */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Matrix"] = 128] = "Matrix";
+    /** Custom object */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["Object"] = 256] = "Object";
+    /** Detect type based on connection */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["AutoDetect"] = 1024] = "AutoDetect";
+    /** Output type that will be defined by input type */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["BasedOnInput"] = 2048] = "BasedOnInput";
+    /** Bitmask of all types */
+    NodeMaterialBlockConnectionPointTypes[NodeMaterialBlockConnectionPointTypes["All"] = 4095] = "All";
+})(NodeMaterialBlockConnectionPointTypes || (NodeMaterialBlockConnectionPointTypes = {}));
+//# sourceMappingURL=nodeMaterialBlockConnectionPointTypes.js.map

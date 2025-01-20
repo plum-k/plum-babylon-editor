@@ -1,0 +1,262 @@
+
+import { RenderTargetWrapper } from "../renderTargetWrapper.js";
+import { HasStencilAspect } from "../../Materials/Textures/internalTexture.js";
+/** @internal */
+export class WebGLRenderTargetWrapper extends RenderTargetWrapper {
+    setDepthStencilTexture(texture, disposeExisting = true) {
+        super.setDepthStencilTexture(texture, disposeExisting);
+        if (!texture) {
+            return;
+        }
+        const engine = this._engine;
+        const gl = this._context;
+        const hardwareTexture = texture._hardwareTexture;
+        if (hardwareTexture && texture._autoMSAAManagement && this._MSAAFramebuffer) {
+            const currentFB = engine._currentFramebuffer;
+            engine._bindUnboundFramebuffer(this._MSAAFramebuffer);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, HasStencilAspect(texture.format) ? gl.DEPTH_STENCIL_ATTACHMENT : gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, hardwareTexture.getMSAARenderBuffer());
+            engine._bindUnboundFramebuffer(currentFB);
+        }
+    }
+    constructor(isMulti, isCube, size, engine, context) {
+        super(isMulti, isCube, size, engine);
+        /**
+         * @internal
+         */
+        this._framebuffer = null;
+        /**
+         * @internal
+         */
+        this._depthStencilBuffer = null;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        /**
+         * @internal
+         */
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        this._MSAAFramebuffer = null;
+        // Multiview
+        /**
+         * @internal
+         */
+        this._colorTextureArray = null;
+        /**
+         * @internal
+         */
+        this._depthStencilTextureArray = null;
+        /**
+         * @internal
+         */
+        this._disposeOnlyFramebuffers = false;
+        /**
+         * @internal
+         */
+        this._currentLOD = 0;
+        this._context = context;
+    }
+    _cloneRenderTargetWrapper() {
+        let rtw = null;
+        if (this._colorTextureArray && this._depthStencilTextureArray) {
+            rtw = this._engine.createMultiviewRenderTargetTexture(this.width, this.height);
+            rtw.texture.isReady = true;
+        }
+        else {
+            rtw = super._cloneRenderTargetWrapper();
+        }
+        return rtw;
+    }
+    _swapRenderTargetWrapper(target) {
+        super._swapRenderTargetWrapper(target);
+        target._framebuffer = this._framebuffer;
+        target._depthStencilBuffer = this._depthStencilBuffer;
+        target._MSAAFramebuffer = this._MSAAFramebuffer;
+        target._colorTextureArray = this._colorTextureArray;
+        target._depthStencilTextureArray = this._depthStencilTextureArray;
+        this._framebuffer = this._depthStencilBuffer = this._MSAAFramebuffer = this._colorTextureArray = this._depthStencilTextureArray = null;
+    }
+    /**
+     * Creates the depth/stencil texture
+     * @param comparisonFunction Comparison function to use for the texture
+     * @param bilinearFiltering true if bilinear filtering should be used when sampling the texture
+     * @param generateStencil true if the stencil aspect should also be created
+     * @param samples sample count to use when creating the texture
+     * @param format format of the depth texture
+     * @param label defines the label to use for the texture (for debugging purpose only)
+     * @returns the depth/stencil created texture
+     */
+    createDepthStencilTexture(comparisonFunction = 0, bilinearFiltering = true, generateStencil = false, samples = 1, format = 14, label) {
+        if (this._depthStencilBuffer) {
+            const engine = this._engine;
+            // Dispose previous depth/stencil render buffers and clear the corresponding attachment.
+            // Next time this framebuffer is bound, the new depth/stencil texture will be attached.
+            const currentFrameBuffer = engine._currentFramebuffer;
+            const gl = this._context;
+            engine._bindUnboundFramebuffer(this._framebuffer);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, null);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, null);
+            engine._bindUnboundFramebuffer(currentFrameBuffer);
+            gl.deleteRenderbuffer(this._depthStencilBuffer);
+            this._depthStencilBuffer = null;
+        }
+        return super.createDepthStencilTexture(comparisonFunction, bilinearFiltering, generateStencil, samples, format, label);
+    }
+    /**
+     * Shares the depth buffer of this render target with another render target.
+     * @param renderTarget Destination renderTarget
+     */
+    shareDepth(renderTarget) {
+        super.shareDepth(renderTarget);
+        const gl = this._context;
+        const depthbuffer = this._depthStencilBuffer;
+        const framebuffer = renderTarget._MSAAFramebuffer || renderTarget._framebuffer;
+        const engine = this._engine;
+        if (renderTarget._depthStencilBuffer && renderTarget._depthStencilBuffer !== depthbuffer) {
+            gl.deleteRenderbuffer(renderTarget._depthStencilBuffer);
+        }
+        renderTarget._depthStencilBuffer = depthbuffer;
+        const attachment = renderTarget._generateStencilBuffer ? gl.DEPTH_STENCIL_ATTACHMENT : gl.DEPTH_ATTACHMENT;
+        engine._bindUnboundFramebuffer(framebuffer);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, depthbuffer);
+        engine._bindUnboundFramebuffer(null);
+    }
+    /**
+     * Binds a texture to this render target on a specific attachment
+     * @param texture The texture to bind to the framebuffer
+     * @param attachmentIndex Index of the attachment
+     * @param faceIndexOrLayer The face or layer of the texture to render to in case of cube texture or array texture
+     * @param lodLevel defines the lod level to bind to the frame buffer
+     */
+    _bindTextureRenderTarget(texture, attachmentIndex = 0, faceIndexOrLayer, lodLevel = 0) {
+        const hardwareTexture = texture._hardwareTexture;
+        if (!hardwareTexture) {
+            return;
+        }
+        const framebuffer = this._framebuffer;
+        const engine = this._engine;
+        const currentFB = engine._currentFramebuffer;
+        engine._bindUnboundFramebuffer(framebuffer);
+        let attachment;
+        if (engine.webGLVersion > 1) {
+            const gl = this._context;
+            attachment = gl["COLOR_ATTACHMENT" + attachmentIndex];
+            if (texture.is2DArray || texture.is3D) {
+                faceIndexOrLayer = faceIndexOrLayer ?? this.layerIndices?.[attachmentIndex] ?? 0;
+                gl.framebufferTextureLayer(gl.FRAMEBUFFER, attachment, hardwareTexture.underlyingResource, lodLevel, faceIndexOrLayer);
+            }
+            else if (texture.isCube) {
+                // if face index is not specified, try to query it from faceIndices
+                // default is face 0
+                faceIndexOrLayer = faceIndexOrLayer ?? this.faceIndices?.[attachmentIndex] ?? 0;
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndexOrLayer, hardwareTexture.underlyingResource, lodLevel);
+            }
+            else {
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, hardwareTexture.underlyingResource, lodLevel);
+            }
+        }
+        else {
+            // Default behavior (WebGL)
+            const gl = this._context;
+            attachment = gl["COLOR_ATTACHMENT" + attachmentIndex + "_WEBGL"];
+            const target = faceIndexOrLayer !== undefined ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndexOrLayer : gl.TEXTURE_2D;
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, target, hardwareTexture.underlyingResource, lodLevel);
+        }
+        if (texture._autoMSAAManagement && this._MSAAFramebuffer) {
+            const gl = this._context;
+            engine._bindUnboundFramebuffer(this._MSAAFramebuffer);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, hardwareTexture.getMSAARenderBuffer());
+        }
+        engine._bindUnboundFramebuffer(currentFB);
+    }
+    /**
+     * Set a texture in the textures array
+     * @param texture the texture to set
+     * @param index the index in the textures array to set
+     * @param disposePrevious If this function should dispose the previous texture
+     */
+    setTexture(texture, index = 0, disposePrevious = true) {
+        super.setTexture(texture, index, disposePrevious);
+        this._bindTextureRenderTarget(texture, index);
+    }
+    /**
+     * Sets the layer and face indices of every render target texture
+     * @param layers The layer of the texture to be set (make negative to not modify)
+     * @param faces The face of the texture to be set (make negative to not modify)
+     */
+    setLayerAndFaceIndices(layers, faces) {
+        super.setLayerAndFaceIndices(layers, faces);
+        if (!this.textures || !this.layerIndices || !this.faceIndices) {
+            return;
+        }
+        // the length of this._attachments is the right one as it does not count the depth texture, in case we generated it
+        const textureCount = this._attachments?.length ?? this.textures.length;
+        for (let index = 0; index < textureCount; index++) {
+            const texture = this.textures[index];
+            if (!texture) {
+                // The target type was probably -1 at creation time and setTexture has not been called yet for this index
+                continue;
+            }
+            if (texture.is2DArray || texture.is3D) {
+                this._bindTextureRenderTarget(texture, index, this.layerIndices[index]);
+            }
+            else if (texture.isCube) {
+                this._bindTextureRenderTarget(texture, index, this.faceIndices[index]);
+            }
+            else {
+                this._bindTextureRenderTarget(texture, index);
+            }
+        }
+    }
+    /**
+     * Set the face and layer indices of a texture in the textures array
+     * @param index The index of the texture in the textures array to modify
+     * @param layer The layer of the texture to be set
+     * @param face The face of the texture to be set
+     */
+    setLayerAndFaceIndex(index = 0, layer, face) {
+        super.setLayerAndFaceIndex(index, layer, face);
+        if (!this.textures || !this.layerIndices || !this.faceIndices) {
+            return;
+        }
+        const texture = this.textures[index];
+        if (texture.is2DArray || texture.is3D) {
+            this._bindTextureRenderTarget(this.textures[index], index, this.layerIndices[index]);
+        }
+        else if (texture.isCube) {
+            this._bindTextureRenderTarget(this.textures[index], index, this.faceIndices[index]);
+        }
+    }
+    resolveMSAATextures() {
+        const engine = this._engine;
+        const currentFramebuffer = engine._currentFramebuffer;
+        engine._bindUnboundFramebuffer(this._MSAAFramebuffer);
+        super.resolveMSAATextures();
+        engine._bindUnboundFramebuffer(currentFramebuffer);
+    }
+    dispose(disposeOnlyFramebuffers = this._disposeOnlyFramebuffers) {
+        const gl = this._context;
+        if (!disposeOnlyFramebuffers) {
+            if (this._colorTextureArray) {
+                this._context.deleteTexture(this._colorTextureArray);
+                this._colorTextureArray = null;
+            }
+            if (this._depthStencilTextureArray) {
+                this._context.deleteTexture(this._depthStencilTextureArray);
+                this._depthStencilTextureArray = null;
+            }
+        }
+        if (this._framebuffer) {
+            gl.deleteFramebuffer(this._framebuffer);
+            this._framebuffer = null;
+        }
+        if (this._depthStencilBuffer) {
+            gl.deleteRenderbuffer(this._depthStencilBuffer);
+            this._depthStencilBuffer = null;
+        }
+        if (this._MSAAFramebuffer) {
+            gl.deleteFramebuffer(this._MSAAFramebuffer);
+            this._MSAAFramebuffer = null;
+        }
+        super.dispose(disposeOnlyFramebuffers);
+    }
+}
+//# sourceMappingURL=webGLRenderTargetWrapper.js.map

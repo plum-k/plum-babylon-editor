@@ -1,0 +1,850 @@
+import { WebXRFeaturesManager, WebXRFeatureName } from "../webXRFeaturesManager.js";
+import { CreateSphere } from "../../Meshes/Builders/sphereBuilder.js";
+import { Vector3, Quaternion, TmpVectors } from "../../Maths/math.vector.js";
+import { Ray } from "../../Culling/ray.js";
+import { PickingInfo } from "../../Collisions/pickingInfo.js";
+import { WebXRAbstractFeature } from "./WebXRAbstractFeature.js";
+import { UtilityLayerRenderer } from "../../Rendering/utilityLayerRenderer.js";
+import { BoundingSphere } from "../../Culling/boundingSphere.js";
+import { StandardMaterial } from "../../Materials/standardMaterial.js";
+import { Color3 } from "../../Maths/math.color.js";
+import { NodeMaterial } from "../../Materials/Node/nodeMaterial.js";
+import { Animation } from "../../Animations/animation.js";
+import { QuadraticEase, EasingFunction } from "../../Animations/easing.js";
+// side effects
+import "../../Meshes/subMesh.project.js";
+import { Logger } from "../../Misc/logger.js";
+// Tracks the interaction animation state when using a motion controller with a near interaction orb
+var ControllerOrbAnimationState;
+(function (ControllerOrbAnimationState) {
+    /**
+     * Orb is invisible
+     */
+    ControllerOrbAnimationState[ControllerOrbAnimationState["DEHYDRATED"] = 0] = "DEHYDRATED";
+    /**
+     * Orb is visible and inside the hover range
+     */
+    ControllerOrbAnimationState[ControllerOrbAnimationState["HOVER"] = 1] = "HOVER";
+    /**
+     * Orb is visible and touching a near interaction target
+     */
+    ControllerOrbAnimationState[ControllerOrbAnimationState["TOUCH"] = 2] = "TOUCH";
+})(ControllerOrbAnimationState || (ControllerOrbAnimationState = {}));
+/**
+ * Where should the near interaction mesh be attached to when using a motion controller for near interaction
+ */
+export var WebXRNearControllerMode;
+(function (WebXRNearControllerMode) {
+    /**
+     * Motion controllers will not support near interaction
+     */
+    WebXRNearControllerMode[WebXRNearControllerMode["DISABLED"] = 0] = "DISABLED";
+    /**
+     * The interaction point for motion controllers will be inside of them
+     */
+    WebXRNearControllerMode[WebXRNearControllerMode["CENTERED_ON_CONTROLLER"] = 1] = "CENTERED_ON_CONTROLLER";
+    /**
+     * The interaction point for motion controllers will be in front of the controller
+     */
+    WebXRNearControllerMode[WebXRNearControllerMode["CENTERED_IN_FRONT"] = 2] = "CENTERED_IN_FRONT";
+})(WebXRNearControllerMode || (WebXRNearControllerMode = {}));
+const _tmpVectors = [new Vector3(), new Vector3(), new Vector3(), new Vector3()];
+/**
+ * A module that will enable near interaction near interaction for hands and motion controllers of XR Input Sources
+ */
+export class WebXRNearInteraction extends WebXRAbstractFeature {
+    /**
+     * constructs a new background remover module
+     * @param _xrSessionManager the session manager for this module
+     * @param _options read-only options to be used in this module
+     */
+    constructor(_xrSessionManager, _options) {
+        super(_xrSessionManager);
+        this._options = _options;
+        this._tmpRay = new Ray(new Vector3(), new Vector3());
+        this._attachController = (xrController) => {
+            if (this._controllers[xrController.uniqueId]) {
+                // already attached
+                return;
+            }
+            // get two new meshes
+            const { touchCollisionMesh, touchCollisionMeshFunction, hydrateCollisionMeshFunction } = this._generateNewTouchPointMesh();
+            const selectionMesh = this._generateVisualCue();
+            this._controllers[xrController.uniqueId] = {
+                xrController,
+                meshUnderPointer: null,
+                nearInteractionTargetMesh: null,
+                pick: null,
+                stalePick: null,
+                touchCollisionMesh,
+                touchCollisionMeshFunction: touchCollisionMeshFunction,
+                hydrateCollisionMeshFunction: hydrateCollisionMeshFunction,
+                currentAnimationState: ControllerOrbAnimationState.DEHYDRATED,
+                grabRay: new Ray(new Vector3(), new Vector3()),
+                hoverInteraction: false,
+                nearInteraction: false,
+                grabInteraction: false,
+                downTriggered: false,
+                id: WebXRNearInteraction._IdCounter++,
+                pickedPointVisualCue: selectionMesh,
+            };
+            this._controllers[xrController.uniqueId]._worldScaleObserver =
+                this._controllers[xrController.uniqueId]._worldScaleObserver ||
+                    this._xrSessionManager.onWorldScaleFactorChangedObservable.add((values) => {
+                        if (values.newScaleFactor !== values.previousScaleFactor) {
+                            this._controllers[xrController.uniqueId].touchCollisionMesh.dispose();
+                            this._controllers[xrController.uniqueId].pickedPointVisualCue.dispose();
+                            const { touchCollisionMesh, touchCollisionMeshFunction, hydrateCollisionMeshFunction } = this._generateNewTouchPointMesh();
+                            this._controllers[xrController.uniqueId].touchCollisionMesh = touchCollisionMesh;
+                            this._controllers[xrController.uniqueId].touchCollisionMeshFunction = touchCollisionMeshFunction;
+                            this._controllers[xrController.uniqueId].hydrateCollisionMeshFunction = hydrateCollisionMeshFunction;
+                            this._controllers[xrController.uniqueId].pickedPointVisualCue = this._generateVisualCue();
+                        }
+                    });
+            if (this._attachedController) {
+                if (!this._options.enableNearInteractionOnAllControllers &&
+                    this._options.preferredHandedness &&
+                    xrController.inputSource.handedness === this._options.preferredHandedness) {
+                    this._attachedController = xrController.uniqueId;
+                }
+            }
+            else {
+                if (!this._options.enableNearInteractionOnAllControllers) {
+                    this._attachedController = xrController.uniqueId;
+                }
+            }
+            switch (xrController.inputSource.targetRayMode) {
+                case "tracked-pointer":
+                    return this._attachNearInteractionMode(xrController);
+                case "gaze":
+                    return null;
+                case "screen":
+                    return null;
+            }
+        };
+        this._controllers = {};
+        this._farInteractionFeature = null;
+        /**
+         * default color of the selection ring
+         */
+        this.selectionMeshDefaultColor = new Color3(0.8, 0.8, 0.8);
+        /**
+         * This color will be applied to the selection ring when selection is triggered
+         */
+        this.selectionMeshPickedColor = new Color3(0.3, 0.3, 1.0);
+        /**
+         * If set to true, the selection mesh will always be hidden. Otherwise it will be shown only when needed
+         */
+        this.alwaysHideSelectionMesh = false;
+        this._hoverRadius = 0.1;
+        this._pickRadius = 0.02;
+        this._controllerPickRadius = 0.03; // The radius is slightly larger here to make it easier to manipulate since it's not tied to the hand position
+        this._nearGrabLengthScale = 5;
+        this._scene = this._xrSessionManager.scene;
+        if (this._options.nearInteractionControllerMode === undefined) {
+            this._options.nearInteractionControllerMode = 2 /* WebXRNearControllerMode.CENTERED_IN_FRONT */;
+        }
+        if (this._options.farInteractionFeature) {
+            this._farInteractionFeature = this._options.farInteractionFeature;
+        }
+    }
+    /**
+     * Attach this feature
+     * Will usually be called by the features manager
+     *
+     * @returns true if successful.
+     */
+    attach() {
+        if (!super.attach()) {
+            return false;
+        }
+        this._options.xrInput.controllers.forEach(this._attachController);
+        this._addNewAttachObserver(this._options.xrInput.onControllerAddedObservable, this._attachController);
+        this._addNewAttachObserver(this._options.xrInput.onControllerRemovedObservable, (controller) => {
+            // REMOVE the controller
+            this._detachController(controller.uniqueId);
+        });
+        this._scene.constantlyUpdateMeshUnderPointer = true;
+        return true;
+    }
+    /**
+     * Detach this feature.
+     * Will usually be called by the features manager
+     *
+     * @returns true if successful.
+     */
+    detach() {
+        if (!super.detach()) {
+            return false;
+        }
+        Object.keys(this._controllers).forEach((controllerId) => {
+            this._detachController(controllerId);
+        });
+        return true;
+    }
+    /**
+     * Will get the mesh under a specific pointer.
+     * `scene.meshUnderPointer` will only return one mesh - either left or right.
+     * @param controllerId the controllerId to check
+     * @returns The mesh under pointer or null if no mesh is under the pointer
+     */
+    getMeshUnderPointer(controllerId) {
+        if (this._controllers[controllerId]) {
+            return this._controllers[controllerId].meshUnderPointer;
+        }
+        else {
+            return null;
+        }
+    }
+    /**
+     * Get the xr controller that correlates to the pointer id in the pointer event
+     *
+     * @param id the pointer id to search for
+     * @returns the controller that correlates to this id or null if not found
+     */
+    getXRControllerByPointerId(id) {
+        const keys = Object.keys(this._controllers);
+        for (let i = 0; i < keys.length; ++i) {
+            if (this._controllers[keys[i]].id === id) {
+                return this._controllers[keys[i]].xrController || null;
+            }
+        }
+        return null;
+    }
+    /**
+     * This function sets webXRControllerPointerSelection feature that will be disabled when
+     * the hover range is reached for a mesh and will be reattached when not in hover range.
+     * This is used to remove the selection rays when moving.
+     * @param farInteractionFeature the feature to disable when finger is in hover range for a mesh
+     */
+    setFarInteractionFeature(farInteractionFeature) {
+        this._farInteractionFeature = farInteractionFeature;
+    }
+    /**
+     * Filter used for near interaction pick and hover
+     * @param mesh the mesh candidate to be pick-filtered
+     * @returns if the mesh should be included in the list of candidate meshes for near interaction
+     */
+    _nearPickPredicate(mesh) {
+        return mesh.isEnabled() && mesh.isVisible && mesh.isPickable && mesh.isNearPickable;
+    }
+    /**
+     * Filter used for near interaction grab
+     * @param mesh the mesh candidate to be pick-filtered
+     * @returns if the mesh should be included in the list of candidate meshes for near interaction
+     */
+    _nearGrabPredicate(mesh) {
+        return mesh.isEnabled() && mesh.isVisible && mesh.isPickable && mesh.isNearGrabbable;
+    }
+    /**
+     * Filter used for any near interaction
+     * @param mesh the mesh candidate to be pick-filtered
+     * @returns if the mesh should be included in the list of candidate meshes for near interaction
+     */
+    _nearInteractionPredicate(mesh) {
+        return mesh.isEnabled() && mesh.isVisible && mesh.isPickable && (mesh.isNearPickable || mesh.isNearGrabbable);
+    }
+    _controllerAvailablePredicate(mesh, controllerId) {
+        let parent = mesh;
+        while (parent) {
+            if (parent.reservedDataStore && parent.reservedDataStore.nearInteraction && parent.reservedDataStore.nearInteraction.excludedControllerId === controllerId) {
+                return false;
+            }
+            parent = parent.parent;
+        }
+        return true;
+    }
+    _handleTransitionAnimation(controllerData, newState) {
+        if (controllerData.currentAnimationState === newState ||
+            this._options.nearInteractionControllerMode !== 2 /* WebXRNearControllerMode.CENTERED_IN_FRONT */ ||
+            !!controllerData.xrController?.inputSource.hand) {
+            return;
+        }
+        // Don't always break to allow for animation fallthrough on rare cases of multi-transitions
+        if (newState > controllerData.currentAnimationState) {
+            switch (controllerData.currentAnimationState) {
+                case ControllerOrbAnimationState.DEHYDRATED: {
+                    controllerData.hydrateCollisionMeshFunction(true);
+                    if (newState === ControllerOrbAnimationState.HOVER) {
+                        break;
+                    }
+                }
+                // eslint-disable-next-line no-fallthrough
+                case ControllerOrbAnimationState.HOVER: {
+                    controllerData.touchCollisionMeshFunction(true);
+                    if (newState === ControllerOrbAnimationState.TOUCH) {
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            switch (controllerData.currentAnimationState) {
+                case ControllerOrbAnimationState.TOUCH: {
+                    controllerData.touchCollisionMeshFunction(false);
+                    if (newState === ControllerOrbAnimationState.HOVER) {
+                        break;
+                    }
+                }
+                // eslint-disable-next-line no-fallthrough
+                case ControllerOrbAnimationState.HOVER: {
+                    controllerData.hydrateCollisionMeshFunction(false);
+                    if (newState === ControllerOrbAnimationState.DEHYDRATED) {
+                        break;
+                    }
+                }
+            }
+        }
+        controllerData.currentAnimationState = newState;
+    }
+    _processTouchPoint(id, position, orientation) {
+        const controllerData = this._controllers[id];
+        // Position and orientation could be temporary values, se we take care of them before calling any functions that use temporary vectors/quaternions
+        controllerData.grabRay.origin.copyFrom(position);
+        orientation.toEulerAnglesToRef(TmpVectors.Vector3[0]);
+        controllerData.grabRay.direction.copyFrom(TmpVectors.Vector3[0]);
+        if (this._options.nearInteractionControllerMode === 2 /* WebXRNearControllerMode.CENTERED_IN_FRONT */ && !controllerData.xrController?.inputSource.hand) {
+            // offset the touch point in the direction the transform is facing
+            controllerData.xrController.getWorldPointerRayToRef(this._tmpRay);
+            controllerData.grabRay.origin.addInPlace(this._tmpRay.direction.scale(0.05));
+        }
+        controllerData.grabRay.length = this._nearGrabLengthScale * this._hoverRadius * this._xrSessionManager.worldScalingFactor;
+        controllerData.touchCollisionMesh.position.copyFrom(controllerData.grabRay.origin).scaleInPlace(this._xrSessionManager.worldScalingFactor);
+    }
+    _onXRFrame(_xrFrame) {
+        Object.keys(this._controllers).forEach((id) => {
+            // only do this for the selected pointer
+            const controllerData = this._controllers[id];
+            const handData = controllerData.xrController?.inputSource.hand;
+            // If near interaction is not enabled/available for this controller, return early
+            if ((!this._options.enableNearInteractionOnAllControllers && id !== this._attachedController) ||
+                !controllerData.xrController ||
+                (!handData && (!this._options.nearInteractionControllerMode || !controllerData.xrController.inputSource.gamepad))) {
+                controllerData.pick = null;
+                return;
+            }
+            controllerData.hoverInteraction = false;
+            controllerData.nearInteraction = false;
+            // Every frame check collisions/input
+            if (controllerData.xrController) {
+                if (handData) {
+                    const xrIndexTip = handData.get("index-finger-tip");
+                    if (xrIndexTip) {
+                        const indexTipPose = _xrFrame.getJointPose(xrIndexTip, this._xrSessionManager.referenceSpace);
+                        if (indexTipPose && indexTipPose.transform) {
+                            const axisRHSMultiplier = this._scene.useRightHandedSystem ? 1 : -1;
+                            TmpVectors.Vector3[0].set(indexTipPose.transform.position.x, indexTipPose.transform.position.y, indexTipPose.transform.position.z * axisRHSMultiplier);
+                            TmpVectors.Quaternion[0].set(indexTipPose.transform.orientation.x, indexTipPose.transform.orientation.y, indexTipPose.transform.orientation.z * axisRHSMultiplier, indexTipPose.transform.orientation.w * axisRHSMultiplier);
+                            this._processTouchPoint(id, TmpVectors.Vector3[0], TmpVectors.Quaternion[0]);
+                        }
+                    }
+                }
+                else if (controllerData.xrController.inputSource.gamepad && this._options.nearInteractionControllerMode !== 0 /* WebXRNearControllerMode.DISABLED */) {
+                    let controllerPose = controllerData.xrController.pointer;
+                    if (controllerData.xrController.grip && this._options.nearInteractionControllerMode === 1 /* WebXRNearControllerMode.CENTERED_ON_CONTROLLER */) {
+                        controllerPose = controllerData.xrController.grip;
+                    }
+                    this._processTouchPoint(id, controllerPose.position, controllerPose.rotationQuaternion);
+                }
+            }
+            else {
+                return;
+            }
+            const accuratePickInfo = (originalScenePick, utilityScenePick) => {
+                let pick = null;
+                if (!utilityScenePick || !utilityScenePick.hit) {
+                    // No hit in utility scene
+                    pick = originalScenePick;
+                }
+                else if (!originalScenePick || !originalScenePick.hit) {
+                    // No hit in original scene
+                    pick = utilityScenePick;
+                }
+                else if (utilityScenePick.distance < originalScenePick.distance) {
+                    // Hit is closer in utility scene
+                    pick = utilityScenePick;
+                }
+                else {
+                    // Hit is closer in original scene
+                    pick = originalScenePick;
+                }
+                return pick;
+            };
+            const populateNearInteractionInfo = (nearInteractionInfo) => {
+                let result = new PickingInfo();
+                let nearInteractionAtOrigin = false;
+                const nearInteraction = nearInteractionInfo && nearInteractionInfo.pickedPoint && nearInteractionInfo.hit;
+                if (nearInteractionInfo?.pickedPoint) {
+                    nearInteractionAtOrigin = nearInteractionInfo.pickedPoint.x === 0 && nearInteractionInfo.pickedPoint.y === 0 && nearInteractionInfo.pickedPoint.z === 0;
+                }
+                if (nearInteraction && !nearInteractionAtOrigin) {
+                    result = nearInteractionInfo;
+                }
+                return result;
+            };
+            // Don't perform touch logic while grabbing, to prevent triggering touch interactions while in the middle of a grab interaction
+            // Dont update cursor logic either - the cursor should already be visible for the grab to be in range,
+            // and in order to maintain its position on the target mesh it is parented for the duration of the grab.
+            if (!controllerData.grabInteraction) {
+                let pick = null;
+                // near interaction hover
+                let utilitySceneHoverPick = null;
+                if (this._options.useUtilityLayer && this._utilityLayerScene) {
+                    utilitySceneHoverPick = this._pickWithSphere(controllerData, this._hoverRadius * this._xrSessionManager.worldScalingFactor, this._utilityLayerScene, (mesh) => this._nearInteractionPredicate(mesh));
+                }
+                const originalSceneHoverPick = this._pickWithSphere(controllerData, this._hoverRadius * this._xrSessionManager.worldScalingFactor, this._scene, (mesh) => this._nearInteractionPredicate(mesh));
+                const hoverPickInfo = accuratePickInfo(originalSceneHoverPick, utilitySceneHoverPick);
+                if (hoverPickInfo && hoverPickInfo.hit) {
+                    pick = populateNearInteractionInfo(hoverPickInfo);
+                    if (pick.hit) {
+                        controllerData.hoverInteraction = true;
+                    }
+                }
+                // near interaction pick
+                if (controllerData.hoverInteraction) {
+                    let utilitySceneNearPick = null;
+                    const radius = (handData ? this._pickRadius : this._controllerPickRadius) * this._xrSessionManager.worldScalingFactor;
+                    if (this._options.useUtilityLayer && this._utilityLayerScene) {
+                        utilitySceneNearPick = this._pickWithSphere(controllerData, radius, this._utilityLayerScene, (mesh) => this._nearPickPredicate(mesh));
+                    }
+                    const originalSceneNearPick = this._pickWithSphere(controllerData, radius, this._scene, (mesh) => this._nearPickPredicate(mesh));
+                    const pickInfo = accuratePickInfo(originalSceneNearPick, utilitySceneNearPick);
+                    const nearPick = populateNearInteractionInfo(pickInfo);
+                    if (nearPick.hit) {
+                        // Near pick takes precedence over hover interaction
+                        pick = nearPick;
+                        controllerData.nearInteraction = true;
+                    }
+                }
+                controllerData.stalePick = controllerData.pick;
+                controllerData.pick = pick;
+                // Update mesh under pointer
+                if (controllerData.pick && controllerData.pick.pickedPoint && controllerData.pick.hit) {
+                    controllerData.meshUnderPointer = controllerData.pick.pickedMesh;
+                    controllerData.pickedPointVisualCue.position.copyFrom(controllerData.pick.pickedPoint);
+                    controllerData.pickedPointVisualCue.isVisible = !this.alwaysHideSelectionMesh;
+                    if (this._farInteractionFeature && this._farInteractionFeature.attached) {
+                        this._farInteractionFeature._setPointerSelectionDisabledByPointerId(controllerData.id, true);
+                    }
+                }
+                else {
+                    controllerData.meshUnderPointer = null;
+                    controllerData.pickedPointVisualCue.isVisible = false;
+                    if (this._farInteractionFeature && this._farInteractionFeature.attached) {
+                        this._farInteractionFeature._setPointerSelectionDisabledByPointerId(controllerData.id, false);
+                    }
+                }
+            }
+            // Update the interaction animation. Only updates if the visible touch mesh is active
+            let state = ControllerOrbAnimationState.DEHYDRATED;
+            if (controllerData.grabInteraction || controllerData.nearInteraction) {
+                state = ControllerOrbAnimationState.TOUCH;
+            }
+            else if (controllerData.hoverInteraction) {
+                state = ControllerOrbAnimationState.HOVER;
+            }
+            this._handleTransitionAnimation(controllerData, state);
+        });
+    }
+    get _utilityLayerScene() {
+        return this._options.customUtilityLayerScene || UtilityLayerRenderer.DefaultUtilityLayer.utilityLayerScene;
+    }
+    _generateVisualCue() {
+        const sceneToRenderTo = this._options.useUtilityLayer ? this._options.customUtilityLayerScene || UtilityLayerRenderer.DefaultUtilityLayer.utilityLayerScene : this._scene;
+        const selectionMesh = CreateSphere("nearInteraction", {
+            diameter: 0.0035 * 3 * this._xrSessionManager.worldScalingFactor,
+        }, sceneToRenderTo);
+        selectionMesh.bakeCurrentTransformIntoVertices();
+        selectionMesh.isPickable = false;
+        selectionMesh.isVisible = false;
+        selectionMesh.rotationQuaternion = Quaternion.Identity();
+        const targetMat = new StandardMaterial("targetMat", sceneToRenderTo);
+        targetMat.specularColor = Color3.Black();
+        targetMat.emissiveColor = this.selectionMeshDefaultColor;
+        targetMat.backFaceCulling = false;
+        selectionMesh.material = targetMat;
+        return selectionMesh;
+    }
+    _isControllerReadyForNearInteraction(id) {
+        if (this._farInteractionFeature) {
+            return this._farInteractionFeature._getPointerSelectionDisabledByPointerId(id);
+        }
+        return true;
+    }
+    _attachNearInteractionMode(xrController) {
+        const controllerData = this._controllers[xrController.uniqueId];
+        const pointerEventInit = {
+            pointerId: controllerData.id,
+            pointerType: "xr-near",
+        };
+        controllerData.onFrameObserver = this._xrSessionManager.onXRFrameObservable.add(() => {
+            if ((!this._options.enableNearInteractionOnAllControllers && xrController.uniqueId !== this._attachedController) ||
+                !controllerData.xrController ||
+                (!controllerData.xrController.inputSource.hand && (!this._options.nearInteractionControllerMode || !controllerData.xrController.inputSource.gamepad))) {
+                return;
+            }
+            if (controllerData.pick) {
+                controllerData.pick.ray = controllerData.grabRay;
+            }
+            if (controllerData.pick && this._isControllerReadyForNearInteraction(controllerData.id)) {
+                this._scene.simulatePointerMove(controllerData.pick, pointerEventInit);
+            }
+            // Near pick pointer event
+            if (controllerData.nearInteraction && controllerData.pick && controllerData.pick.hit) {
+                if (!controllerData.nearInteractionTargetMesh) {
+                    this._scene.simulatePointerDown(controllerData.pick, pointerEventInit);
+                    controllerData.nearInteractionTargetMesh = controllerData.meshUnderPointer;
+                    controllerData.downTriggered = true;
+                }
+            }
+            else if (controllerData.nearInteractionTargetMesh && controllerData.stalePick) {
+                this._scene.simulatePointerUp(controllerData.stalePick, pointerEventInit);
+                controllerData.downTriggered = false;
+                controllerData.nearInteractionTargetMesh = null;
+            }
+        });
+        const grabCheck = (pressed) => {
+            if (this._options.enableNearInteractionOnAllControllers ||
+                (xrController.uniqueId === this._attachedController && this._isControllerReadyForNearInteraction(controllerData.id))) {
+                if (controllerData.pick) {
+                    controllerData.pick.ray = controllerData.grabRay;
+                }
+                if (pressed && controllerData.pick && controllerData.meshUnderPointer && this._nearGrabPredicate(controllerData.meshUnderPointer)) {
+                    controllerData.grabInteraction = true;
+                    controllerData.pickedPointVisualCue.isVisible = false;
+                    this._scene.simulatePointerDown(controllerData.pick, pointerEventInit);
+                    controllerData.downTriggered = true;
+                }
+                else if (!pressed && controllerData.pick && controllerData.grabInteraction) {
+                    this._scene.simulatePointerUp(controllerData.pick, pointerEventInit);
+                    controllerData.downTriggered = false;
+                    controllerData.grabInteraction = false;
+                    controllerData.pickedPointVisualCue.isVisible = !this.alwaysHideSelectionMesh;
+                }
+            }
+            else {
+                if (pressed && !this._options.enableNearInteractionOnAllControllers && !this._options.disableSwitchOnClick) {
+                    this._attachedController = xrController.uniqueId;
+                }
+            }
+        };
+        if (xrController.inputSource.gamepad) {
+            const init = (motionController) => {
+                controllerData.squeezeComponent = motionController.getComponent("grasp");
+                if (controllerData.squeezeComponent) {
+                    controllerData.onSqueezeButtonChangedObserver = controllerData.squeezeComponent.onButtonStateChangedObservable.add((component) => {
+                        if (component.changes.pressed) {
+                            const pressed = component.changes.pressed.current;
+                            grabCheck(pressed);
+                        }
+                    });
+                }
+                else {
+                    controllerData.selectionComponent = motionController.getMainComponent();
+                    controllerData.onButtonChangedObserver = controllerData.selectionComponent.onButtonStateChangedObservable.add((component) => {
+                        if (component.changes.pressed) {
+                            const pressed = component.changes.pressed.current;
+                            grabCheck(pressed);
+                        }
+                    });
+                }
+            };
+            if (xrController.motionController) {
+                init(xrController.motionController);
+            }
+            else {
+                xrController.onMotionControllerInitObservable.add(init);
+            }
+        }
+        else {
+            // use the select and squeeze events
+            const selectStartListener = (event) => {
+                if (controllerData.xrController &&
+                    event.inputSource === controllerData.xrController.inputSource &&
+                    controllerData.pick &&
+                    this._isControllerReadyForNearInteraction(controllerData.id) &&
+                    controllerData.meshUnderPointer &&
+                    this._nearGrabPredicate(controllerData.meshUnderPointer)) {
+                    controllerData.grabInteraction = true;
+                    controllerData.pickedPointVisualCue.isVisible = false;
+                    this._scene.simulatePointerDown(controllerData.pick, pointerEventInit);
+                    controllerData.downTriggered = true;
+                }
+            };
+            const selectEndListener = (event) => {
+                if (controllerData.xrController &&
+                    event.inputSource === controllerData.xrController.inputSource &&
+                    controllerData.pick &&
+                    this._isControllerReadyForNearInteraction(controllerData.id)) {
+                    this._scene.simulatePointerUp(controllerData.pick, pointerEventInit);
+                    controllerData.grabInteraction = false;
+                    controllerData.pickedPointVisualCue.isVisible = !this.alwaysHideSelectionMesh;
+                    controllerData.downTriggered = false;
+                }
+            };
+            controllerData.eventListeners = {
+                selectend: selectEndListener,
+                selectstart: selectStartListener,
+            };
+            this._xrSessionManager.session.addEventListener("selectstart", selectStartListener);
+            this._xrSessionManager.session.addEventListener("selectend", selectEndListener);
+        }
+    }
+    _detachController(xrControllerUniqueId) {
+        const controllerData = this._controllers[xrControllerUniqueId];
+        if (!controllerData) {
+            return;
+        }
+        if (controllerData.squeezeComponent) {
+            if (controllerData.onSqueezeButtonChangedObserver) {
+                controllerData.squeezeComponent.onButtonStateChangedObservable.remove(controllerData.onSqueezeButtonChangedObserver);
+            }
+        }
+        if (controllerData.selectionComponent) {
+            if (controllerData.onButtonChangedObserver) {
+                controllerData.selectionComponent.onButtonStateChangedObservable.remove(controllerData.onButtonChangedObserver);
+            }
+        }
+        if (controllerData.onFrameObserver) {
+            this._xrSessionManager.onXRFrameObservable.remove(controllerData.onFrameObserver);
+        }
+        if (controllerData.eventListeners) {
+            Object.keys(controllerData.eventListeners).forEach((eventName) => {
+                const func = controllerData.eventListeners && controllerData.eventListeners[eventName];
+                if (func) {
+                    this._xrSessionManager.session.removeEventListener(eventName, func);
+                }
+            });
+        }
+        controllerData.touchCollisionMesh.dispose();
+        controllerData.pickedPointVisualCue.dispose();
+        this._xrSessionManager.runInXRFrame(() => {
+            if (!controllerData.downTriggered) {
+                return;
+            }
+            // Fire a pointerup in case controller was detached before a pointerup event was fired
+            const pointerEventInit = {
+                pointerId: controllerData.id,
+                pointerType: "xr-near",
+            };
+            this._scene.simulatePointerUp(new PickingInfo(), pointerEventInit);
+        });
+        // remove world scale observer
+        if (controllerData._worldScaleObserver) {
+            this._xrSessionManager.onWorldScaleFactorChangedObservable.remove(controllerData._worldScaleObserver);
+        }
+        // remove from the map
+        delete this._controllers[xrControllerUniqueId];
+        if (this._attachedController === xrControllerUniqueId) {
+            // check for other controllers
+            const keys = Object.keys(this._controllers);
+            if (keys.length) {
+                this._attachedController = keys[0];
+            }
+            else {
+                this._attachedController = "";
+            }
+        }
+    }
+    _generateNewTouchPointMesh() {
+        const worldScale = this._xrSessionManager.worldScalingFactor;
+        // populate information for near hover, pick and pinch
+        const meshCreationScene = this._options.useUtilityLayer ? this._options.customUtilityLayerScene || UtilityLayerRenderer.DefaultUtilityLayer.utilityLayerScene : this._scene;
+        const touchCollisionMesh = CreateSphere("PickSphere", { diameter: 1 * worldScale }, meshCreationScene);
+        touchCollisionMesh.isVisible = false;
+        // Generate the material for the touch mesh visuals
+        if (this._options.motionControllerOrbMaterial) {
+            touchCollisionMesh.material = this._options.motionControllerOrbMaterial;
+        }
+        else {
+            let parsePromise;
+            if (this._options.motionControllerTouchMaterialSnippetUrl) {
+                parsePromise = NodeMaterial.ParseFromFileAsync("motionControllerTouchMaterial", this._options.motionControllerTouchMaterialSnippetUrl, meshCreationScene);
+            }
+            else {
+                parsePromise = NodeMaterial.ParseFromSnippetAsync("8RUNKL#3", meshCreationScene);
+            }
+            parsePromise
+                .then((mat) => {
+                touchCollisionMesh.material = mat;
+            })
+                .catch((err) => {
+                Logger.Warn(`Error creating touch material in WebXRNearInteraction: ${err}`);
+            });
+        }
+        const easingFunction = new QuadraticEase();
+        easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+        // Adjust the visual size based off of the size of the touch collision orb.
+        // Having the size perfectly match for hover gives a more accurate tell for when the user will start interacting with the target
+        // Sizes for other states are somewhat arbitrary, as they are based on what feels nice during an interaction
+        const hoverSizeVec = new Vector3(this._controllerPickRadius, this._controllerPickRadius, this._controllerPickRadius).scaleInPlace(worldScale);
+        const touchSize = this._controllerPickRadius * (4 / 3);
+        const touchSizeVec = new Vector3(touchSize, touchSize, touchSize).scaleInPlace(worldScale);
+        const hydrateTransitionSize = this._controllerPickRadius * (7 / 6);
+        const hydrateTransitionSizeVec = new Vector3(hydrateTransitionSize, hydrateTransitionSize, hydrateTransitionSize).scaleInPlace(worldScale);
+        const touchHoverTransitionSize = this._controllerPickRadius * (4 / 5);
+        const touchHoverTransitionSizeVec = new Vector3(touchHoverTransitionSize, touchHoverTransitionSize, touchHoverTransitionSize).scaleInPlace(worldScale);
+        const hoverTouchTransitionSize = this._controllerPickRadius * (3 / 2);
+        const hoverTouchTransitionSizeVec = new Vector3(hoverTouchTransitionSize, hoverTouchTransitionSize, hoverTouchTransitionSize).scaleInPlace(worldScale);
+        const touchKeys = [
+            { frame: 0, value: hoverSizeVec },
+            { frame: 10, value: hoverTouchTransitionSizeVec },
+            { frame: 18, value: touchSizeVec },
+        ];
+        const releaseKeys = [
+            { frame: 0, value: touchSizeVec },
+            { frame: 10, value: touchHoverTransitionSizeVec },
+            { frame: 18, value: hoverSizeVec },
+        ];
+        const hydrateKeys = [
+            { frame: 0, value: Vector3.ZeroReadOnly },
+            { frame: 12, value: hydrateTransitionSizeVec },
+            { frame: 15, value: hoverSizeVec },
+        ];
+        const dehydrateKeys = [
+            { frame: 0, value: hoverSizeVec },
+            { frame: 10, value: Vector3.ZeroReadOnly },
+            { frame: 15, value: Vector3.ZeroReadOnly },
+        ];
+        const touchAction = new Animation("touch", "scaling", 60, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        const releaseAction = new Animation("release", "scaling", 60, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        const hydrateAction = new Animation("hydrate", "scaling", 60, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        const dehydrateAction = new Animation("dehydrate", "scaling", 60, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        touchAction.setEasingFunction(easingFunction);
+        releaseAction.setEasingFunction(easingFunction);
+        hydrateAction.setEasingFunction(easingFunction);
+        dehydrateAction.setEasingFunction(easingFunction);
+        touchAction.setKeys(touchKeys);
+        releaseAction.setKeys(releaseKeys);
+        hydrateAction.setKeys(hydrateKeys);
+        dehydrateAction.setKeys(dehydrateKeys);
+        const touchCollisionMeshFunction = (isTouch) => {
+            const action = isTouch ? touchAction : releaseAction;
+            meshCreationScene.beginDirectAnimation(touchCollisionMesh, [action], 0, 18, false, 1);
+        };
+        const hydrateCollisionMeshFunction = (isHydration) => {
+            const action = isHydration ? hydrateAction : dehydrateAction;
+            if (isHydration) {
+                touchCollisionMesh.isVisible = true;
+            }
+            meshCreationScene.beginDirectAnimation(touchCollisionMesh, [action], 0, 15, false, 1, () => {
+                if (!isHydration) {
+                    touchCollisionMesh.isVisible = false;
+                }
+            });
+        };
+        return { touchCollisionMesh, touchCollisionMeshFunction, hydrateCollisionMeshFunction };
+    }
+    _pickWithSphere(controllerData, radius, sceneToUse, predicate) {
+        const pickingInfo = new PickingInfo();
+        pickingInfo.distance = +Infinity;
+        if (controllerData.touchCollisionMesh && controllerData.xrController) {
+            const position = controllerData.touchCollisionMesh.position;
+            const sphere = BoundingSphere.CreateFromCenterAndRadius(position, radius);
+            for (let meshIndex = 0; meshIndex < sceneToUse.meshes.length; meshIndex++) {
+                const mesh = sceneToUse.meshes[meshIndex];
+                if (!predicate(mesh) || !this._controllerAvailablePredicate(mesh, controllerData.xrController.uniqueId)) {
+                    continue;
+                }
+                const result = WebXRNearInteraction.PickMeshWithSphere(mesh, sphere);
+                if (result && result.hit && result.distance < pickingInfo.distance) {
+                    pickingInfo.hit = result.hit;
+                    pickingInfo.pickedMesh = mesh;
+                    pickingInfo.pickedPoint = result.pickedPoint;
+                    pickingInfo.aimTransform = controllerData.xrController.pointer;
+                    pickingInfo.gripTransform = controllerData.xrController.grip || null;
+                    pickingInfo.originMesh = controllerData.touchCollisionMesh;
+                    pickingInfo.distance = result.distance;
+                    pickingInfo.bu = result.bu;
+                    pickingInfo.bv = result.bv;
+                    pickingInfo.faceId = result.faceId;
+                    pickingInfo.subMeshId = result.subMeshId;
+                }
+            }
+        }
+        return pickingInfo;
+    }
+    /**
+     * Picks a mesh with a sphere
+     * @param mesh the mesh to pick
+     * @param sphere picking sphere in world coordinates
+     * @param skipBoundingInfo a boolean indicating if we should skip the bounding info check
+     * @returns the picking info
+     */
+    static PickMeshWithSphere(mesh, sphere, skipBoundingInfo = false) {
+        const subMeshes = mesh.subMeshes;
+        const pi = new PickingInfo();
+        const boundingInfo = mesh.getBoundingInfo();
+        if (!mesh._generatePointsArray()) {
+            return pi;
+        }
+        if (!mesh.subMeshes || !boundingInfo) {
+            return pi;
+        }
+        if (!skipBoundingInfo && !BoundingSphere.Intersects(boundingInfo.boundingSphere, sphere)) {
+            return pi;
+        }
+        const result = _tmpVectors[0];
+        const tmpVec = _tmpVectors[1];
+        _tmpVectors[2].setAll(0);
+        _tmpVectors[3].setAll(0);
+        const tmpRay = new Ray(_tmpVectors[2], _tmpVectors[3], 1);
+        let distance = +Infinity;
+        let tmp, tmpDistanceSphereToCenter, tmpDistanceSurfaceToCenter, intersectionInfo;
+        const center = TmpVectors.Vector3[2];
+        const worldToMesh = TmpVectors.Matrix[0];
+        worldToMesh.copyFrom(mesh.getWorldMatrix());
+        worldToMesh.invert();
+        Vector3.TransformCoordinatesToRef(sphere.center, worldToMesh, center);
+        for (let index = 0; index < subMeshes.length; index++) {
+            const subMesh = subMeshes[index];
+            subMesh.projectToRef(center, mesh._positions, mesh.getIndices(), tmpVec);
+            Vector3.TransformCoordinatesToRef(tmpVec, mesh.getWorldMatrix(), tmpVec);
+            tmp = Vector3.Distance(tmpVec, sphere.center);
+            // Check for finger inside of mesh
+            tmpDistanceSurfaceToCenter = Vector3.DistanceSquared(tmpVec, mesh.getAbsolutePosition());
+            tmpDistanceSphereToCenter = Vector3.DistanceSquared(sphere.center, mesh.getAbsolutePosition());
+            if (tmpDistanceSphereToCenter !== -1 && tmpDistanceSurfaceToCenter !== -1 && tmpDistanceSurfaceToCenter > tmpDistanceSphereToCenter) {
+                tmp = 0;
+                tmpVec.copyFrom(sphere.center);
+            }
+            if (tmp !== -1 && tmp < distance) {
+                distance = tmp;
+                // ray between the sphere center and the point on the mesh
+                Ray.CreateFromToToRef(sphere.center, tmpVec, tmpRay);
+                tmpRay.length = distance * 2;
+                intersectionInfo = tmpRay.intersectsMesh(mesh);
+                result.copyFrom(tmpVec);
+            }
+        }
+        if (distance < sphere.radius) {
+            pi.hit = true;
+            pi.distance = distance;
+            pi.pickedMesh = mesh;
+            pi.pickedPoint = result.clone();
+            if (intersectionInfo && intersectionInfo.bu !== null && intersectionInfo.bv !== null) {
+                pi.faceId = intersectionInfo.faceId;
+                pi.subMeshId = intersectionInfo.subMeshId;
+                pi.bu = intersectionInfo.bu;
+                pi.bv = intersectionInfo.bv;
+            }
+        }
+        return pi;
+    }
+}
+WebXRNearInteraction._IdCounter = 200;
+/**
+ * The module's name
+ */
+WebXRNearInteraction.Name = WebXRFeatureName.NEAR_INTERACTION;
+/**
+ * The (Babylon) version of this module.
+ * This is an integer representing the implementation version.
+ * This number does not correspond to the WebXR specs version
+ */
+WebXRNearInteraction.Version = 1;
+//Register the plugin
+WebXRFeaturesManager.AddWebXRFeature(WebXRNearInteraction.Name, (xrSessionManager, options) => {
+    return () => new WebXRNearInteraction(xrSessionManager, options);
+}, WebXRNearInteraction.Version, true);
+//# sourceMappingURL=WebXRNearInteraction.js.map

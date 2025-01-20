@@ -1,5 +1,5 @@
-import {ArcRotateCamera} from "@babylonjs/core";
-
+import {type ArcRotateCamera} from "@babylonjs/core";
+import { invoke} from "lodash-es";
 export function isArcRotateCamera(value: any): value is ArcRotateCamera {
-    return value instanceof ArcRotateCamera;
+    return invoke(value, "getClassName") === "ArcRotateCamera";
 }
