@@ -8,7 +8,7 @@ import {
     Vector3,
     VertexBuffer
 } from "@babylonjs/core";
-import {isAbstractMesh, isCamera, isLight} from "@plum-render/babylon-type-guard";
+import {isAbstractMesh, isCamera, isLight} from "../guard";
 import {NormalMaterial} from "@babylonjs/materials";
 
 export class NodeTool {
@@ -21,9 +21,10 @@ export class NodeTool {
         if (isAbstractMesh(node)) {
             node.isVisible = !node.isVisible;
         } else if (isCamera(node)) {
-            node.setEnabled(!node.isEnabled);
+            node.setEnabled(!node.isEnabled());
         } else if (isLight(node)) {
-            node.setEnabled(!node.isEnabled);
+            console.log(node.isEnabled())
+            node.setEnabled(!node.isEnabled());
         }
         if (recursive) {
             node.getChildMeshes().forEach((m) => {

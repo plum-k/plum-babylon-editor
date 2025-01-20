@@ -6,7 +6,7 @@ import {Mesh, PhysicsAggregate, PhysicsMotionType, PhysicsShapeType} from "@baby
 import {FieldData} from "rc-field-form/lib/interface";
 import {InputNumberItem, ObjectAttributeProvider, SelectItem, TextItem} from "@plum-render/common-ui";
 import EmptyState from "../Empty.tsx";
-import {isExtendsTransformNode, isMesh} from "@plum-render/babylon-type-guard";
+import {isExtendsTransformNode, isMesh} from "@plum-render/babylon-sdk";
 import {set} from "lodash-es";
 
 export interface IProxyPhysicsBody {

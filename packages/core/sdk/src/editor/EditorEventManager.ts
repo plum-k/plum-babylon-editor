@@ -2,6 +2,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 import {Node, Nullable, PBRMaterial} from "@babylonjs/core";
 import {PropertyPath} from "lodash-es";
+import {PlumMeshAssetTask} from "../manager";
 
 
 export interface IEditorEventManagerOptions extends IBasePlumOptions {
@@ -30,7 +31,6 @@ export class EditorEventManager extends BasePlum {
     // 被控制的三维对象位置等信息被修改
     selectObjectChanged = new Subject<ISelectObjectChanged>();
 
-
     // 选择的材质变化
     selectMaterialChanged = new Subject<ISelectMaterialChanged>();
 
@@ -38,12 +38,22 @@ export class EditorEventManager extends BasePlum {
         super(options);
         this.mergeSubject();
 
-        // 加载模型事件
-        this.viewer.scene.onDataLoadedObservable.add((e) => {
+        // 模型加载成功后 派发场景变化事件
+        this.viewer.assetsManager.onTaskSuccessObservable.add((task) => {
             if (this.viewer.isLoad) {
-                this.sceneGraphChanged.next(true);
+                if (task instanceof PlumMeshAssetTask){
+                    this.sceneGraphChanged.next(true);
+                }
             }
         });
+
+
+        // 加载模型事件
+        // this.viewer.scene.onDataLoadedObservable.add((e) => {
+        //     if (this.viewer.isLoad) {
+        //         this.sceneGraphChanged.next(true);
+        //     }
+        // });
 
         // 场景加载完成后, 派发事件
         // this.viewer.initSubject.subscribe(()=>{

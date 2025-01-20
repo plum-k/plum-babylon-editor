@@ -14,7 +14,7 @@ import {
 import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
 import COSApi, {ICOSApiOptions} from "cos-api";
 import {HtmlMeshRenderer} from "@babylonjs/addons";
-import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
+import {isCamera, isLight, isMesh} from "../guard";
 import {Editor} from "../editor/Editor";
 import {EventManager, PlumAssetContainer, PlumAssetsManager, PlumPostProcessManager} from "../manager";
 import {CameraControls} from "./CameraControls";
@@ -131,19 +131,19 @@ export class Viewer {
 
         const {engineOptions} = this.options;
 
-        // 动态加载 gltf 模块
-       import("@babylonjs/loaders/glTF/index.js").then((gltf) => {
-           console.log("gltf",gltf)
-           // 根据不同环境创建不同的引擎
-           EngineFactory.CreateAsync(this.canvas, engineOptions).then((engine) => {
-               this.engine = engine;
-               if (this.engine instanceof WebGPUEngine) {
-                   this.isWebGPU = true;
-               }
-               this.initComponent();
-           });
-       })
+        // 动态加载 gltf 模块 todo
+        import("@babylonjs/loaders/glTF/index.js").then((gltf) => {
+            // 根据不同环境创建不同的引擎
+            EngineFactory.CreateAsync(this.canvas, engineOptions).then((engine) => {
+                this.engine = engine;
+                if (this.engine instanceof WebGPUEngine) {
+                    this.isWebGPU = true;
+                }
+                this.initComponent();
+            });
+        })
     }
+
 
     /**
      * 启用/禁用 HTML 网格渲染器
@@ -304,16 +304,18 @@ export class Viewer {
     }
 
 
+    isInitDebugModule = false
+
     /**
      * 开启调试模式
      * @param debugOn
      * @param config
      */
     async debug(debugOn: boolean = true, config: IInspectorOptions = {overlay: true}) {
-        // todo
-        // import "@babylonjs/core/Debug/debugLayer";
-        // import "@babylonjs/inspector";
-
+        if (!this.isInitDebugModule) {
+            await Promise.all([import("@babylonjs/core/Debug/debugLayer"), import("@babylonjs/inspector")])
+        }
+        this.isInitDebugModule = true
         if (debugOn) {
             const debugLayer = await this.scene.debugLayer.show(config);
         } else {
@@ -396,28 +398,27 @@ export class Viewer {
      * @returns 具有指定名称的节点，如果未找到则返回 null。
      */
     getNodeByName(name: string): Nullable<Node> {
-        // 根据名称获取节点
-        const mesh = this.scene.getMeshByName(name); // 获取网格
+        const mesh = this.scene.getMeshByName(name);
         if (mesh) {
-            return mesh; // 返回网格
+            return mesh;
         }
 
-        const transformNode = this.scene.getTransformNodeByName(name); // 获取变换节点
+        const transformNode = this.scene.getTransformNodeByName(name);
         if (transformNode) {
-            return transformNode; // 返回变换节点
+            return transformNode;
         }
 
-        const light = this.scene.getLightByName(name); // 获取光源
+        const light = this.scene.getLightByName(name);
         if (light) {
-            return light; // 返回光源
+            return light;
         }
 
-        const camera = this.scene.getCameraByName(name); // 获取相机
+        const camera = this.scene.getCameraByName(name);
         if (camera) {
-            return camera; // 返回相机
+            return camera;
         }
 
-        return null; // 未找到返回 null
+        return null;
     }
 
     /**

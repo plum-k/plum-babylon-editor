@@ -13,9 +13,8 @@ import {
     SetMaterialValueCommand,
 } from "./commands";
 import {uniqueId} from "lodash-es";
-import {loadFiles, loadItemList} from "@plum-render/tool";
 import {PlumGizmoManager} from "../manager";
-import {isMesh} from "@plum-render/babylon-type-guard";
+import {isMesh} from "../guard";
 import {ISetObjectVector3Command} from "./commands/SetObjectValueCommand/SetObjectVector3Command";
 import {ISetObjectValueCommand, SetObjectValueCommand} from "./commands/SetObjectValueCommand/SetObjectValueCommand";
 import {SetPositionCommand} from "./commands/SetObjectValueCommand/SetPositionCommand";
@@ -30,6 +29,7 @@ import {
 import {GridTool} from "../tool/GridTool";
 import {Select} from "./Select";
 import { EditorEventManager } from "./EditorEventManager";
+import {loadFiles, loadItemList} from "../tool";
 
 export interface IEditorOptions extends IBasePlumOptions {
 }

@@ -20,7 +20,7 @@ import {
     isPointLight,
     isSpotLight,
     isTransformNode
-} from "@plum-render/babylon-type-guard";
+} from "@plum-render/babylon-sdk";
 import ArcRotateCameraAttribute from "./ArcRotateCameraAttribute.tsx";
 import FollowCameraAttribute from "./FollowCameraAttribute.tsx";
 import FreeCameraAttribute from "./FreeCameraAttribute.tsx";

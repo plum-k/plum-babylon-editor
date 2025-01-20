@@ -61,13 +61,9 @@ export default function SceneView(props: ISceneViewProps) {
                     toast.done(toastId.current);
                 }
                 setViewer(_viewer);
-                let camera = _viewer.scene.activeCamera! as PlumArcRotateCamera;
-                console.log(camera)
-
                 // testSerialize(_viewer);
-                testMesh(_viewer,"scene.glb")
+                // testMesh(_viewer,"scene.glb")
                 testPhysics(_viewer)
-
                 // tesProjection(_viewer)
             })
         }

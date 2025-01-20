@@ -9,9 +9,7 @@ export class ExporterTool {
     }
 
     exportSTL(scene: Scene) {
-        STLExport.CreateSTL(scene.meshes as Array<Mesh>).then((gltf) => {
-            gltf.downloadFiles();
-        });
+        STLExport.CreateSTL(scene.meshes as Array<Mesh>)
     }
 
     exportUSDZ(scene: Scene) {

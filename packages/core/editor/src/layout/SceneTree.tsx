@@ -6,9 +6,8 @@ import {isNil} from "lodash-es";
 import {EyeInvisibleOutlined, EyeOutlined} from '@ant-design/icons';
 import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} from "../store";
 import {useToggle} from "ahooks";
-import {isMesh, isTransformNode} from '@plum-render/babylon-type-guard';
+import {isMesh, isTransformNode, NodeTool, Viewer} from '@plum-render/babylon-sdk';
 import "../styles/SceneTree.css";
-import {NodeTool, Viewer} from '@plum-render/babylon-sdk';
 import {Node} from "@babylonjs/core";
 
 export interface ITreeNode {
@@ -139,43 +138,8 @@ export default function SceneTree() {
         });
         return result;
     }, [baseTreeData, searchState]);
-    const onRightClick: TreeProps["onRightClick"] = (info) => {
-        const {event, node} = info;
-        const {key} = node;
-        const SceneNode = viewer?.getNodeByUniqueId(key);
-        if (node) {
-            setVisible(() => {
-                return SceneNode.visible;
-            })
-        }
-        show({
-            event: event,
-            props: node
-        });
-    }
-    const MENU_ID = 'Menu1';
-    const {show} = useContextMenu({
-        id: MENU_ID,
-    });
-    const visible = (value: ItemParams) => {
-        const {props} = value;
-        const {key} = props;
-        const node = viewer?.getNodeByUniqueId(key);
-        if (node) {
-            NodeTool.toggleVisibility(node)
-        }
-    }
-    const remove = (value: ItemParams) => {
-        const {props} = value;
-        const {key} = props;
-        const node = viewer?.getNodeByUniqueId(key);
-        if (node) {
-            viewer?.editor.removeObjectExecute({
-                source: "editor",
-                object: node
-            })
-        }
-    }
+
+
     const onDragEnter: TreeProps['onDragEnter'] = (info) => {
 
     };
@@ -220,8 +184,7 @@ export default function SceneTree() {
             toggle(); // 如果搜索框为空，切换搜索状态
         }
     }, [inputValue]);
-
-    const treeRef = useRef<Tree>(null);
+    const treeRef = useRef<any>(null);
     const [expandedKeys, setExpandedKeys] = useState<Array<number>>([]); // 初始化展开的节点
 
     // 更新展开的节点
@@ -272,12 +235,53 @@ export default function SceneTree() {
             }
         }
     }
+    //----------------- 右键菜单相关逻辑 开始----------
+    const [rightKey, setRightKey] = useState<number>(-1)
 
-    // 渲染右键菜单
+    const onRightClick: TreeProps["onRightClick"] = (info) => {
+        console.log(info)
+        const {event, node} = info;
+        const {key} = node;
+        const sceneNode = viewer?.getNodeByUniqueId(key as number);
+        if (node && sceneNode) {
+            setVisible(() => {
+                return NodeTool.getVisibleNode(sceneNode)
+            })
+            setRightKey(key as number)
+        }
+        show({event: event, props: node});
+    }
+    const MENU_ID = 'Menu1';
+    const {show} = useContextMenu({id: MENU_ID});
+
+    const visible = (value: ItemParams) => {
+        const {props} = value;
+        const {key} = props;
+        const node = viewer?.getNodeByUniqueId(key);
+        if (node) {
+            // todo 历史记录
+            NodeTool.toggleVisibility(node)
+        }
+    }
+    const remove = (value: ItemParams) => {
+        const {props} = value;
+        const {key} = props;
+        const node = viewer?.getNodeByUniqueId(key);
+        if (node) {
+            viewer?.editor.removeObjectExecute({
+                source: "editor",
+                object: node
+            })
+        }
+    }
+
     const RenderRightMenu = () => {
         const visibleText = () => {
-            if (selectObject3D) {
-                return NodeTool.getVisibleNode(selectObject3D) ? "隐藏" : "显示"
+            if (rightKey!==-1) {
+                const node = viewer?.getNodeByUniqueId(rightKey);
+                if (node){
+                    return NodeTool.getVisibleNode(node) ? "隐藏" : "显示"
+                }
             }
             return ""
         }
@@ -292,6 +296,7 @@ export default function SceneTree() {
             </RightMenu>
         )
     }
+    //----------------- 右键菜单相关逻辑 结束----------
 
     return (
         <div className="bg-white overflow-hidden h-full w-full m-0 pb-5" ref={treeContainer}>
@@ -312,11 +317,10 @@ export default function SceneTree() {
                 showIcon
                 icon={(props) => {
                     let {visible, isShowVisibleIcon, uniqueId} = props as unknown as ITreeNode;
-
-                    if (isShowVisibleIcon) {
-                        return visible ? <EyeOutlined onClick={() => handleVisible(uniqueId, false)}/> :
-                            <EyeInvisibleOutlined onClick={() => handleVisible(uniqueId, true)}/>
-                    }
+                    // if (isShowVisibleIcon) {
+                    return visible ? <EyeOutlined onClick={() => handleVisible(uniqueId, false)}/> :
+                        <EyeInvisibleOutlined onClick={() => handleVisible(uniqueId, true)}/>
+                    // }
                 }}
                 draggable
                 onDoubleClick={onDoubleClick}

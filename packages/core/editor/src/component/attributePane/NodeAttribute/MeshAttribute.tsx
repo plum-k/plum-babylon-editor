@@ -10,7 +10,7 @@ import {
     Vector3Item
 } from "@plum-render/common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
-import {isInstancedMesh} from "@plum-render/babylon-type-guard";
+import {isInstancedMesh} from "@plum-render/babylon-sdk";
 import {AbstractMesh, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
 import {isNil} from "lodash-es";
 

@@ -1,6 +1,6 @@
 import {get, isNil} from "lodash-es";
 import {BoundingInfo, Node, Nullable, PhysicsPrestepType, Quaternion, Vector3} from "@babylonjs/core";
-import {isCamera, isLight, isMesh} from "@plum-render/babylon-type-guard";
+import {isCamera, isLight, isMesh} from "../guard";
 import {Editor} from "./index";
 import {GizmoEnum} from "../enum";
 

@@ -47,13 +47,13 @@ export default defineConfig({
     ],
 
     external: [
-        "@babylonjs/havok",
         "@babylonjs/core",
         "@babylonjs/addons",
-        "@babylonjs/inspector",
         "@babylonjs/loaders",
         "@babylonjs/materials",
         "@babylonjs/serializers",
+        "@babylonjs/havok",
+        "@babylonjs/inspector",
     ],
     watch: {
         include: "src/**", // 监听的文件
