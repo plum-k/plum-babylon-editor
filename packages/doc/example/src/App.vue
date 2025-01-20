@@ -81,11 +81,11 @@ const replaceImport = (key: string, value: string) => {
   const is = isProduction();
   if (is) {
     return value.replace("@plum-render/babylon-sdk", "./plum-render-babylon-sdk.js")
-        .replace("tweakpane", "./tweakpane.min.js")
+        // .replace("tweakpane", "./tweakpane.min.js")
         .replace("Vite App", key)
   } else {
     return value.replace("./plum-render-babylon-sdk.js", "http://127.0.0.1:4000/plum-render-babylon-sdk.js")
-        .replace("tweakpane", "./tweakpane.min.js")
+        // .replace("tweakpane", "./tweakpane.min.js")
         .replace("Vite App", key)
   }
 }

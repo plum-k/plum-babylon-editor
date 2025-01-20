@@ -20,7 +20,6 @@ export default defineConfig({
         {
             file: "public/plum-render-babylon-sdk.js",
             format: "module",
-            // inlineDynamicImports: true,
         },
     ],
     plugins: [
@@ -29,7 +28,8 @@ export default defineConfig({
             resolveId(source) {
                 // console.log(    source)
                 if (source.includes('@babylonjs/loaders/glTF/index.js')) {
-                    return { id: source, external: true }; // 将其标记为外部
+                    console.log("exclude-plugin", source)
+                    return {id: source, external: true}; // 将其标记为外部
                 }
                 return null; // 继续解析其他模块
             }
@@ -41,12 +41,20 @@ export default defineConfig({
             // minify: true
             // tsconfig: path.resolve(__dirname, "./tsconfig.json"),
         }),
-        // visualizer({
-        //     open: false, // 自动打开生成的报告
-        // })
+        visualizer({
+            open: true, // 自动打开生成的报告
+        })
     ],
 
-    external: ["@babylonjs/havok", "@babylonjs/addons", "@babylonjs/core", "@babylonjs/inspector", "@babylonjs/loaders", "@babylonjs/materials", "@babylonjs/serializers"],
+    external: [
+        "@babylonjs/havok",
+        "@babylonjs/core",
+        "@babylonjs/addons",
+        "@babylonjs/inspector",
+        "@babylonjs/loaders",
+        "@babylonjs/materials",
+        "@babylonjs/serializers",
+    ],
     watch: {
         include: "src/**", // 监听的文件
         clearScreen: false, // 设置为 false 以防止每次重建时清屏
