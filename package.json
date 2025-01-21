@@ -13,8 +13,7 @@
   "workspaces": [
     "packages/*",
     "packages/core/*",
-    "packages/dev/*",
-    "packages/doc/*"
+    "packages/dev/*"
   ],
   "dependencies": {
     "npm-check-updates": "^17.1.14"

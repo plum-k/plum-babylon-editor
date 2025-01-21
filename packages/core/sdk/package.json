@@ -11,9 +11,9 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "@babylonjs/addons": "^7.44.0",
     "@babylonjs/havok": "^1.3.10",
     "@babylonjs/core": "^7.44.0",
+    "@babylonjs/addons": "workspace:*",
     "@babylonjs/inspector": "7.44.0",
     "@babylonjs/loaders": "^7.44.0",
     "@babylonjs/materials": "7.44.0",

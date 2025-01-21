@@ -1,5 +1,0 @@
-packages:
-    - "packages/*"
-    - "packages/core/*"
-    - "packages/dev/*"
-    - "packages/doc/*"
