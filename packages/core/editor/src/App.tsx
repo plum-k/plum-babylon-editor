@@ -1,8 +1,7 @@
 import {createBrowserRouter, RouterProvider} from "react-router";
-import {Fragment, Suspense} from "react";
+import {Fragment, lazy, Suspense} from "react";
 import {AntdThemeProvider, Loading} from "./component";
 import {RouteObject} from "react-router-dom";
-import {lazy} from "react";
 
 const Home = lazy(() => import("./view/Home.tsx"))
 const Editor = lazy(() => import('./view/Editor.tsx'))
@@ -35,4 +34,3 @@ export default function App() {
         </Fragment>
     )
 }
-

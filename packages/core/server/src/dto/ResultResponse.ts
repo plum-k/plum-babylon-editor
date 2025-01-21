@@ -1,8 +1,6 @@
 import {Result} from "./Result";
 
 export class ResultResponse<T> {
-    //   private final static String SUCCESS = "success";
-    //
     static ok<T>(data: T) {
         return new Result<T>().setCode(1).setData(data);
     }

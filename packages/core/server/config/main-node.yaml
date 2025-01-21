@@ -7,3 +7,8 @@ database:
 
 http:
   port: 5010
+
+oss:
+  accessKeyId:
+  accessKeySecret:
+  roleArn:
