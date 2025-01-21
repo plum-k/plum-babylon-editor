@@ -1,10 +1,10 @@
 import {Button, Dropdown} from "antd";
-import MenuItem from "./MenuItem.tsx";
 import {useViewer} from "../../store";
 import {ExporterTool} from "@plum-render/babylon-sdk";
 import {useParams} from "react-router-dom";
 import {useRef} from "react";
 import {type Id} from "react-toastify";
+import {MenuItem} from "./MenuItem.tsx";
 
 enum FileFormat {
     GLB = "GLB",
@@ -14,7 +14,7 @@ enum FileFormat {
     OBJ = "OBJ",
 }
 
-export default function FileMenu() {
+export  function FileMenu() {
     const viewer = useViewer();
     const {appId} = useParams();
     const handleNew = () => {

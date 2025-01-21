@@ -1,4 +1,4 @@
-import {FC, Fragment, useEffect, useMemo} from "react";
+import {Fragment, useEffect, useMemo} from "react";
 import {Collapse, Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
 import {
@@ -8,13 +8,14 @@ import {
     InputNumberItem,
     ObjectAttributeProvider,
     SelectItem
-} from "@plum-render/common-ui";
+} from "../../common-ui";
 import {useViewer} from "../../store";
 import {invoke, set} from "lodash-es";
 import {HDRCubeTextureAssetTask, Scene} from "@babylonjs/core";
 import {isAggregationColor} from "../../tool/isAggregationColor.ts";
 import type {ItemType} from "rc-collapse/es/interface";
-export default function SceneAttribute() {
+
+export function SceneAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     const fogMode = Form.useWatch('fogMode', form);
@@ -27,6 +28,7 @@ export default function SceneAttribute() {
                     let skybox = form.getFieldValue("skybox") as boolean;
                     // 天空盒 同步 环境贴图
                     if (skybox) {
+                        // todo
                         viewer.skybox = viewer!.scene.createDefaultSkybox(task.texture, true, (viewer.scene.activeCamera!.maxZ - viewer.scene.activeCamera!.minZ) / 2, 0.3, false)
                     }
                 }

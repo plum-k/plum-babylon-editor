@@ -1,5 +1,5 @@
 import {Fragment, useEffect, useMemo, useState} from "react";
-import {BoolItem, InputNumberItem, SelectItem} from "@plum-render/common-ui";
+import {BoolItem, InputNumberItem, SelectItem} from "../../../../common-ui";
 import {useSelectObject3D, useViewer} from "../../../../store";
 import {Button} from "antd";
 import {CascadedShadowGenerator, PointLight, ShadowGenerator} from "@babylonjs/core";
@@ -12,7 +12,7 @@ interface ShadowState {
     generator: ShadowGenerator | CascadedShadowGenerator | null
 }
 
-export default function LightShadowAttribute(props: PointLightShadowAttributeProps) {
+export function LightShadowAttribute(props: PointLightShadowAttributeProps) {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D();
     const [animationsList, setAnimationsList] = useState<Array<any>>([])

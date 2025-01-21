@@ -1,9 +1,6 @@
-import FileMenu from "./FileMenu.tsx";
-import EditMenu from "./EditMenu.tsx";
-import AddMenu from "./AddMenu.tsx";
-import HeaderTool from "./HeaderTool.tsx";
+import {AddMenu,HeaderTool,EditMenu,FileMenu} from "./";
 
-export default function Header() {
+export function Header() {
     return (
         <header className="relative  h-8 flex border-b shadow-sm">
             <div className="flex justify-center items-center ml-2 text-1xl font-bold">

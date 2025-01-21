@@ -33,9 +33,13 @@
     }
 </script>
 <script async type="module">
-    import { MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {Vector3, Color4, MeshBuilder} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     new AxesViewer(scene, 8);

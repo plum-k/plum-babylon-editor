@@ -33,7 +33,8 @@
     }
 </script>
 <script async type="module">
-    import {Plane, MeshBuilder, Viewer, StandardMaterial} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {});
     let scene = viewer.scene;
@@ -92,13 +93,13 @@
 
     // 性能优先模式
 
-    // 从 Babylon.js 5.22 开始，您现在可以更改场景在向后兼容性和易用性方面的性能处理方式。
+    // 从 js 5.22 开始，您现在可以更改场景在向后兼容性和易用性方面的性能处理方式。
     //
     // 向后兼容模式（默认）
-    // 默认情况下，设置为 。在此模式下，根本没有变化。该场景将继续优先考虑易用性和向后兼容性。scene.performancePriorityBABYLON.ScenePerformancePriority.BackwardCompatible
+    // 默认情况下，设置为 。在此模式下，根本没有变化。该场景将继续优先考虑易用性和向后兼容性。scene.performancePriorityScenePerformancePriority.BackwardCompatible
     //
     // 中间模式
-    // 如果切换到 ，场景将自动：performancePriorityBABYLON.ScenePerformancePriority.Intermediate
+    // 如果切换到 ，场景将自动：performancePriorityScenePerformancePriority.Intermediate
     //
     // 准备好后冻结材料。如果您需要更改材质上的某些内容，则必须在进行更改后致电material.markDirty(true)
     // 新网格的 property 将设为 true。然后，系统将跳过网格的视锥裁剪，并始终将其设置为活动状态（节省复杂的 CPU 操作）。请记住，如果场景受 GPU 限制，请将其关闭alwaysSelectAsActiveMesh
@@ -106,7 +107,7 @@
     // scene.skipPointerMovePicking 将打开（意味着不会有 OnPointerMove 事件）
     // scene.autoClear将被关闭
     // 激进模式
-    // 如果切换到 ，场景将自动：performancePriorityBABYLON.ScenePerformancePriority.Aggressive
+    // 如果切换到 ，场景将自动：performancePriorityScenePerformancePriority.Aggressive
     //
     // 启用模式的所有功能Intermediate
     //

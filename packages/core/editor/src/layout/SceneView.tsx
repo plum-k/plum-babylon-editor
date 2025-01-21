@@ -3,21 +3,18 @@ import {useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
 import {IFolder} from "common";
-import {Control} from "../component/sidePane";
-import {PlumArcRotateCamera, Viewer} from "@plum-render/babylon-sdk";
+import {Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
-import PanelCollapsed from "../component/PanelCollapsed.tsx";
 import testPhysics from "../testCore/testPhysics.ts";
-import tesProjection from "../testCore/tesProjection.ts";
-import testMesh from "../testCore/testMesh.ts";
+import {Control, PanelCollapsed} from "../component";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
     rightPanelRef: RefObject<ImperativePanelHandle | null>
 }
 
-export default function SceneView(props: ISceneViewProps) {
+export  function SceneView(props: ISceneViewProps) {
     const {leftPanelRef, rightPanelRef} = props;
     const canvasContainer = createRef<HTMLDivElement>();
     const viewer = useViewer()

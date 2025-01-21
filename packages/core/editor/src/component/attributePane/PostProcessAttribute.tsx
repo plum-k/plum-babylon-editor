@@ -1,4 +1,4 @@
-import {FC, Fragment, useEffect, useMemo} from "react";
+import {Fragment, useEffect, useMemo} from "react";
 import {Collapse, CollapseProps, Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
 import {
@@ -10,11 +10,12 @@ import {
     SelectItem,
     TextItem,
     Vector2Item
-} from "@plum-render/common-ui";
+} from "../../common-ui";
 import {useViewer} from "../../store";
 import {DepthOfFieldEffectBlurLevel, ImageProcessingConfiguration} from "@babylonjs/core";
 import {set} from "lodash-es";
-export default function PostProcessAttribute() {
+
+export function PostProcessAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     useEffect(() => {

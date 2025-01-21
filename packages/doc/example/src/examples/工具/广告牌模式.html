@@ -33,15 +33,19 @@
     }
 </script>
 <script async type="module">
-    import {Color3, StandardMaterial, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
     import {Pane} from "tweakpane";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     viewer.scene.activeCamera.useAutoRotationBehavior = true;
 
-    var box = MeshBuilder.CreateBox("box", {size: 1}, scene);
+    let  box = MeshBuilder.CreateBox("box", {size: 1}, scene);
     box.position.y = 1;
     box.material = new StandardMaterial("boxMat", scene);
     box.material.diffuseColor = Color3.Blue();
@@ -64,7 +68,7 @@
     box.billboardMode = 0;
 
     // Our built-in 'ground' shape.
-    var ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+    let  ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
     const pane = new Pane();
     pane.addBinding(box, 'billboardMode', {
         options: {

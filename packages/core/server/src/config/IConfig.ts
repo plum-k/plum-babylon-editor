@@ -13,8 +13,16 @@ export interface IHttpConfig {
     port: number;              // HTTP 服务的端口号
 }
 
+// OSS 配置接口
+export interface IOssConfig {
+    accessKeyId: string;       // OSS 访问密钥 ID
+    accessKeySecret: string;   // OSS 访问密钥 Secret
+    roleArn:string;            // OSS 角色 ARN
+}
+
 // 总配置接口
 export interface IConfig {
     database: IDatabaseConfig; // 数据库配置
     http: IHttpConfig;         // HTTP 配置
+    oss: IOssConfig;           // OSS 配置
 }

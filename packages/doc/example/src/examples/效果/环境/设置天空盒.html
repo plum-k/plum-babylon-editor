@@ -35,8 +35,12 @@
 <script async type="module">
     import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
     let skyMesh;
 

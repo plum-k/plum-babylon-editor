@@ -1,7 +1,7 @@
 import {Button, Dropdown} from "antd";
-import MenuItem from "./MenuItem.tsx";
+import {MenuItem} from "./MenuItem.tsx";
 
-export default function EditMenu() {
+export  function EditMenu() {
     const items = [
         {
             key: '撤销',

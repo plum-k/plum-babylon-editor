@@ -1,14 +1,10 @@
 import {Fragment, useEffect, useState} from "react";
 import {Form, FormProps} from "antd";
 import {useSelectObject3D, useViewer} from "../../../store";
-import {InputItem, ObjectAttributeProvider, TextItem} from "@plum-render/common-ui";
-import {AbstractMesh, fromBabylonObservable, isPlumArcRotateCamera, NodeTool} from "@plum-render/babylon-sdk";
-import MeshAttribute from "./MeshAttribute.tsx";
-import DirectionalLightAttribute from "./lights/DirectionalLightAttribute.tsx";
-import SpotLightAttribute from "./lights/SpotLightAttribute.tsx";
-import HemisphericLightAttribute from "./lights/HemisphericLightAttribute.tsx";
-import PointLightAttribute from "./lights/PointLightAttribute.tsx";
+import {InputItem, ObjectAttributeProvider, TextItem} from "../../../common-ui";
+import {AbstractMesh, ArcRotateCamera, HemisphericLight, Node, Tools, Vector3} from "@babylonjs/core";
 import {
+    fromBabylonObservable,
     isArcRotateCamera,
     isCamera,
     isDirectionalLight,
@@ -17,26 +13,28 @@ import {
     isHemisphericLight,
     isInstancedMesh,
     isMesh,
+    isPlumArcRotateCamera,
     isPointLight,
     isSpotLight,
-    isTransformNode
+    isTransformNode,
+    NodeTool
 } from "@plum-render/babylon-sdk";
-import ArcRotateCameraAttribute from "./ArcRotateCameraAttribute.tsx";
-import FollowCameraAttribute from "./FollowCameraAttribute.tsx";
-import FreeCameraAttribute from "./FreeCameraAttribute.tsx";
-import {ArcRotateCamera, HemisphericLight, Node, Tools, Vector3} from "@babylonjs/core";
 import {auditTime} from "rxjs";
-import TransformNodeAttribute from "./TransformNodeAttribute.tsx";
 import {get, invoke} from "lodash-es";
 import {isAggregationColor} from "../../../tool/isAggregationColor.ts";
-import EmptyState from "../../Empty.tsx";
+import {MeshAttribute} from "./MeshAttribute.tsx";
+import {TransformNodeAttribute} from "./TransformNodeAttribute.tsx";
+import {ArcRotateCameraAttribute} from "./ArcRotateCameraAttribute.tsx";
+import {FollowCameraAttribute} from "./FollowCameraAttribute.tsx";
+import {FreeCameraAttribute} from "./FreeCameraAttribute.tsx";
+import {DirectionalLightAttribute, HemisphericLightAttribute, PointLightAttribute, SpotLightAttribute} from "./lights";
+import {EmptyState} from "../../Empty.tsx";
 
-export default function NodeAttribute() {
+
+export function NodeAttribute() {
     const viewer = useViewer()
     const [form] = Form.useForm();
     const selectObject3D = useSelectObject3D();
-    const [animationsList, setAnimationsList] = useState<Array<any>>([])
-
     const onFieldsChange: FormProps['onFieldsChange'] = (changedFields, allFields) => {
         const changedField = changedFields[0];
         const name = changedField.name as Array<string>;
@@ -226,7 +224,6 @@ export default function NodeAttribute() {
         } else if (isFreeCamera(selectObject3D)) {
             return <FreeCameraAttribute/>
         } else if (isMesh(selectObject3D)) {
-
             if (selectObject3D.getTotalVertices() > 0) {
                 return <MeshAttribute/>
             } else {

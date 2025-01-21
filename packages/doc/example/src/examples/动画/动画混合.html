@@ -36,8 +36,12 @@
 
     import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
+    import {StandardMaterial, MeshBuilder, Color3} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
     let scene = viewer.scene;
 
     let hero
@@ -70,8 +74,8 @@
 
     function createAnim(name, weight) {
         const folder = pane.addFolder({title: name});
-        var runAnim = scene.animationGroups.find(a => a.name === name);
-        var runParam = {name: name, anim: runAnim, weight: weight};
+        let  runAnim = scene.animationGroups.find(a => a.name === name);
+        let  runParam = {name: name, anim: runAnim, weight: weight};
         runAnim.weight = weight;
         runAnim.play(true);
         console.log(runAnim)

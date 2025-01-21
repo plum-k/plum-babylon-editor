@@ -1,4 +1,4 @@
-import {IApplication} from "@plum-common/type";
+
 import {req} from "./request";
 
 export class ApplicationApi {

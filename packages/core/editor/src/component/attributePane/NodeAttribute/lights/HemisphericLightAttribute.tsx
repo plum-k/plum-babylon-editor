@@ -1,7 +1,7 @@
 import {Fragment} from "react";
-import {ColorItem, InputNumberItem, Vector3Item} from "@plum-render/common-ui";
+import {ColorItem, InputNumberItem, Vector3Item} from "../../../../common-ui";
 
-export default function HemisphericLightAttribute() {
+export function HemisphericLightAttribute() {
 
     return (
         <Fragment>

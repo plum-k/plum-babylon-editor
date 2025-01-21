@@ -33,13 +33,14 @@
     }
 </script>
 <script async type="module">
-    import {AbstractMesh, MeshBuilder, Viewer, Color4} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {});
     let scene = viewer.scene;
 
 
-    var plane = MeshBuilder.CreatePlane('opaque1', {
+    let  plane = MeshBuilder.CreatePlane('opaque1', {
         width: 5,
         height: 5
     });
@@ -78,7 +79,7 @@
     // OCCLUSION_TYPE_STRICT：此选项将恢复对象的最后状态，无论是可见的、继续为可见的还是隐藏的，继续为隐藏的。
 
     sphere.occlusionRetryCount = 10;
-    sphere.occlusionType = BABYLON.AbstractMesh.OCCLUSION_TYPE_STRICT;
+    sphere.occlusionType = AbstractMesh.OCCLUSION_TYPE_STRICT;
 
     console.log(scene.rootNodes)
 

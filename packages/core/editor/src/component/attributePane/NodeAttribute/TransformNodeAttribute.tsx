@@ -1,13 +1,13 @@
-import React, {Fragment} from "react";
-import {BoolItem, InputNumberItem, Vector3Item} from "@plum-render/common-ui";
-import {Button, Checkbox, Collapse, Flex, Form, Space} from "antd";
+import {Fragment} from "react";
+import {BoolItem, InputNumberItem, Vector3Item} from "../../../common-ui";
+import {Button, Collapse, Flex, Form, Space} from "antd";
 import {isArray} from "lodash-es";
 import {AnimationGroup, Skeleton} from "@babylonjs/core";
 import {PauseCircleOutlined, PlayCircleOutlined, StopOutlined} from "@ant-design/icons";
 import {useSelectObject3D} from "../../../store";
 import {useForceUpdate} from "../../../hooks/useForceUpdate.ts";
 
-export default function TransformNodeAttribute() {
+export function TransformNodeAttribute() {
     const selectObject3D = useSelectObject3D();
 
     const [forceState, forceUpdate] = useForceUpdate();
@@ -24,9 +24,9 @@ export default function TransformNodeAttribute() {
         item.stop();
         forceUpdate();
     }
-    const onReset = (items:AnimationGroup[]) => {
-        const skeleton = selectObject3D?.reservedDataStore?.skeleton as  Skeleton
-        if (skeleton){
+    const onReset = (items: AnimationGroup[]) => {
+        const skeleton = selectObject3D?.reservedDataStore?.skeleton as Skeleton
+        if (skeleton) {
             skeleton.returnToRest();
         }
         forceUpdate();
@@ -58,7 +58,7 @@ export default function TransformNodeAttribute() {
                         })
                     }
                     <Form.Item valuePropName="checked" label={"骨骼姿态"}>
-                        <Button color="default" variant="filled" onClick={()=>onReset(animations)}>
+                        <Button color="default" variant="filled" onClick={() => onReset(animations)}>
                             重置
                         </Button>
                     </Form.Item>

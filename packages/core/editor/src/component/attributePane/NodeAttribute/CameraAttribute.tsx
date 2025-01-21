@@ -1,14 +1,13 @@
 import {Fragment, useState} from "react";
 import {Form} from "antd";
 import {DescriptionsProps} from "antd/lib";
-
-import {InputNumberItem, NumberSliderItem, SelectItem} from "@plum-render/common-ui";
+import {InputNumberItem, NumberSliderItem, SelectItem} from "../../../common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
 import {Camera} from "@babylonjs/core";
 
 
-export default function CameraAttribute() {
-    
+export function CameraAttribute() {
+
     const form = Form.useFormInstance();
     const viewer = useViewer()
     const [MeshInfo, setMeshInfo] = useState<DescriptionsProps['items']>([]);

@@ -8,13 +8,13 @@ import {
     SelectItem,
     TextItem,
     Vector3Item
-} from "@plum-render/common-ui";
+} from "../../../common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
 import {isInstancedMesh} from "@plum-render/babylon-sdk";
 import {AbstractMesh, Mesh, RenderingManager, VertexBuffer} from "@babylonjs/core";
 import {isNil} from "lodash-es";
 
-export default function MeshAttribute() {
+export function MeshAttribute() {
     const form = Form.useFormInstance();
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D();

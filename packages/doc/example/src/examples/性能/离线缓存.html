@@ -33,7 +33,8 @@
     }
 </script>
 <script async type="module">
-    import {AbstractMesh, MeshBuilder, Viewer, Color4} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {});
     let scene = viewer.scene;

@@ -33,6 +33,8 @@
     }
 </script>
 <script async type="module">
+    import {Viewer,} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
     import {
         Color3,
         Color4,
@@ -43,9 +45,7 @@
         PhysicsShapeType,
         Texture,
         Vector3,
-        Viewer,
-    } from "@plum-render/babylon-sdk";
-    import {Pane} from 'tweakpane';
+    } from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
@@ -54,48 +54,48 @@
     let scene = viewer.scene;
 
 
-    var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+    let  sphere1 = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
 
     // Move the sphere upward
     sphere1.position.set(1.5, 5, 0);
 
     // Our built-in 'sphere' shape.
-    var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+    let  sphere2 = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
 
     // Move the sphere upward
     sphere2.position.set(-1.5, 4, 0);
 
     // Our built-in 'ground' shape.
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
+    let  ground = MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
 
     // A box shape lying on the ground.
-    var box = BABYLON.MeshBuilder.CreateBox("box", {width: 8, height: 2, depth: 2}, scene);
-    let redMaterial = new BABYLON.StandardMaterial("box", scene);
+    let  box = MeshBuilder.CreateBox("box", {width: 8, height: 2, depth: 2}, scene);
+    let redMaterial = new StandardMaterial("box", scene);
     redMaterial.diffuseColor.set(1, 0, 0);
     box.material = redMaterial;
 
     // initialize plugin
-    var hk = new BABYLON.HavokPlugin();
+    let  hk = new HavokPlugin();
     // enable physics in the scene with a gravity
-    scene.enablePhysics(new BABYLON.Vector3(0, -1, 0), hk);
+    scene.enablePhysics(new Vector3(0, -1, 0), hk);
 
     // Create a sphere shape and the associated body. Size will be determined automatically.
-    var sphere1Aggregate = new BABYLON.PhysicsAggregate(sphere1, BABYLON.PhysicsShapeType.SPHERE, {mass: 1}, scene);
+    let  sphere1Aggregate = new PhysicsAggregate(sphere1, PhysicsShapeType.SPHERE, {mass: 1}, scene);
 
-    var sphere2Aggregate = new BABYLON.PhysicsAggregate(sphere2, BABYLON.PhysicsShapeType.SPHERE, {mass: 1}, scene);
+    let  sphere2Aggregate = new PhysicsAggregate(sphere2, PhysicsShapeType.SPHERE, {mass: 1}, scene);
 
     // Create a static box shape for the ground.
-    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
+    let  groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, scene);
 
     // Create a static box shape for the box
-    var boxAggregate = new BABYLON.PhysicsAggregate(box, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
+    let  boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, {mass: 0}, scene);
 
     //filtering happens here
     const FILTER_GROUP_SPHERE = 1;
     const FILTER_GROUP_GROUND = 2;
     const FILTER_GROUP_BOX = 4;
 
-    sphere1Aggregate.body.applyForce(sphere1Aggregate.body.getObjectCenterWorld(), new BABYLON.Vector3(0, 1, 5))
+    sphere1Aggregate.body.applyForce(sphere1Aggregate.body.getObjectCenterWorld(), new Vector3(0, 1, 5))
 
     sphere1Aggregate.shape.filterMembershipMask = FILTER_GROUP_SPHERE;
     sphere2Aggregate.shape.filterMembershipMask = FILTER_GROUP_SPHERE;

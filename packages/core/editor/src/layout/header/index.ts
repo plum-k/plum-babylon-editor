@@ -1,5 +1,6 @@
-export {default as AddMenu} from "./AddMenu.tsx";
-export {default as EditMenu} from "./EditMenu.tsx";
-export {default as FileMenu} from "./FileMenu.tsx";
-export {default as Header} from "./Header.tsx";
-export {default as MenuItem} from "./MenuItem.tsx";
+export * from "./AddMenu";
+export * from "./EditMenu";
+export * from "./FileMenu";
+export * from "./Header";
+export * from "./HeaderTool";
+export * from "./MenuItem";

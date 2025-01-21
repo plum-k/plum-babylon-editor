@@ -33,16 +33,13 @@
     }
 </script>
 <script async type="module">
-    import {
-        StandardMaterial,
-        MeshDebugMode,
-        Color3,
-        MeshBuilder,
-        Viewer,
-        MeshDebugPluginMaterial
-    } from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     let box = MeshBuilder.CreateBox('box', {width: 2, height: 2, depth: 2}, scene);

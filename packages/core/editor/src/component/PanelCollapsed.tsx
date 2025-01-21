@@ -8,7 +8,7 @@ export interface IPanelCollapsedProps {
     direction: "left" | "right";
 }
 
-export default function PanelCollapsed(props: IPanelCollapsedProps) {
+export function PanelCollapsed(props: IPanelCollapsedProps) {
     const {panelRef, direction} = props;
     const isLeft = direction === "left";
     const viewer = useViewer()
@@ -49,7 +49,8 @@ export default function PanelCollapsed(props: IPanelCollapsedProps) {
              }}
              onClick={click}>
             {
-                (isLeft ? panelCollapsed : !panelCollapsed) ? <CaretRightOutlined className="text-3xl" style={{color: "rgba(246, 246, 247, 0.5)"}}/> :
+                (isLeft ? panelCollapsed : !panelCollapsed) ?
+                    <CaretRightOutlined className="text-3xl" style={{color: "rgba(246, 246, 247, 0.5)"}}/> :
                     <CaretLeftOutlined className="text-3xl" style={{color: "rgba(246, 246, 247, 0.5)"}}/>
             }
         </div>

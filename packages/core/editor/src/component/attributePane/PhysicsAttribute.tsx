@@ -1,13 +1,13 @@
 import {useSelectObject3D, useViewer} from "../../store";
 import {Fragment, useEffect, useState} from "react";
-import {useForceUpdate} from "../../hooks/useForceUpdate.ts";
 import {Button, Form, FormProps, Space} from "antd";
-import {Mesh, PhysicsAggregate, PhysicsMotionType, PhysicsShapeType} from "@babylonjs/core";
+import {PhysicsAggregate, PhysicsMotionType, PhysicsShapeType} from "@babylonjs/core";
 import {FieldData} from "rc-field-form/lib/interface";
-import {InputNumberItem, ObjectAttributeProvider, SelectItem, TextItem} from "@plum-render/common-ui";
-import EmptyState from "../Empty.tsx";
+import {InputNumberItem, ObjectAttributeProvider, SelectItem, TextItem} from "../../common-ui";
 import {isExtendsTransformNode, isMesh} from "@plum-render/babylon-sdk";
 import {set} from "lodash-es";
+import {useForceUpdate} from "../../hooks/useForceUpdate.ts";
+import {EmptyState} from "../Empty.tsx";
 
 export interface IProxyPhysicsBody {
     isEnable: string; // "未启用" 或其他状态
@@ -19,7 +19,7 @@ export interface IProxyPhysicsBody {
     shapeType: PhysicsShapeType; // 形状类型
 }
 
-export default function PhysicsAttribute() {
+export function PhysicsAttribute() {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D();
     const [proxyPhysicsBody, setProxyPhysicsBody] = useState<IProxyPhysicsBody>({

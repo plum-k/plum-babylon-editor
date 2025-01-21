@@ -33,13 +33,17 @@
     }
 </script>
 <script async type="module">
-    import {Scalar, SolidParticleSystem, MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     // 固体粒子系统 （SPS） 不仅仅是生成网格的多个副本，这些副本在 粒子 部分中进行了全面考虑。SPS 将一个网格的多个副本全部放入一个网格中。这意味着单个网格只有一个绘制调用，而不是多个绘制调用。
-    // SPS 是单个可更新的网格，其属性与任何其他 Babylon.js 网格相同。
+    // SPS 是单个可更新的网格，其属性与任何其他 js 网格相同。
 
     let SPS = new SolidParticleSystem("SPS", scene);  //create the SPS
     const tetra = MeshBuilder.CreatePolyhedron("tetra", {}); //create the mesh

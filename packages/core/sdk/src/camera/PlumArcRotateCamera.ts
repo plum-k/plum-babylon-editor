@@ -7,7 +7,7 @@ export class PlumArcRotateCamera extends ArcRotateCamera {
         this.inputs.removeByType("ArcRotateCameraPointersInput");
         this.inputs.add(new PlumArcRotateCameraPointersInput());
         this.wheelDeltaPercentage = 0.01;
-        this.panningSensibility = 5000;
+        this.panningSensibility = 15000;
     }
 }
 

@@ -33,6 +33,8 @@
     }
 </script>
 <script async type="module">
+    import {Viewer,} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
     import {
         Color3,
         Color4,
@@ -43,9 +45,7 @@
         PhysicsShapeType,
         Texture,
         Vector3,
-        Viewer,
-    } from "@plum-render/babylon-sdk";
-    import {Pane} from 'tweakpane';
+    } from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
@@ -55,37 +55,37 @@
 
 
     // Our built-in 'sphere' shape.
-    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+    let  sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
 
     // Move the sphere upward at 4 units
     sphere.position.y = 4;
 
     // Our built-in 'ground' shape.
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
+    let  ground = MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
 
     // initialize plugin
-    var hk = new BABYLON.HavokPlugin();
+    let  hk = new HavokPlugin();
     // enable physics in the scene with a gravity
-    scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), hk);
+    scene.enablePhysics(new Vector3(0, -9.8, 0), hk);
 
     // Create a sphere shape and the associated body. Size will be determined automatically.
-    var sphereAggregate = new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, {
+    let  sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, {
         mass: 1,
         restitution: 0.75
     }, scene);
 
     // Create a static box shape.
-    var groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0}, scene);
+    let  groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, scene);
 
     //When clicking the display, sphere will jump.
     scene.onPointerDown = function () {
         sphereAggregate.body.applyForce(
-            new BABYLON.Vector3(0, 100, 0),
+            new Vector3(0, 100, 0),
             sphere.absolutePosition
         );
 
         // sphereAggregate.body.applyImpulse(
-        //     new BABYLON.Vector3(0, 10, 0),
+        //     new Vector3(0, 10, 0),
         //     sphere.absolutePosition
         // );
     }

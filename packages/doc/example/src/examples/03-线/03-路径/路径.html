@@ -33,32 +33,36 @@
     }
 </script>
 <script async type="module">
-    import { MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {Vector3, Curve3, Color3, MeshBuilder} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     // array of points
-    var points = [];
-    for (var i = 0; i < 50; i++) {
+    let  points = [];
+    for (let  i = 0; i < 50; i++) {
         points.push(new Vector3(i - 25, 5 * Math.sin(i / 2), 0));
     }
 
     // Path3D
-    var path3d = new Path3D(points);
-    var tangents = path3d.getTangents();
-    var normals = path3d.getNormals();
-    var binormals = path3d.getBinormals();
-    var curve = path3d.getCurve();
+    let  path3d = new Path3D(points);
+    let  tangents = path3d.getTangents();
+    let  normals = path3d.getNormals();
+    let  binormals = path3d.getBinormals();
+    let  curve = path3d.getCurve();
 
     // visualisation
-    var li = Mesh.CreateLines('li', curve, scene);
-    for (var p = 0; p < curve.length; p++) {
-        var tg = Mesh.CreateLines('tg', [curve[p], curve[p].add(tangents[p])], scene);
+    let  li = Mesh.CreateLines('li', curve, scene);
+    for (let  p = 0; p < curve.length; p++) {
+        let  tg = Mesh.CreateLines('tg', [curve[p], curve[p].add(tangents[p])], scene);
         tg.color = Color3.Red();
-        var no = Mesh.CreateLines('no', [curve[p], curve[p].add(normals[p])], scene);
+        let  no = Mesh.CreateLines('no', [curve[p], curve[p].add(normals[p])], scene);
         no.color = Color3.Blue();
-        var bi = Mesh.CreateLines('bi', [curve[p], curve[p].add(binormals[p])], scene);
+        let  bi = Mesh.CreateLines('bi', [curve[p], curve[p].add(binormals[p])], scene);
         bi.color = Color3.Green();
     }
 

@@ -36,7 +36,10 @@
     import {Viewer, MeshBuilder, PBRMaterial, Color3} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
     const pane = new Pane();
 

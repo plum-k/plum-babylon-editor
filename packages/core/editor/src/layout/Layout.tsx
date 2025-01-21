@@ -1,11 +1,11 @@
 import {Fragment, useRef} from "react";
 import {ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
-import SceneView from "./SceneView.tsx";
-import SceneTree from "./SceneTree.tsx";
-import AttributePane from "./AttributePane.tsx";
 import {useViewer} from "../store";
+import {SceneTree} from "./SceneTree.tsx";
+import {SceneView} from "./SceneView.tsx";
+import {AttributePane} from "./AttributePane.tsx";
 
-export default function Layout() {
+export  function Layout() {
     const viewer = useViewer()
     const onLayout = () => {
         if (viewer) {

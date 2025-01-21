@@ -1,6 +1,5 @@
 import {useEffect} from "react";
 import {Button, Dropdown, MenuProps} from "antd";
-import MenuItem from "./MenuItem.tsx";
 import {isNil} from "lodash-es";
 import {useViewer} from "../../store";
 import {
@@ -12,11 +11,11 @@ import {
     PointLight,
     SpotLight,
     TransformNode,
-    Vector2,
     Vector3
 } from "@babylonjs/core";
+import { MenuItem } from "./MenuItem";
 
-export default function AddMenu() {
+export  function AddMenu() {
     const viewer = useViewer()
     useEffect(() => {
     }, [viewer])
@@ -112,20 +111,6 @@ export default function AddMenu() {
                     object: tube
                 });
                 break;
-            case "lathe":
-                const points = [];
-                for (let i = 0; i < 10; i++) {
-                    points.push(new Vector2(Math.sin(i * 0.2) * 3 + 3, (i - 5) * 0.8));
-                }
-                const lathe = MeshBuilder.CreateLathe("Lathe", {
-                    shape: points,
-                    sideOrientation: Mesh.DOUBLESIDE
-                },);
-                viewer.editor.addObjectCommandExecute({
-                    source: "editor",
-                    object: lathe
-                });
-                break;
             case "PointLight":
                 const pointLight = new PointLight("PointLight", new Vector3(0, 2, 2),);
                 viewer.editor.addObjectCommandExecute({
@@ -204,42 +189,12 @@ export default function AddMenu() {
                 <MenuItem name={'球体'} onClick={() => HandleClick('sphere')}/>
             )
         },
-        // {
-        //     key: 'dodecahedron',
-        //     label: (
-        //         <MenuItem name={'十二面体'} onClick={() => HandleClick('dodecahedron')}/>
-        //     )
-        // },
-        // {
-        //     key: 'icosahedron',
-        //     label: (
-        //         <MenuItem name={'二十面体'} onClick={() => HandleClick('icosahedron')}/>
-        //     )
-        // },
-        // {
-        //     key: 'octahedron',
-        //     label: (
-        //         <MenuItem name={'八面体'} onClick={() => HandleClick('octahedron')}/>
-        //     )
-        // },
-        // {
-        //     key: 'tetrahedron',
-        //     label: (
-        //         <MenuItem name={'四面体'} onClick={() => HandleClick('tetrahedron')}/>
-        //     )
-        // },
         {
             key: 'torus',
             label: (
                 <MenuItem name={'圆环体'} onClick={() => HandleClick('torus')}/>
             )
         },
-        // {
-        //     key: 'torusknot',
-        //     label: (
-        //         <MenuItem name={'环面纽结体'} onClick={() => HandleClick('torusknot')}/>
-        //     )
-        // },
         {
             key: 'tube',
             label: (
@@ -250,12 +205,6 @@ export default function AddMenu() {
             key: 'lathe',
             label: (
                 <MenuItem name={'酒杯'} onClick={() => HandleClick('lathe')}/>
-            )
-        },
-        {
-            key: 'sprite',
-            label: (
-                <MenuItem name={'精灵'} onClick={() => HandleClick('sprite')}/>
             )
         }
     ];

@@ -12,7 +12,7 @@ export interface IEmptyStateProps {
  * @param props
  * @constructor
  */
-export default function EmptyState(props: IEmptyStateProps) {
+export function EmptyState(props: IEmptyStateProps) {
     return (
         <div className="flex justify-center items-center h-full">
             <Empty description={false}>

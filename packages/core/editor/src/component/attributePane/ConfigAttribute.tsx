@@ -1,10 +1,10 @@
 import {Fragment, useEffect} from "react";
 import {Form, FormProps} from "antd";
 import {FieldData} from "rc-field-form/lib/interface";
-import {BoolItem, ObjectAttributeProvider} from "@plum-render/common-ui";
+import {BoolItem, ObjectAttributeProvider} from "../../common-ui";
 import {useSetIsDebug, useViewer} from "../../store";
 
-export default function ConfigAttribute() {
+export function ConfigAttribute() {
     const [form] = Form.useForm();
     const viewer = useViewer()
     const setIsDebug = useSetIsDebug();

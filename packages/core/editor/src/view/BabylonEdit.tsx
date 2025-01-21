@@ -1,12 +1,11 @@
 import {Fragment} from "react";
-import Layout from "../layout/Layout.tsx";
-import Header from "../layout/header/Header.tsx";
 import {useSelectObject3D, useViewer} from "../store";
 import {useHotkeys} from "react-hotkeys-hook";
 import '../styles/index.css'
 import {ToastContainer} from "react-toastify";
+import {Header, Layout} from "../layout";
 
-export default function BabylonEdit() {
+export default   function BabylonEdit() {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D()
     useHotkeys('ctrl+z', () => {

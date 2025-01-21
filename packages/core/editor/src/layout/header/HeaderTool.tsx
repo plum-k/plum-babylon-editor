@@ -14,7 +14,7 @@ import {Fragment, useState} from "react";
 
 let videoRecorder: Nullable<VideoRecorder> = null;
 
-export default function HeaderTool() {
+export  function HeaderTool() {
     const viewer = useViewer();
     // 焦点到场景
     const focusToScene = () => {

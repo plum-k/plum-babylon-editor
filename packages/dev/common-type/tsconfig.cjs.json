@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "./build/commonjs",
-    "module": "commonjs",
-    "declaration": true,
-    "declarationDir": "./build/types"
-  }
-}

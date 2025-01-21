@@ -1,6 +1,5 @@
 import {ChunkSerialize, Viewer} from "@plum-render/babylon-sdk";
 import {Pane} from 'tweakpane';
-import testMesh from "./testMesh.ts";
 
 export default function testSerialize(viewer: Viewer) {
     const pane = new Pane();

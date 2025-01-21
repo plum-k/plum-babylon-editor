@@ -33,17 +33,18 @@
     }
 </script>
 <script async type="module">
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
     import {
         ParticleSystem,
         Texture,
         Vector3,
-        MeshBuilder,
-        Viewer,
-        StandardMaterial,
-        Color3,
         Color4,
-        SphereParticleEmitter
-    } from "@plum-render/babylon-sdk";
+        MeshBuilder,
+        MeshParticleEmitter,
+        PhysicsAggregate,
+        PhysicsShapeType
+    } from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
@@ -52,16 +53,16 @@
     let scene = viewer.scene;
 
 
-    var surfaceParticles = new ParticleSystem("surfaceParticles", 1600, scene);
+    let  surfaceParticles = new ParticleSystem("surfaceParticles", 1600, scene);
 
     // Texture of each particle
     surfaceParticles.particleTexture = new Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJStextures/master/ParticleSystems/Sun/T_SunSurface.png", scene);
 
     // Create core sphere
-    var coreSphere = MeshBuilder.CreateSphere("coreSphere", {diameter: 2.01, segments: 64}, scene);
+    let  coreSphere = MeshBuilder.CreateSphere("coreSphere", {diameter: 2.01, segments: 64}, scene);
 
     // Create core material
-    var coreMat = new StandardMaterial("coreMat", scene)
+    let  coreMat = new StandardMaterial("coreMat", scene)
     coreMat.emissiveColor = new Color3(0.3773, 0.0930, 0.0266);
 
     // Assign core material to sphere
@@ -77,7 +78,7 @@
     surfaceParticles.maxInitialRotation = 2 * Math.PI;
 
     // Where the sun particles come from
-    var sunEmitter = new SphereParticleEmitter();
+    let  sunEmitter = new SphereParticleEmitter();
     sunEmitter.radius = 1;
     sunEmitter.radiusRange = 0; // emit only from shape surface
 

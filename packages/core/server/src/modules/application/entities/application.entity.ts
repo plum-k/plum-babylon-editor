@@ -1,8 +1,12 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
-import {EAppType, IApplication} from "@plum-common/type";
+
+export enum EAppType {
+    DIR = "DIR",
+    BABYLON = "BABYLON",
+}
 
 @Entity()
-export class Application implements IApplication {
+export class Application {
     fileName: string
 
     @PrimaryGeneratedColumn()

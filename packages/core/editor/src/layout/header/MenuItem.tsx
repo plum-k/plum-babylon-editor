@@ -4,7 +4,7 @@ export interface MenuProps {
     onClick?: () => void
 }
 
-export default function MenuItem(props: MenuProps) {
+export  function MenuItem(props: MenuProps) {
     const {name, hotKey, onClick} = props;
     return (
         <div onClick={onClick}

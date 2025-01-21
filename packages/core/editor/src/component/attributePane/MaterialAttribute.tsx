@@ -12,16 +12,16 @@ import {
     SelectItem,
     TextItem,
     Vector2Item,
-} from "@plum-render/common-ui";
+} from "../../common-ui";
 import {Color3, Constants, Engine, Material, Mesh, PBRMaterial} from "@babylonjs/core";
 import {AggregationColor} from "antd/es/color-picker/color";
-import BabylonTextureItem from "../attributeItem/BabylonTextureItem.tsx";
 import {isAggregationColor} from "../../tool/isAggregationColor.ts";
 import {get, invoke} from "lodash-es";
 import {useForceUpdate} from "../../hooks/useForceUpdate.ts";
-import EmptyState from "../Empty.tsx";
+import {BabylonTextureItem} from "../../common-ui/attributeItem/BabylonTextureItem.tsx";
+import {EmptyState} from "../Empty.tsx";
 
-export default function MaterialAttribute() {
+export function MaterialAttribute() {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D();
     const selectKey = useSelectKey();

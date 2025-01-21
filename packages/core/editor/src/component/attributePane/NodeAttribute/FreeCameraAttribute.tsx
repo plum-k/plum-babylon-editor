@@ -1,12 +1,12 @@
 import {Fragment, useMemo} from "react";
 import {Collapse, CollapseProps} from "antd";
-import {BoolItem, InputNumberItem, Vector3Item} from "@plum-render/common-ui";
+import {BoolItem, InputNumberItem, Vector3Item} from "../../../common-ui";
 import {useSelectObject3D} from "../../../store";
-import CameraAttribute from "./CameraAttribute.tsx";
+import {CameraAttribute} from "./CameraAttribute.tsx";
 
 
-export default function FreeCameraAttribute() {
-    
+export function FreeCameraAttribute() {
+
     const selectObject3D = useSelectObject3D();
     const items = useMemo(() => {
         const list: CollapseProps['items'] = [];
@@ -33,8 +33,8 @@ export default function FreeCameraAttribute() {
             children: <Fragment>
                 <BoolItem label="启用碰撞检测" name={["checkCollisions"]}/>
                 <BoolItem label="启用重力" name={["applyGravity"]}/>
-                <Vector3Item label="碰撞体大小" name={["ellipsoid"]}/>
-                <Vector3Item label="碰撞体偏移" basePropertyName="ellipsoidOffset"/>
+                <Vector3Item label="碰撞体大小" basePropertyName={["ellipsoid"]}/>
+                <Vector3Item label="碰撞体偏移" basePropertyName={["ellipsoidOffset"]}/>
             </Fragment>
         });
         return list;

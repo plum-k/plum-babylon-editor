@@ -1,13 +1,5 @@
-import {
-    initReservedDataStore,
-    MeshBuilder,
-    PhysicsAggregate,
-    PhysicsPrestepType,
-    PhysicsShapeType,
-    Quaternion,
-    Vector3,
-    Viewer
-} from "@plum-render/babylon-sdk";
+import {initReservedDataStore, Viewer} from "@plum-render/babylon-sdk";
+import {MeshBuilder, PhysicsAggregate, PhysicsShapeType,} from "@babylonjs/core";
 
 export default async function testPhysics(viewer: Viewer,) {
     const scene = viewer.scene;

@@ -32,11 +32,15 @@
       }
     }
 </script>
-<script  type="module">
-    import { MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+<script type="module">
+    import {Viewer} from "@plum-render/babylon-sdk";
     import {Pane} from "tweakpane";
+    import {MeshBuilder} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
     const scene = viewer.scene;
 

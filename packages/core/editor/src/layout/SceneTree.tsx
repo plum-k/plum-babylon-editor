@@ -51,7 +51,7 @@ const getSceneTree = (viewer: Viewer) => {
     return getTree(rootNodes);
 }
 
-export default function SceneTree() {
+export  function SceneTree() {
     const viewer = useViewer();
     const setSelectObject3D = useSetSelectObject3D()
     const setSelectKey = useSetSelectKey()
@@ -123,7 +123,7 @@ export default function SceneTree() {
         }
 
         // 深度优先遍历剔除不匹配的节点
-        function pruneTreeDFS(nodes, condition) {
+        function pruneTreeDFS(nodes: any[], condition: { (node: any): any; (arg0: any): any; }) {
             return nodes.reduce((acc, node) => {
                 const children = node.children ? pruneTreeDFS(node.children, condition) : [];
                 if (condition(node) || children.length > 0) {
@@ -133,10 +133,9 @@ export default function SceneTree() {
             }, []);
         }
 
-        let result = pruneTreeDFS(baseTreeData, (node) => {
+        return pruneTreeDFS(baseTreeData, (node) => {
             return node.name.includes(inputValue); // 根据输入值过滤节点
         });
-        return result;
     }, [baseTreeData, searchState]);
 
 
@@ -277,9 +276,9 @@ export default function SceneTree() {
 
     const RenderRightMenu = () => {
         const visibleText = () => {
-            if (rightKey!==-1) {
+            if (rightKey !== -1) {
                 const node = viewer?.getNodeByUniqueId(rightKey);
-                if (node){
+                if (node) {
                     return NodeTool.getVisibleNode(node) ? "隐藏" : "显示"
                 }
             }

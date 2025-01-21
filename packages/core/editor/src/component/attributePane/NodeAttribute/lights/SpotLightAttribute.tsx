@@ -1,8 +1,8 @@
 import {Fragment} from "react";
-import {ColorItem, InputNumberItem, Vector3Item} from "@plum-render/common-ui";
-import LightShadowAttribute from "./LightShadowAttribute.tsx";
+import {ColorItem, InputNumberItem, Vector3Item} from "../../../../common-ui";
+import {LightShadowAttribute} from "./LightShadowAttribute.tsx";
 
-export default function SpotLightAttribute() {
+export function SpotLightAttribute() {
     return (
         <Fragment>
             <InputNumberItem name={["intensity"]} label="强度"/>

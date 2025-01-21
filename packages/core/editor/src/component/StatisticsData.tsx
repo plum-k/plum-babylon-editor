@@ -2,9 +2,9 @@ import {Fragment, useEffect, useMemo, useState} from "react";
 import {useViewer} from "../store";
 import {SceneStatistics} from "@plum-render/babylon-sdk";
 import {Collapse, CollapseProps, Form} from "antd";
-import {ObjectAttributeProvider, TextItem} from "@plum-render/common-ui";
+import {ObjectAttributeProvider, TextItem} from "../common-ui";
 
-export default function StatisticsData() {
+export function StatisticsData() {
     const viewer = useViewer()
     const [form] = Form.useForm();
 

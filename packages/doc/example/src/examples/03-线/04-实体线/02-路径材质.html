@@ -34,15 +34,19 @@
 </script>
 <script async type="module">
     import {
-        Color3,
-        GreasedLineMeshColorDistributionType,
-        CreateGreasedLine,
         Viewer,
-        Debug
     } from "@plum-render/babylon-sdk";
     import {GreasedLineTools} from "@babylonjs/core";
+    import {
+        Vector3, Curve3, Color3, MeshBuilder, Debug,
+        GreasedLineMeshColorDistributionType,
+        CreateGreasedLine,
+    } from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
 
     new Debug.AxesViewer()

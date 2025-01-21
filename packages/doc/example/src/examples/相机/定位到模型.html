@@ -33,10 +33,24 @@
     }
 </script>
 <script async type="module">
-    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Viewer,} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
+    import {
+        Color3,
+        Color4,
+        MeshBuilder,
+        MeshParticleEmitter,
+        ParticleSystem,
+        PhysicsAggregate,
+        PhysicsShapeType,
+        Texture,
+        Vector3,
+    } from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
     let mesh = [];
 
     const pane = new Pane();

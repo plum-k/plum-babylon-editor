@@ -8,7 +8,7 @@ interface IConProps {
     style?: CSSProperties
 }
 
-export default function Icon(props: IConProps) {
+export function Icon(props: IConProps) {
     const {iconName, className, onClick, style} = props;
 
     const _className = cn("icon", className)

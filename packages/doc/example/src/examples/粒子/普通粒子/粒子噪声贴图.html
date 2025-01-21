@@ -33,7 +33,18 @@
     }
 </script>
 <script async type="module">
-    import {ParticleSystem, Texture, Vector3, Viewer, Color4, NoiseProceduralTexture} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+    import {
+        ParticleSystem,
+        Texture,
+        Vector3,
+        Color4,
+        MeshBuilder,
+        MeshParticleEmitter,
+        PhysicsAggregate,
+        PhysicsShapeType
+    } from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,

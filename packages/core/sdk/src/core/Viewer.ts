@@ -12,7 +12,7 @@ import {
     WebGPUEngineOptions
 } from "@babylonjs/core";
 import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
-import COSApi, {ICOSApiOptions} from "cos-api";
+import  {ICOSApiOptions,COSApi} from "cos-api";
 import {HtmlMeshRenderer} from "@babylonjs/addons";
 import {isCamera, isLight, isMesh} from "../guard";
 import {Editor} from "../editor/Editor";

@@ -33,10 +33,14 @@
     }
 </script>
 <script async type="module">
-    import {Viewer, MeshBuilder} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
+    import {StandardMaterial, MeshBuilder, Animation} from "@babylonjs/core";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
     const box = MeshBuilder.CreateBox("Box", {size: 1});
 
     // 创建一个动画, 动画名称为"xSlide",操作哪个属性做动画, 动画类型为浮点型, 动画循环模式为循环

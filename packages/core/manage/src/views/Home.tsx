@@ -1,9 +1,8 @@
 import AddAppModalForm from "../component/AddAppModalForm.tsx";
 import {ApplicationApi} from "common";
 import {useEffect, useState} from "react";
-import {IApplication} from "@plum-common/type";
 import {Card} from "../component/Card.tsx";
-
+import {IApplication} from "../interface/IApplication.ts";
 
 export default function Home() {
     const [folders, setFolders] = useState<Array<IApplication>>([]);

@@ -1,9 +1,10 @@
-import {CSSProperties, FC, Fragment, useEffect, useState} from "react";
+import {CSSProperties, Fragment, useEffect, useState} from "react";
 import {ArrowsAltOutlined, FullscreenOutlined, RedoOutlined} from "@ant-design/icons";
 import {Segmented} from "antd";
 import {useIsDebug, useViewer} from "../../store";
 import {GizmoEnum} from "@plum-render/babylon-sdk";
-export default function Control() {
+
+export function Control() {
     const viewer = useViewer()
     useEffect(() => {
     }, [viewer])
@@ -11,17 +12,17 @@ export default function Control() {
 
     const isDebug = useIsDebug();
 
-    const [contrlCss, setContrlCss] = useState<CSSProperties>({
+    const [controlCss, setControlCss] = useState<CSSProperties>({
         left: '10px',
     })
 
     useEffect(() => {
         if (isDebug) {
-            setContrlCss({
+            setControlCss({
                 left: '310px',
             })
         } else {
-            setContrlCss({
+            setControlCss({
                 left: '10px',
             })
         }
@@ -40,7 +41,7 @@ export default function Control() {
                 zIndex: 9999,
                 position: "absolute",
                 top: "20px",
-                ...contrlCss
+                ...controlCss
             }}>
                 <Segmented
                     vertical

@@ -8,6 +8,11 @@ export class PScene extends BabylonScene {
         super(engine, options);
     }
 
+    /**
+     * 判断场景中是否包含指定的节点
+     * @param node 节点
+     * @returns 是否包含
+     */
     objectIsInScene(node: Node) {
         if (isMesh(node)) {
             return this.meshes.includes(node);

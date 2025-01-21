@@ -1,11 +1,11 @@
-import {FC, Fragment, useMemo} from "react";
+import {Fragment, useMemo} from "react";
 import {Collapse, CollapseProps} from "antd";
-import {BoolItem, InputNumberItem, NumberSliderItem, Vector3Item} from "@plum-render/common-ui";
+import {BoolItem, InputNumberItem, NumberSliderItem, Vector3Item} from "../../../common-ui";
 import {useSelectObject3D, useViewer} from "../../../store";
-import CameraAttribute from "./CameraAttribute.tsx";
 import {ArcRotateCamera} from "@babylonjs/core";
+import {CameraAttribute} from "./CameraAttribute.tsx";
 
-export default function ArcRotateCameraAttribute() {
+export function ArcRotateCameraAttribute() {
 
     const selectObject3D = useSelectObject3D();
     let camera = selectObject3D as ArcRotateCamera;
@@ -44,7 +44,7 @@ export default function ArcRotateCameraAttribute() {
             label: '碰撞',
             children: <Fragment>
                 <BoolItem name={["checkCollisions"]} label="启动碰撞"/>
-                <Vector3Item basePropertyName="collisionRadius" label="碰撞半径"/>
+                <Vector3Item basePropertyName={["collisionRadius"]} label="碰撞半径"/>
             </Fragment>
         });
 

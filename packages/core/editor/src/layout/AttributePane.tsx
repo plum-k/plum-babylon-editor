@@ -1,11 +1,5 @@
 import {Fragment} from "react";
 import {Tabs, Tooltip} from "antd";
-import NodeAttribute from "../component/attributePane/NodeAttribute/NodeAttribute.tsx";
-import MaterialAttribute from "../component/attributePane/MaterialAttribute.tsx";
-import SceneAttribute from "../component/attributePane/SceneAttribute.tsx";
-import PostProcessAttribute from "../component/attributePane/PostProcessAttribute.tsx";
-import StatisticsData from "../component/StatisticsData.tsx";
-import ConfigAttribute from "../component/attributePane/ConfigAttribute.tsx";
 import {
     ApartmentOutlined,
     AreaChartOutlined,
@@ -15,9 +9,17 @@ import {
     RocketOutlined,
     SlidersOutlined
 } from "@ant-design/icons";
-import PhysicsAttribute from "../component/attributePane/PhysicsAttribute.tsx";
+import {
+    ConfigAttribute,
+    MaterialAttribute,
+    NodeAttribute,
+    PhysicsAttribute,
+    PostProcessAttribute,
+    SceneAttribute,
+    StatisticsData
+} from "../component";
 
-export default function AttributePane() {
+export  function AttributePane() {
     const items = [
         {
             label: (

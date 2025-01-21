@@ -1,4 +1,5 @@
-export  { default as AttributePane } from "./AttributePane";
-export  { default as Layout } from "./Layout.tsx";
-export  { default as SceneTree } from "./SceneTree";
-export  { default as SceneView } from "./SceneView";
+export * from "./AttributePane";
+export * from "./Layout";
+export * from "./SceneTree";
+export * from "./SceneView";
+export * from "./header";

@@ -27,7 +27,10 @@ export default defineConfig({
             name: 'exclude-plugin',
             resolveId(source) {
                 // console.log(    source)
-                if (source.includes('@babylonjs/loaders/glTF/index.js')) {
+                if (source.includes('@babylonjs/loaders/glTF/index.js')
+                    || source.includes('@babylonjs/core/Debug/debugLayer')
+                    || source.includes('@babylonjs/inspector')
+                ) {
                     console.log("exclude-plugin", source)
                     return {id: source, external: true}; // 将其标记为外部
                 }
@@ -42,7 +45,7 @@ export default defineConfig({
             // tsconfig: path.resolve(__dirname, "./tsconfig.json"),
         }),
         visualizer({
-            open: true, // 自动打开生成的报告
+            open: false, // 自动打开生成的报告
         })
     ],
 

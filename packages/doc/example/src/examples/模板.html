@@ -33,9 +33,12 @@
     }
 </script>
 <script async type="module">
-    import { MeshBuilder, Viewer} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
 
-    const viewer = await Viewer.create("app", {});
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
 
     viewer.initSubject.subscribe(() => {
         console.log("场景初始化完成");

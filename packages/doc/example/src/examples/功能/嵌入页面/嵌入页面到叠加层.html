@@ -51,13 +51,20 @@
 </script>
 <script async type="module">
     import {
+
+        Viewer,
+
+    } from "@plum-render/babylon-sdk";
+
+    import {
+        MeshBuilder,
+    } from "@babylonjs/core";
+    import {
         FitStrategy,
         HtmlMesh,
-        MeshBuilder,
-        Viewer,
         ActionManager,
         ExecuteCodeAction
-    } from "@plum-render/babylon-sdk";
+    } from "@babylonjs/addons";
 
     const viewer = await Viewer.create("app", {
         // packagePath: "",
