@@ -1,4 +1,4 @@
-import OSS from "ali-oss";
+import OSS, {Credentials} from "ali-oss";
 
 export interface IOssApiOptions {
     // 授权地址
@@ -9,14 +9,14 @@ export interface IOssApiOptions {
     bucket: string;
 }
 
-export default class OSSApi {
+export class OssApi {
     // 客户端
     client!: OSS;
     // 配置
     options: IOssApiOptions;
     // 是否初始化
     isInit = false;
-    credentials: any | null = null;
+    credentials!: Credentials
 
     constructor(options: IOssApiOptions) {
         this.options = Object.assign({}, options);
@@ -26,11 +26,11 @@ export default class OSSApi {
      * 创建 OSS 实例
      * @param options
      */
-    static async create(options: IOssApiOptions): Promise<OSSApi> {
-        return new Promise<OSSApi>((resolve) => {
-            const OssApi = new OSSApi(options);
-            OssApi.initClient();
-            resolve(OssApi);
+    static async create(options: IOssApiOptions): Promise<OssApi> {
+        return new Promise<OssApi>(async (resolve) => {
+            const ossApi = new OssApi(options);
+            await ossApi.initClient();
+            resolve(ossApi);
         });
     }
 
@@ -38,13 +38,17 @@ export default class OSSApi {
      * 获取凭证
      */
     async getCredentials() {
-        const response = await fetch(`${this.options.server}`, {
+        const response = await fetch(`${this.options.server}/oss`, {
             method: "GET",
         })
-        this.credentials = await response.json();
-        return await response.json();
+        const resJson = await response.json();
+        this.credentials = resJson.data;
+        return this.credentials as Credentials;
     }
 
+    /**
+     * 初始化客户端
+     */
     async initClient() {
         if (this.isInit) {
             return;
@@ -54,18 +58,17 @@ export default class OSSApi {
             // yourRegion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
             region: this.options.region,
             // 从STS服务获取的临时访问密钥（AccessKey ID和AccessKey Secret）。
-            accessKeyId: this.credentials.accessKeyId,
-            accessKeySecret: this.credentials.accessKeySecret,
+            accessKeyId: this.credentials.AccessKeyId,
+            accessKeySecret: this.credentials.AccessKeySecret,
             // 从STS服务获取的安全令牌（SecurityToken）。
-            stsToken: this.credentials.stsToken,
+            stsToken: this.credentials.SecurityToken,
             refreshSTSToken: async () => {
                 // 向您搭建的STS服务获取临时访问凭证。
-                const info = this.getCredentials();
-
+                const info = await this.getCredentials();
                 return {
-                    accessKeyId: info.accessKeyId,
-                    accessKeySecret: info.accessKeySecret,
-                    stsToken: info.stsToken
+                    accessKeyId: info.AccessKeyId,
+                    accessKeySecret: info.AccessKeySecret,
+                    stsToken: info.SecurityToken
                 }
             },
             // 刷新临时访问凭证的时间间隔，单位为毫秒。
@@ -96,6 +99,12 @@ export default class OSSApi {
         return await this.client.put(name, file, options);
     }
 
+    /**
+     * 获取文件
+     */
+    async get(name: string, file: any, options?:  OSS.GetObjectOptions): Promise<OSS.GetObjectResult> {
+        return await this.client.get(name, file, options);
+    }
     // 组装路径
     // let list: Array<IFolder> = []
     // let list = []
@@ -141,16 +150,7 @@ export default class OSSApi {
      * 对象是否存在
      */
     async head(name: string, options?: OSS.HeadObjectOptions) {
-        try {
-            await this.client.head(name, options);
-            return true;
-        } catch (error) {
-            if (Reflect.get(error as object, "code") === "NoSuchKey") {
-                console.log("文件不存在");
-                return false;
-            }
-        }
-        return false;
+        return await this.client.head(name, options);
     }
 
     /**

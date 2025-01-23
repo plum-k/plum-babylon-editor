@@ -35,14 +35,21 @@
 <script async type="module">
     import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
-    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
+    import {
+        StandardMaterial,
+        MeshDebugMode,
+        Color3,
+        MeshBuilder,
+        MeshDebugPluginMaterial,
+        SpotLight, Vector3
+    } from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,
     });
-
-
+    const scene = viewer.scene;
+    const spotLight = new SpotLight("SpotLight", new Vector3(2, 2, 2), new Vector3(0, -1, 0), Math.PI / 6, 0.5,scene);
 </script>
 </body>
 </html>

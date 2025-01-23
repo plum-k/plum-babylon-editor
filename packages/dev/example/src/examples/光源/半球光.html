@@ -35,13 +35,15 @@
 <script async type="module">
     import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
-    import {StandardMaterial, MeshDebugMode, Color3, MeshBuilder, MeshDebugPluginMaterial} from "@babylonjs/core";
+    import {StandardMaterial, MeshDebugMode, Color3, Vector3, HemisphericLight} from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,
     });
-
+    const scene = viewer.scene;
+    const hemisphereLight = new HemisphericLight("HemisphereLight", new Vector3(0, 1, 0),scene);
+    hemisphereLight.groundColor = new Color3(0.4, 0.4, 0.4);
 
 </script>
 </body>

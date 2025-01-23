@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Vite App</title>
+    <style>
+        html, body, #app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+</div>
+<script type="importmap">
+    {
+      "imports": {
+        "tweakpane": "./tweakpane.min.js",
+        "@plum-render/babylon-sdk": "./plum-render-babylon-sdk.js",
+        "@babylonjs/core": "./@babylonjs/core/index.js",
+        "@babylonjs/addons": "./@babylonjs/addons/index.js",
+        "@babylonjs/loaders": "./@babylonjs/loaders/index.js",
+        "@babylonjs/materials": "./@babylonjs/materials/index.js",
+        "@babylonjs/serializers": "./@babylonjs/serializers/index.js",
+        "@babylonjs/havok": "./@babylonjs/havok/HavokPhysics_es.js",
+        "@babylonjs/core/": "./@babylonjs/core/",
+        "@babylonjs/loaders/": "./@babylonjs/loaders/"
+      }
+    }
+</script>
+<script async type="module">
+    import {Viewer, NodeTool} from "@plum-render/babylon-sdk";
+    import {Pane} from 'tweakpane';
+    import {
+        StandardMaterial,
+        MeshDebugMode,
+        Color3,
+        MeshBuilder,
+        MeshDebugPluginMaterial,
+        PointLight, Vector3
+    } from "@babylonjs/core";
+
+    let viewer = await Viewer.create("app", {
+        isCreateDefaultLight: true,
+        isCreateDefaultEnvironment: true,
+    });
+    const scene = viewer.scene;
+    const directionalLight = new PointLight("DirectionalLight", new Vector3(1, 2, 1), scene);
+</script>
+</body>
+</html>

@@ -1,14 +1,14 @@
 import {AbstractMesh, AnimationGroup, Mesh, Node, SceneSerializer, TransformNode} from "@babylonjs/core";
-import {isMesh, isTransformNode} from "../guard";
+import {isMesh, isTransformNode} from "../../guard";
 import {includes, isArray, max, split} from "lodash-es";
 import {Subject} from "rxjs";
 import pako from "pako";
 import {BlobReader, BlobWriter, Uint8ArrayReader, Uint8ArrayWriter, ZipReader, ZipWriter} from "@zip.js/zip.js";
 import {Package} from "./Package";
-import {SerializeViewer} from "./serialize";
-import { IBasePlumOptions } from "../core";
-import { SceneSerializeObject } from "./SerializeJsonType";
-import { SerializerTool } from "./SerializerTool";
+import {SerializeViewer} from "../serialize";
+import { IBasePlumOptions } from "../../core";
+import { SceneSerializeObject } from "../SerializeJsonType";
+import { SerializerTool } from "../SerializerTool";
 
 export interface ISerializeSubject {
     blob: Blob;
@@ -302,7 +302,7 @@ export class PartPackage extends Package {
             const {blob, index} = event;
             console.log("name", index)
             console.log(event);
-            this.viewer?.cosApi.uploadFile({
+            this.viewer?.ossApi.uploadFile({
                 Body: blob,
                 Key: `${appId}/${index}.babylonZip`,
                 onProgress: (progressData) => {
@@ -325,7 +325,7 @@ export class PartPackage extends Package {
         const options = this.viewer.options;
         const {appId, packagePath} = options;
         let Key = `${appId}/${zipPackIndex}.babylonZip`
-        this.viewer.cosApi.getObject({
+        this.viewer.ossApi.getObject({
             Key: Key,
             DataType: 'blob',
         }).then(async (data) => {

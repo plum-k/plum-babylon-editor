@@ -1,66 +1,103 @@
-import {createRef, Fragment, RefObject, useEffect, useRef} from "react";
+import {createRef, Fragment, RefObject, useEffect} from "react";
 import {useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
-import {IFolder} from "common";
-import {Viewer} from "@plum-render/babylon-sdk";
+import {ESceneLoadType, ESceneSaveType, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
-import testPhysics from "../testCore/testPhysics.ts";
 import {Control, PanelCollapsed} from "../component";
+import testSerialize from "../testCore/testSerialize.ts";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
     rightPanelRef: RefObject<ImperativePanelHandle | null>
 }
 
-export  function SceneView(props: ISceneViewProps) {
+export function SceneView(props: ISceneViewProps) {
     const {leftPanelRef, rightPanelRef} = props;
     const canvasContainer = createRef<HTMLDivElement>();
     const viewer = useViewer()
     const setViewer = useSetViewer()
     const {appId} = useParams();
-    const toastId = useRef<Id>(null);
+    const loadIdMao = new Map<string, Id>();
+    const saveIdMao = new Map<string, Id>();
+
     useEffect(() => {
         if (canvasContainer.current && isNil(viewer)) {
-
             let _viewer = new Viewer(canvasContainer.current, {
                 appId: appId,
                 packageType: "chunk",
                 isCreateDefaultEnvironment: true,
                 isCreateDefaultLight: true,
-                cosApiOptions: {
-                    bucketParams: {
-                        Bucket: import.meta.env.VITE_BUCKET,
-                        Region: import.meta.env.Region,
-                    },
-                    COSOptions: {
-                        SecretId: import.meta.env.VITE_SECRETID,
-                        SecretKey: import.meta.env.VITE_SECRETKEY,
-                    }
+                ossApiOptions: {
+                    server: import.meta.env.VITE_SERVER,
+                    bucket: import.meta.env.VITE_BUCKET,
+                    region: import.meta.env.VITE_REGION,
                 }
             })
-            // todo
+            // 场景加载进度条
             _viewer.sceneLoadProgressSubject.subscribe((event) => {
-                const {total, progress} = event;
-                if (event.type === "unZip") {
-                    const _progress = progress / total;
-                    if (toastId.current === null) {
-                        toastId.current = toast('正在加载场景中!', {progress: _progress, position: 'top-right',});
+                const {type, name, total, loaded} = event;
+                const _progress = loaded / total;
+                const id = loadIdMao.get(name);
+                if (id === undefined) {
+                    if (type === ESceneLoadType.Load) {
+                        const newId = toast.loading(name, {position: 'top-right',});
+                        loadIdMao.set(name, newId);
                     } else {
-                        toast.update(toastId.current, {progress: _progress});
+                        if (total === loaded) {
+                            return
+                        }
+                        const newId = toast(name, {progress: _progress, position: 'top-right',});
+                        loadIdMao.set(name, newId);
+                    }
+                } else {
+                    if (type === ESceneLoadType.Load) {
+                        toast.update(id, {render: "场景加载成功", type: "success", isLoading: false, autoClose: 3000});
+                        loadIdMao.clear()
+                    } else {
+                        toast.update(id, {render: name, progress: _progress});
+                        if (loaded === total) {
+                            toast.done(id);
+                        }
                     }
                 }
             })
+
+            _viewer.sceneSaveProgressSubject.subscribe((event) => {
+                const {type, name, total, loaded} = event;
+                const _progress = loaded / total;
+                const id = saveIdMao.get(name);
+                if (id === undefined) {
+                    if (type === ESceneSaveType.Save) {
+                        const newId = toast.loading(name, {position: 'top-right',});
+                        saveIdMao.set(name, newId);
+                    } else {
+                        if (total === loaded) {
+                            return
+                        }
+                        const newId = toast(name, {progress: _progress, position: 'top-right',});
+                        saveIdMao.set(name, newId);
+                    }
+                } else {
+                    if (type === ESceneSaveType.Save) {
+                        toast.update(id, {render: "场景保存成功", type: "success", isLoading: false, autoClose: 3000});
+                        saveIdMao.clear()
+                    } else {
+                        toast.update(id, {render: name, progress: _progress});
+                        if (loaded === total) {
+                            toast.done(id);
+                        }
+                    }
+                }
+            })
+
             _viewer.initSubject.subscribe(() => {
                 _viewer.enableEditor();
-                if (toastId.current !== null) {
-                    toast.done(toastId.current);
-                }
                 setViewer(_viewer);
-                // testSerialize(_viewer);
+                testSerialize(_viewer);
                 // testMesh(_viewer,"scene.glb")
-                testPhysics(_viewer)
+                // testPhysics(_viewer)
                 // tesProjection(_viewer)
             })
         }

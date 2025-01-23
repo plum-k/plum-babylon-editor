@@ -12,7 +12,7 @@ import {
     WebGPUEngineOptions
 } from "@babylonjs/core";
 import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
-import  {ICOSApiOptions,COSApi} from "cos-api";
+import {IOssApiOptions, OssApi} from "@plum-render/oss-api";
 import {HtmlMeshRenderer} from "@babylonjs/addons";
 import {isCamera, isLight, isMesh} from "../guard";
 import {Editor} from "../editor/Editor";
@@ -29,10 +29,54 @@ import {EnvironmentManage} from "../manager/EnvironmentManage";
 import {getPackage, Package} from "../serializeManage";
 import {Physics} from "../manager/Physics";
 
+/**
+ * 定义场景加载类型的枚举
+ */
+export enum ESceneLoadType {
+    Load,
+    /**
+     * 表示场景加载类型为下载，即从网络或其他数据源下载场景资源
+     */
+    Down,
+    /**
+     * 表示场景加载类型为解压，即对下载后的压缩场景资源进行解压操作
+     */
+    UnZip
+}
+
+/**
+ * 定义场景加载进度事件的接口
+ */
 export interface ISceneLoadProgressEvent {
-    type: "unZip";
+    /**
+     * 当前场景加载操作的类型，取值为 ISceneLoadType 枚举中的值
+     */
+    type: ESceneLoadType;
+    /**
+     * 操作的名称
+     */
+    name: string;
+    /**
+     * 场景加载任务的总工作量，可以是字节数、文件数量等，具体含义取决于加载类型
+     */
     total: number;
-    progress: number;
+    /**
+     * 当前场景加载任务已经完成的工作量，与 total 采用相同的度量单位
+     */
+    loaded: number;
+}
+
+export enum ESceneSaveType {
+    Save,
+    Put,
+    Zip
+}
+
+export interface ISceneSaveProgressEvent {
+    type: ESceneSaveType;
+    name: string;
+    total: number;
+    loaded: number;
 }
 
 export interface IViewerOptions {
@@ -70,12 +114,15 @@ export interface IViewerOptions {
     /**
      * cos 配置
      */
-    cosApiOptions?: ICOSApiOptions;
+    ossApiOptions?: IOssApiOptions;
+    /**
+     * 是否使用对数深度缓冲区
+     */
+    useLogarithmicDepth?: boolean
 }
 
 export class Viewer {
-    //---------- 配置
-    options: IViewerOptions;
+
 
     //---------- HTML 容器
     container!: HTMLElement; // 用于渲染的容器
@@ -99,30 +146,29 @@ export class Viewer {
     editor!: Editor; // 编辑器
     drawLine!: DrawLine; // 绘制线条的工具
     statistics!: Statistics; // 性能统计
-
     environmentManage!: EnvironmentManage;
+    // 阿里对象存储
+    ossApi: Nullable<OssApi> = null;
+    physics!: Physics;
+    gridTool: GridTool = new GridTool()
+    serializer: Package | null = null
 
     //---------- 事件
+    // 初始化组件完成
+    initComponentSubject = new Subject();
     // 场景初始化完成
     initSubject = new Subject();
     // 场景加载进度
     sceneLoadProgressSubject = new Subject<ISceneLoadProgressEvent>();
-    initComponentSubject = new Subject();
-
-    isWebGPU = false; // 标识是否使用 WebGPU 渲染
-
+    // 场景保存进度
+    sceneSaveProgressSubject = new Subject<ISceneSaveProgressEvent>();
+    //---------------- 属性
+    // 配置
+    options: IViewerOptions;
+    // 标识是否使用 WebGPU 渲染
+    isWebGPU = false;
     // 是否初始化完成
     isLoad = false;
-
-    // 腾讯cos存储
-    cosApi: Nullable<COSApi> = null;
-
-    //----------------
-
-    physics = new Physics({viewer: this});
-
-    gridTool: GridTool = new GridTool()
-    serializer: Package | null = null;
 
     constructor(container: string | HTMLDivElement, options ?: IViewerOptions) {
         this.options = defaultsDeep({}, options);
@@ -131,15 +177,14 @@ export class Viewer {
 
         const {engineOptions} = this.options;
 
-        // 动态加载 gltf 模块 todo
         import("@babylonjs/loaders/glTF/index.js").then((gltf) => {
             // 根据不同环境创建不同的引擎
-            EngineFactory.CreateAsync(this.canvas, engineOptions).then((engine) => {
+            EngineFactory.CreateAsync(this.canvas, engineOptions).then(async (engine) => {
                 this.engine = engine;
                 if (this.engine instanceof WebGPUEngine) {
                     this.isWebGPU = true;
                 }
-                this.initComponent();
+                await this.initComponent();
             });
         })
     }
@@ -218,17 +263,16 @@ export class Viewer {
     /**
      * 初始化组件
      */
-    initComponent() {
+    async initComponent() {
         SceneLoader.ShowLoadingScreen = false; // 不显示加载屏幕
         this.engine.hideLoadingUI(); // 隐藏加载 UI
 
-        if (this.options.cosApiOptions) {
-            this.cosApi = new COSApi(this.options.cosApiOptions);
+        if (this.options.ossApiOptions) {
+            this.ossApi = await OssApi.create(this.options.ossApiOptions);
         }
 
         this.scene = new PScene(this.engine);
-
-        // this.physics = new Physics({viewer: this});
+        this.physics = new Physics({viewer: this});
 
         this.eventManager = new EventManager({viewer: this});
         this.assetsManager = new PlumAssetsManager(this);
@@ -237,8 +281,6 @@ export class Viewer {
         this.cameraControls = new CameraControls({viewer: this});
         this.lightManager = new LightManager({viewer: this});
         this.postProcessManager = new PlumPostProcessManager({viewer: this});
-
-
         this.environmentManage = new EnvironmentManage({viewer: this})
 
 
@@ -275,6 +317,11 @@ export class Viewer {
         this.scene.onNewMeshAddedObservable.add((mesh) => {
             this.setDefaultMaterial(mesh);
         });
+
+        this.scene.onNewMaterialAddedObservable.add((material) => {
+            // 使用对数深度缓冲
+            material.useLogarithmicDepth = this.options.useLogarithmicDepth ?? true;
+        })
     }
 
     /**
@@ -290,6 +337,12 @@ export class Viewer {
     }
 
     setInitState() {
+        this.sceneLoadProgressSubject.next({
+            type: ESceneLoadType.Load,
+            name: `加载场景中`,
+            total: 1,
+            loaded: 1,
+        })
         this.isLoad = true;
         this.initSubject.next(true);
     }

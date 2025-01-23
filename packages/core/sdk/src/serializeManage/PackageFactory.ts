@@ -1,7 +1,5 @@
-import {Package} from "./Package";
-import {PartPackage} from "./PartPackage";
+import {ChunkSerialize, Package, PartPackage} from "./package";
 import {Viewer} from "../core";
-import {ChunkSerialize} from "./ChunkPackage";
 
 const packageMap = new Map<string, typeof Package>();
 
@@ -21,5 +19,4 @@ export function getPackage(viewer: Viewer): Package | null {
     }
     return null;
 }
-
 

@@ -9,6 +9,6 @@ http:
   port: 5010
 
 oss:
+  roleArn:
   accessKeyId:
   accessKeySecret:
-  roleArn:

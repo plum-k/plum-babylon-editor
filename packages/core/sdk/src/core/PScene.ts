@@ -1,8 +1,8 @@
-import {AbstractEngine, Node, Scene as BabylonScene, SceneOptions} from "@babylonjs/core";
+import {AbstractEngine, Node, Scene, SceneOptions} from "@babylonjs/core";
 import {isCamera, isLight, isMesh} from "../guard";
 
 
-export class PScene extends BabylonScene {
+export class PScene extends Scene {
 
     constructor(engine: AbstractEngine, options?: SceneOptions) {
         super(engine, options);

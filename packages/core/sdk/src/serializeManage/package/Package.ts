@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
+import {BasePlum, IBasePlumOptions} from "../../core/BasePlum";
 
 export interface IPlumSceneSerializerOptions extends IBasePlumOptions {
 }
@@ -30,6 +30,10 @@ export abstract class Package extends BasePlum {
      * 加载场景
      */
     abstract loadScene(): void
+
+
+
+
 }
 
 
