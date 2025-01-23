@@ -1,12 +1,9 @@
+@import "tailwindcss";
 
-
-@import "ResizeHandle.css";
-@import "FilePane.css";
-@import "SidePane.css";
-@import "SceneTree.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "./ResizeHandle.css";
+@import "./FilePane.css";
+@import "./SidePane.css";
+@import "./SceneTree.css";
 
 
 html, body, #root {
