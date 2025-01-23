@@ -35,6 +35,7 @@ import {
 import {presetsEnvironmentObj} from "../../manager/EnvironmentManage";
 import {Viewer} from "../../core";
 import {Deserialize} from "./Deserialize";
+import {SceneSerializeObject} from "../SerializeJsonType";
 
 
 let tempIndexContainer: { [key: string]: Node } = {};
@@ -138,7 +139,7 @@ const loadAssetContainer = (viewer: Viewer, data: unknown, rootUrl: string, onEr
 
     const container = new AssetContainer(scene);
     try {
-        const parsedData = data as any
+        const parsedData = data as SceneSerializeObject
 
         let index: number;
         let cache: number;
@@ -584,7 +585,7 @@ export class ChunkDeserialize implements Deserialize {
 
     async loadAsync(scene: Scene, data: unknown, rootUrl: string, onProgress?: (event: ISceneLoaderProgressEvent) => void, fileName?: string): Promise<void> {
         try {
-            const parsedData = data as any
+            const parsedData = data as SceneSerializeObject
             // Scene
             if (parsedData.useDelayedTextureLoading) {
                 scene.useDelayedTextureLoading = parsedData.useDelayedTextureLoading && !SceneLoader.ForceFullSceneLoadingForIncremental;
@@ -602,8 +603,8 @@ export class ChunkDeserialize implements Deserialize {
                 scene.gravity = Vector3.FromArray(parsedData.gravity);
             }
 
-            if (parsedData.useRightHandedSystem !== undefined) {
-                scene.useRightHandedSystem = !!parsedData.useRightHandedSystem;
+            if (parsedData.useRightHandedSystem) {
+                scene.useRightHandedSystem = parsedData.useRightHandedSystem;
             }
 
             // Fog
@@ -645,7 +646,7 @@ export class ChunkDeserialize implements Deserialize {
 
             }
 
-            if (parsedData.autoAnimate) {
+            if (parsedData.autoAnimate && parsedData.autoAnimateFrom && parsedData.autoAnimateTo) {
                 scene.beginAnimation(scene, parsedData.autoAnimateFrom, parsedData.autoAnimateTo, parsedData.autoAnimateLoop, parsedData.autoAnimateSpeed || 1.0);
             }
 

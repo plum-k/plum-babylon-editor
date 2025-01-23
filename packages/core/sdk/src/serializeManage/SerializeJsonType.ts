@@ -44,7 +44,7 @@ export interface SkeletonJson {
     id: string;
     BoneJsons: BoneJson[];
     needInitialSkinMatrix: boolean;
-    ranges: Array<any>;
+    ranges: any[];
 }
 
 export interface MeshJson {
@@ -52,9 +52,9 @@ export interface MeshJson {
     id: string;
     uniqueId: number;
     interface: string;
-    position: Array<number>;
-    rotation: Array<number>;
-    scaling: Array<number>;
+    position: number[];
+    rotation: number[];
+    scaling: number[];
     LocalMatrixJson: LocalMatrixJson;
     isEnabled: boolean;
     isVisible: boolean;
@@ -83,9 +83,9 @@ export interface MeshJson {
         uniqueId: number;
         parentId: number;
     }
-    instances: Array<any>;
-    animations: Array<any>;
-    ranges: Array<any>;
+    instances: any[];
+    animations: any[];
+    ranges: any[];
     layerMask: number;
     alphaIndex: number;
     hasVertexAlpha: boolean;
@@ -96,10 +96,10 @@ export interface MeshJson {
 
 export interface TransformNodeJson {
     tags: any;
-    position: Array<number>;
-    rotation: Array<number>;
+    position: number[];
+    rotation: number[];
     rotationQuaternion: [number, number, number, number];
-    scaling: Array<number>;
+    scaling: number[];
     billboardMode: number;
     scalingDeterminant: number;
     infiniteDistance: boolean;
@@ -117,8 +117,8 @@ export interface TransformNodeJson {
     parentId: number;
     LocalMatrixJson: LocalMatrixJson;
     isEnabled: boolean;
-    animations: Array<any>;
-    ranges: Array<any>;
+    animations: any[];
+    ranges: any[];
 }
 
 export interface MaterialJson {
@@ -358,13 +358,13 @@ export interface MaterialJson {
 }
 
 export interface GeometryJson {
-    boxes: Array<any>;
-    spheres: Array<any>;
-    cylinders: Array<any>;
-    toruses: Array<any>;
-    grounds: Array<any>;
-    planes: Array<any>;
-    torusKnots: Array<any>;
+    boxes: any[];
+    spheres: any[];
+    cylinders: any[];
+    toruses: any[];
+    grounds: any[];
+    planes: any[];
+    torusKnots: any[];
     vertexData: {
         id: string;
         uniqueId: number;
@@ -379,15 +379,60 @@ export interface GeometryJson {
 }
 
 export interface SceneSerializeObject {
-    animationGroups?: Array<any>;
-    cameras: Array<any>;
+    animationGroups?: any[];
+    cameras: any[];
     geometries: GeometryJson;
-    lights: Array<any>;
+    lights: any[];
     materials: MaterialJson[];
     meshes: MeshJson[];
     skeletons: SkeletonJson[];
     transformNodes: TransformNodeJson[];
+
+    // Scene 相关属性
+    useDelayedTextureLoading?: boolean;
+    autoClear?: boolean;
+    clearColor?: number[];
+    ambientColor?: number[];
+    gravity?: number[];
+    useRightHandedSystem?: boolean;
+
+    // Fog 相关属性
+    fogMode?: number;
+    fogColor?: number[];
+    fogStart?: number;
+    fogEnd?: number;
+    fogDensity?: number;
+
+    // Physics 相关属性
+    physicsEnabled?: boolean;
+    physicsGravity?: number[];
+
+    // Metadata 相关属性
+    metadata?: any;
+
+    // Collisions 相关属性
+    collisionsEnabled?: boolean;
+
+    // Animation 相关属性
+    autoAnimate?: boolean;
+    autoAnimateFrom?: number;
+    autoAnimateTo?: number;
+    autoAnimateLoop?: boolean;
+    autoAnimateSpeed?: number;
+
+    // Camera 相关属性
+    activeCameraID?: string;
+
+    // 环境相关
+    environmentTexture?: string;
+    environmentTextureRotationY?: number;
+    environmentIntensity?: number
+
+    reflectionProbes?: any[]
+    animations?: any[]
+    multiMaterials?: any[]
+    morphTargetManagers?: any[]
+    postProcesses?: any[]
+    spriteManagers?: any[]
+    actions?: any[]
 }
-
-
-

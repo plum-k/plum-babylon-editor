@@ -170,8 +170,20 @@ export class Viewer {
     // 是否初始化完成
     isLoad = false;
 
+    #useLogarithmicDepth: boolean = true;
+    get useLogarithmicDepth() {
+        return this.#useLogarithmicDepth;
+    }
+    set useLogarithmicDepth(value: boolean) {
+        this.#useLogarithmicDepth = value;
+        this.scene.materials.forEach((material) => {
+            material.useLogarithmicDepth = this.#useLogarithmicDepth;
+        })
+    }
+
     constructor(container: string | HTMLDivElement, options ?: IViewerOptions) {
         this.options = defaultsDeep({}, options);
+        this.#useLogarithmicDepth = this.options.useLogarithmicDepth ?? true;
         this.initContainer(container);
         this.initCanvas();
 
@@ -320,9 +332,10 @@ export class Viewer {
 
         this.scene.onNewMaterialAddedObservable.add((material) => {
             // 使用对数深度缓冲
-            material.useLogarithmicDepth = this.options.useLogarithmicDepth ?? true;
+            material.useLogarithmicDepth = this.#useLogarithmicDepth;
         })
     }
+
 
     /**
      * 设置默认材质

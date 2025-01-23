@@ -1,4 +1,4 @@
-import {ArcRotateCameraPointersInput, Nullable, PointerTouch, Vector3} from "@babylonjs/core";
+import {ArcRotateCameraPointersInput, CameraInputTypes, Nullable, PointerTouch, Vector3} from "@babylonjs/core";
 
 export class PlumArcRotateCameraPointersInput extends ArcRotateCameraPointersInput {
     /**
@@ -20,4 +20,10 @@ export class PlumArcRotateCameraPointersInput extends ArcRotateCameraPointersInp
             this.camera.inertialBetaOffset -= offsetY / this.angularSensibilityY;
         }
     }
+
+    public override getClassName(): string {
+        return "PlumArcRotateCameraPointersInput";
+    }
 }
+
+(<any>CameraInputTypes)["PlumArcRotateCameraPointersInput"] = PlumArcRotateCameraPointersInput;
