@@ -1,5 +1,4 @@
 import {ArcRotateCamera, RegisterClass, Scene, Vector3,Node} from "@babylonjs/core";
-import {PlumArcRotateCameraPointersInput} from "./PlumArcRotateCameraPointersInput";
 import { PlumArcRotateCameraInputsManager } from "./PlumArcRotateCameraInputsManager";
 
 
