@@ -1,14 +1,23 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query} from '@nestjs/common';
 import {ApplicationService} from "./application.service";
 import {ResultResponse} from "../../dto/ResultResponse";
 import {Page} from "../../dto/Page";
-import {Application} from "./entities/application.entity";
+import {Application, EAppType} from "./entities/application.entity";
+import {IsNull} from 'typeorm';
 
 @Controller('application')
 export class ApplicationController {
     constructor(private readonly server: ApplicationService) {
     }
-
+    @Get("/getAllDir")
+    async getAllDir() {
+        console.log(    await this.server.findAll({
+            appType: EAppType.DIR
+        }))
+        return ResultResponse.ok(await this.server.findAll({
+            appType: EAppType.DIR
+        }));
+    }
     @Get('/:id')
     async getById(@Param('id') id: number) {
         return ResultResponse.ok(await this.server.findOne(id));
@@ -35,10 +44,12 @@ export class ApplicationController {
 
 
     @Get()
-
-    async getAll() {
-        return ResultResponse.ok(await this.server.findAll());
+    async getAll(@Query('parentId') parentId?: number) {
+        return ResultResponse.ok(await this.server.findAll({
+            parentId: parentId === undefined ? IsNull() : parentId
+        }));
     }
+
 
 
     @Delete('/:id')

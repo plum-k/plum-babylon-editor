@@ -1,5 +1,5 @@
 import {Key, useEffect, useMemo, useRef, useState} from 'react';
-import {Input, Tree, TreeDataNode, type TreeProps} from 'antd';
+import {GetRef, Input, Tree, TreeDataNode, type TreeProps} from 'antd';
 import {Item, ItemParams, Menu as RightMenu, useContextMenu} from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.css';
 import {isNil} from "lodash-es";
@@ -183,7 +183,8 @@ export  function SceneTree() {
             toggle(); // 如果搜索框为空，切换搜索状态
         }
     }, [inputValue]);
-    const treeRef = useRef<any>(null);
+    type treeRef = GetRef<typeof Tree>;
+    const treeRef = useRef<treeRef>(null);
     const [expandedKeys, setExpandedKeys] = useState<Array<number>>([]); // 初始化展开的节点
 
     // 更新展开的节点

@@ -29,3 +29,8 @@ Content-Type: application/json
   "name": "testDIR",
   "appType": "DIR"
 }
+
+
+### get application by
+
+GET http://127.0.0.1:5010/application?parentId=18

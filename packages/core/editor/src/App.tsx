@@ -5,7 +5,7 @@ import {RouteObject} from "react-router-dom";
 
 const Home = lazy(() => import("./view/Home.tsx"))
 const Editor = lazy(() => import('./view/Editor.tsx'))
-
+const Preview = lazy(() => import('./view/Preview.tsx'))
 export const routerConfig: RouteObject[] = [
     {
         path: '/',
@@ -16,10 +16,10 @@ export const routerConfig: RouteObject[] = [
         path: '/editor/:appId',
         element: <Editor/>
     },
-    // {
-    //     path: '*',
-    //     element: <NoFind />
-    // }
+    {
+        path: '/preview/:appId',
+        element: <Preview/>
+    },
 ]
 
 export default function App() {

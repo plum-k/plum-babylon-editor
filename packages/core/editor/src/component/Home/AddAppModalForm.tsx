@@ -2,15 +2,16 @@ import {Button, Form} from "antd";
 import {Fragment} from "react";
 import {ModalForm, ProFormSegmented, ProFormText} from "@ant-design/pro-components";
 import {PlusOutlined} from "@ant-design/icons";
-import {ApplicationApi} from "../api";
+import {ApplicationApi} from "../../api";
+import {IApplication} from "../../interface";
 
 interface AddAppModalFormProps {
+    appInfo: IApplication | null
     ok: () => void
 }
 
 export default function AddAppModalForm(props: AddAppModalFormProps) {
-    const {ok} = props;
-
+    const {ok, appInfo} = props;
     const [form] = Form.useForm<{ name: string; company: string }>();
 
     return <Fragment>
@@ -18,7 +19,6 @@ export default function AddAppModalForm(props: AddAppModalFormProps) {
             {...{
                 labelCol: {span: 4},
                 wrapperCol: {span: 14},
-
             }}
             width={350}
             title="新建"
@@ -49,7 +49,7 @@ export default function AddAppModalForm(props: AddAppModalFormProps) {
             }}
             submitTimeout={2000}
             onFinish={async (values) => {
-                const res = await ApplicationApi.create({...values})
+                const res = await ApplicationApi.create({...values, parentId: appInfo?.id});
                 if (res.code === 1) {
                     ok()
                     return true

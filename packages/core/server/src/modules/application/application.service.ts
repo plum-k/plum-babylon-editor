@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {FindManyOptions, FindOptionsWhere, Repository} from "typeorm";
 import {Application} from "./entities/application.entity";
 import {Page} from "../../dto/Page";
 
@@ -20,8 +20,8 @@ export class ApplicationService {
         await this.applicationRepository.delete(id);
     }
 
-    async findAll() {
-        return this.applicationRepository.find();
+    async findAll(where?: FindOptionsWhere<Application>) {
+        return await this.applicationRepository.findBy(where);
     }
 
     async create(entity: Application) {

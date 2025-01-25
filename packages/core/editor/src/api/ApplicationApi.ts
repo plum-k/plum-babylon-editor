@@ -1,8 +1,7 @@
-
+import {IApplication} from "../interface";
 import {req} from "./request";
 
 export class ApplicationApi {
-
     static getById = (id: string) => {
         return req.get<IApplication>({
             url: `/application/${id}`
@@ -32,11 +31,19 @@ export class ApplicationApi {
             data
         })
     }
-    static getAll = () => {
+    static getAll = (parentId: number | null = null) => {
         return req.get<Array<IApplication>>({
-            url: `/application`
+            url: `/application`,
+            params: {parentId}
         })
     }
+    static getAllDir = () => {
+        return req.get<Array<IApplication>>({
+            url: `/application/getAllDir`
+        })
+    }
+
+
     static remove = (id: number) => {
         return req.delete<Array<IApplication>>({
             url: `/application/${id}`

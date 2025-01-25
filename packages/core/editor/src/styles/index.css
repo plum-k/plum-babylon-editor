@@ -6,6 +6,12 @@
 @import "./SceneTree.css";
 
 
+/*去除点击自动跳转*/
+.breadcrumb-item:hover {
+    color: rgba(0, 0, 0, 0.88);
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
 html, body, #root {
     padding: 0;
     margin: 0;
@@ -17,7 +23,6 @@ html, body, #root {
 input {
     color: #181818;
 }
-
 
 
 html, body, #root {

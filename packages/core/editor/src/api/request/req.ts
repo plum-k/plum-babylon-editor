@@ -2,7 +2,7 @@ import {Request} from "./Request";
 import {ApiRes, IRequestError} from "./interface";
 
 const req = new Request({
-    baseURL: import.meta.env.VITE_APP_URL as string
+    baseURL: import.meta.env.VITE_SERVER as string
 })
 
 req.axiosInstance.interceptors.request.use(

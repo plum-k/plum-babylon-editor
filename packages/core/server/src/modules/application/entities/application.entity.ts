@@ -26,7 +26,7 @@ export class Application {
     @Column({nullable: true})
     thumbnailBase64: string;
     @Column({nullable: true})
-    parentId: string;
+    parentId: number;
 
     @CreateDateColumn()
     createTime: Date;
