@@ -1,5 +1,5 @@
 import {Button, Tooltip} from "antd";
-import {useViewer} from "../../store";
+import {useAppInfo, useViewer} from "../../store";
 import {
     CameraOutlined,
     FullscreenExitOutlined,
@@ -16,6 +16,7 @@ let videoRecorder: Nullable<VideoRecorder> = null;
 
 export  function HeaderTool() {
     const viewer = useViewer();
+    const appInfo = useAppInfo();
     // 焦点到场景
     const focusToScene = () => {
         viewer?.cameraControls.focusToScene();
@@ -29,8 +30,16 @@ export  function HeaderTool() {
 
     // 截屏操作
     const createScreenshot = () => {
-        if (viewer) {
-            Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1});
+        debugger
+        if (viewer && appInfo) {
+            Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1},(data)=>{
+                const link = document.createElement('a');
+                link.href = data;
+                link.download = `${appInfo.name}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         }
     }
 

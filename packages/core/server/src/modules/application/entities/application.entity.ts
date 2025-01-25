@@ -23,7 +23,7 @@ export class Application {
 
     @Column({nullable: true})
     resourcePath: string;
-    @Column({nullable: true})
+    @Column({nullable: true, type: "mediumtext"})
     thumbnailBase64: string;
     @Column({nullable: true})
     parentId: number;

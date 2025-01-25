@@ -2,23 +2,27 @@ import {create} from 'zustand'
 import {Viewer} from "@plum-render/babylon-sdk";
 import {Key} from "react";
 import {Node, Nullable} from "@babylonjs/core";
+import {IApplication} from "../interface";
 
 type State = {
-    viewer: Viewer | undefined,
+    viewer: Viewer | null,
     selectKey: Array<Key>,
     selectObject3D: Nullable<Node>,
     isDebug: boolean,
+    appInfo: IApplication | null
 }
 type Action = {
     setViewer: (viewer: State['viewer']) => void,
     setSelectKey: (selectUUid: State['selectKey']) => void,
     setSelectObject3D: (value: State['selectObject3D']) => void,
     setIsDebug: (value: State['isDebug']) => void,
+    setAppInfo: (value: State['appInfo']) => void,
 }
-const useStoreBase = create<State & Action>((set) => ({
-    viewer: undefined,
+export const useStoreBase = create<State & Action>((set) => ({
+    viewer: null,
     selectKey: [],
     selectObject3D: null,
+    appInfo:null,
     isDebug: false,
     setViewer: (viewer) => {
         set(() => {
@@ -41,6 +45,13 @@ const useStoreBase = create<State & Action>((set) => ({
             }
         })
     },
+    setAppInfo: (value) => {
+        set(() => {
+            return {
+                appInfo: value
+            }
+        })
+    },
     setIsDebug: (value) => {
         set(() => {
             return {
@@ -50,4 +61,3 @@ const useStoreBase = create<State & Action>((set) => ({
     },
 }))
 
-export default useStoreBase;

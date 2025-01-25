@@ -1,5 +1,5 @@
 import {createRef, Fragment, RefObject, useEffect} from "react";
-import {useSetViewer, useViewer} from "../store";
+import {useSetAppInfo, useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
 import {ESceneLoadType, ESceneSaveType, Viewer} from "@plum-render/babylon-sdk";
@@ -7,6 +7,7 @@ import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {Control, PanelCollapsed} from "../component";
 import testSerialize from "../testCore/testSerialize.ts";
+import {ApplicationApi} from "../api";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -17,10 +18,20 @@ export function SceneView(props: ISceneViewProps) {
     const {leftPanelRef, rightPanelRef} = props;
     const canvasContainer = createRef<HTMLDivElement>();
     const viewer = useViewer()
+    const setAppInfo = useSetAppInfo()
     const setViewer = useSetViewer()
     const {appId} = useParams();
     const loadIdMao = new Map<string, Id>();
     const saveIdMao = new Map<string, Id>();
+
+    useEffect(() => {
+        ApplicationApi.getById(appId!).then((res) => {
+            if (res.code === 1) {
+                console.log(res)
+                setAppInfo(res.data);
+            }
+        })
+    }, []);
 
     useEffect(() => {
         if (canvasContainer.current && isNil(viewer)) {
@@ -63,7 +74,7 @@ export function SceneView(props: ISceneViewProps) {
                     }
                 }
             })
-
+            // 厂家保存监听
             _viewer.sceneSaveProgressSubject.subscribe((event) => {
                 const {type, name, total, loaded} = event;
                 const _progress = loaded / total;

@@ -5,6 +5,8 @@ import {useParams} from "react-router-dom";
 import {useRef} from "react";
 import {type Id} from "react-toastify";
 import {MenuItem} from "./MenuItem.tsx";
+import {Tools} from "@babylonjs/core";
+import {ApplicationApi} from "../../api";
 
 enum FileFormat {
     GLB = "GLB",
@@ -14,23 +16,20 @@ enum FileFormat {
     OBJ = "OBJ",
 }
 
-export  function FileMenu() {
+export function FileMenu() {
     const viewer = useViewer();
     const {appId} = useParams();
-    const handleNew = () => {
-        console.log("新建被点击");
-    };
-
-    const handleOpen = () => {
-        console.log("打开被点击");
-    };
     const toastId = useRef<Id>(null);
     const handleSave = async () => {
         console.log("保存被点击");
         const serializer = viewer?.serializer
-        if (serializer) {
+        if (viewer && serializer) {
             serializer.pack().then(() => {
-
+            });
+            Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1}, (data) => {
+                console.log("截图", data);
+                ApplicationApi.edit({id: Number(appId), thumbnailBase64: data}).then((res) => {
+                })
             });
         }
     };
@@ -98,18 +97,6 @@ export  function FileMenu() {
     };
 
     const items = [
-        {
-            key: '新建',
-            label: (
-                <MenuItem name={'新建'} hotKey={'Ctrl N'} onClick={handleNew}/>
-            )
-        },
-        {
-            key: '打开',
-            label: (
-                <MenuItem name={'打开'} hotKey={'Ctrl O'} onClick={handleOpen}/>
-            )
-        },
         {
             key: '保存',
             label: (

@@ -33,14 +33,6 @@ export function Card(props: CardProps) {
                 </div>
             ),
         },
-        {
-            key: '2',
-            label: (
-                <div>
-                    移动
-                </div>
-            ),
-        },
     ];
     const isDir = useMemo(() => {
         return appType === EAppType.DIR;
@@ -83,7 +75,7 @@ export function Card(props: CardProps) {
 
     return (
         <div className="rounded-xl border shadow space-y-2 overflow-hidden h-[200px]">
-            <div className="h-[60%] border-b" onClick={skip}>
+            <div className="h-[60%] border-b cursor-pointer" onClick={skip}>
                 <RenderCardImg/>
             </div>
             <div className="h-[40%] p-2">

@@ -34,7 +34,7 @@
     "axios": "^1.7.9"
   },
   "devDependencies": {
-    "@types/node": "^22.10.9",
+    "@types/node": "^22.10.10",
     "@types/pako": "^2.0.3",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-json": "^6.1.0",
@@ -43,7 +43,7 @@
     "@types/proj4": "^2.5.6",
     "@types/stats.js": "^0.17.3",
     "concurrently": "^9.1.2",
-    "rollup": "^4.31.0",
+    "rollup": "^4.32.0",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-visualizer": "^5.14.0",
     "tslib": "^2.8.1",
