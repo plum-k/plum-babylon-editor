@@ -33,9 +33,17 @@
     }
 </script>
 <script async type="module">
-    import {Viewer, HighlightLayer, MeshBuilder, PBRMaterial, Color3} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
-
+    import {
+        StandardMaterial,
+        MeshDebugMode,
+        Color3,
+        MeshBuilder,
+        MeshDebugPluginMaterial,
+        PBRMaterial,
+        HighlightLayer
+    } from "@babylonjs/core";
     const viewer = await Viewer.create("app", {
         engineOptions: {
             stencil: true,

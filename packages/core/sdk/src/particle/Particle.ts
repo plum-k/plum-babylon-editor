@@ -98,7 +98,7 @@ export class PlumParticle {
 
         let scene = options.viewer.scene;
         if (options.isGpu) {
-            this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
+            // this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
         } else {
             this.particleSystem = new ParticleSystem(options.name, options.capacity, scene);
         }

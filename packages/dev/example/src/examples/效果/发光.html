@@ -33,9 +33,16 @@
     }
 </script>
 <script async type="module">
-    import {Viewer, MeshBuilder, PBRMaterial, Color3} from "@plum-render/babylon-sdk";
+    import {Viewer} from "@plum-render/babylon-sdk";
     import {Pane} from 'tweakpane';
-
+    import {
+        StandardMaterial,
+        MeshDebugMode,
+        Color3,
+        MeshBuilder,
+        MeshDebugPluginMaterial,
+        PBRMaterial
+    } from "@babylonjs/core";
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,

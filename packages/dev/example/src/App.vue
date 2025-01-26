@@ -105,7 +105,9 @@ const change = (key: string, value: string) => {
 const run = () => {
   if (editor && iframeRef.value) {
     show.value = true;
-    (iframeRef.value as HTMLIFrameElement).srcdoc = editor!.getValue();
+    const value = editor.getValue();
+    console.log(value);
+    (iframeRef.value as HTMLIFrameElement).srcdoc = value
     show.value = false;
   }
 }
@@ -156,7 +158,6 @@ const reset = () => {
 </template>
 
 <style scoped>
-
 .n-spin-container {
   height: 100% !important;
 }

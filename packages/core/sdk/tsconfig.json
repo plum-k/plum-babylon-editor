@@ -1,22 +1,19 @@
 {
+  "exclude": [
+    "vite.config.ts","build.ts"
+  ],
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "esnext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "declaration": false,
+    "declaration": true,
+    "declarationDir": "./dist",
     "emitDeclarationOnly": true,
-    "outDir": "./lib",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "types": [
-      "babylonjs",
-      "babylonjs-materials",
-      "oneMoreDependencyThatIReallyNeed"
-    ]
+    "skipLibCheck": true
   }
 }

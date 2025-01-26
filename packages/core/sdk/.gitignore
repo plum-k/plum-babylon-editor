@@ -1,4 +1,3 @@
 /node_modules/
-stats.html
+/dist
 /public/scene.glb
-/public/plum-render-babylon-sdk.js

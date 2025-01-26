@@ -379,7 +379,7 @@ export class Viewer {
      */
     async debug(debugOn: boolean = true, config: IInspectorOptions = {overlay: true}) {
         if (!this.isInitDebugModule) {
-            await Promise.all([import("@babylonjs/core/Debug/debugLayer"), import("@babylonjs/inspector")])
+            // await Promise.all([import("@babylonjs/core/Debug/debugLayer"), import("@babylonjs/inspector")])
         }
         this.isInitDebugModule = true
         if (debugOn) {

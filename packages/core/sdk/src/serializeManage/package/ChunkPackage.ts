@@ -6,7 +6,7 @@ import {SerializerTool} from "../SerializerTool";
 import {SceneSerializeObject} from "../SerializeJsonType";
 import {ChunkDeserialize} from "../deserialize";
 import {SerializeViewer} from "../serialize";
-import axios, {AxiosProgressEvent} from 'axios';
+import  axios,{AxiosProgressEvent} from 'axios';
 
 export interface IChunkSerializeOptions extends IBasePlumOptions {
 }

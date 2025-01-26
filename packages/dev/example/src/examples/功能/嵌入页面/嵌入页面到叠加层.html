@@ -50,21 +50,9 @@
     }
 </script>
 <script async type="module">
-    import {
-
-        Viewer,
-
-    } from "@plum-render/babylon-sdk";
-
-    import {
-        MeshBuilder,
-    } from "@babylonjs/core";
-    import {
-        FitStrategy,
-        HtmlMesh,
-        ActionManager,
-        ExecuteCodeAction
-    } from "@babylonjs/addons";
+    import {Viewer} from "@plum-render/babylon-sdk";
+    import {MeshBuilder} from "@babylonjs/core";
+    import {FitStrategy, HtmlMesh} from "@babylonjs/addons";
 
     const viewer = await Viewer.create("app", {
         // packagePath: "",
