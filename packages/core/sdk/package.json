@@ -19,7 +19,6 @@
     "@babylonjs/loaders": "^7.44.1",
     "@babylonjs/materials": "7.44.1",
     "@babylonjs/serializers": "^7.44.1",
-    "@glowjs/core": "2025.1.18",
     "@zip.js/zip.js": "^2.7.54",
     "babylonjs-mapping": "^1.1.42",
     "@plum-render/oss-api": "workspace:*",
