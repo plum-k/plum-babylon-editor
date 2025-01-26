@@ -1,15 +1,16 @@
 import {
     BaseParticleSystem,
+    BoxParticleEmitter,
     Color4,
     ConeParticleEmitter,
-    Constants,
+    Constants, GPUParticleSystem,
     NoiseProceduralTexture,
     ParticleSystem,
     Texture,
     Vector3
 } from "@babylonjs/core";
 import {Viewer} from "../core";
-import {defaultsDeep} from "lodash-es";
+import {defaults, defaultsDeep, isArray} from "lodash-es";
 
 
 // 定义 PlumParticle 实例的配置选项
@@ -20,6 +21,7 @@ export interface IPlumParticle {
     capacity: number;
     // 关联的 Viewer 实例
     viewer: Viewer;
+    isGpu?: boolean;
 }
 
 // 定义粒子系统序列动画相关的配置选项
@@ -64,20 +66,47 @@ export interface IUpdateOptions {
     disposeOnStop?: boolean;
 }
 
+export interface ISetBoxEmitter {
+    direction1?: VectorType
+    direction2?: VectorType
+    minEmitBox?: VectorType
+    maxEmitBox?: VectorType
+}
+
+type VectorType = Vector3 | number[];
+
+
+export function vectorTypeToVector3(value: VectorType) {
+    if (isArray(value)) {
+        return Vector3.FromArray(value)
+    }
+    return value;
+}
 
 /**
  * 把 babylon 粒子系统的配置 按相关性分类
  */
 export class PlumParticle {
-    particleSystem: ParticleSystem;
+    particleSystem: GPUParticleSystem | ParticleSystem;
     noiseTexture?: NoiseProceduralTexture;
-
+    options: IPlumParticle
 
     constructor(options: IPlumParticle) {
+        this.options = defaults(options, {
+            isGpu: true,
+        });
+
         let scene = options.viewer.scene;
-        this.particleSystem = new ParticleSystem(options.name, options.capacity, scene);
+        if (options.isGpu) {
+            this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
+        } else {
+            this.particleSystem = new ParticleSystem(options.name, options.capacity, scene);
+        }
     }
 
+    isGpu(){
+        this.options.isGpu;
+    }
 
     /**
      * 设置粒子系统是否阻止自动启动
@@ -85,7 +114,7 @@ export class PlumParticle {
      */
     setPreventAutoStart(preventAutoStart = false) {
         // 将粒子系统的 preventAutoStart 属性设置为 true，意味着阻止粒子系统自动启动
-        this.particleSystem.preventAutoStart = true;
+        this.particleSystem.preventAutoStart = preventAutoStart;
     }
 
 
@@ -273,6 +302,25 @@ export class PlumParticle {
     }
 
     /**
+     * 设置正方形发射器
+     * @param options
+     */
+    setBoxEmitter(options: ISetBoxEmitter) {
+        const _options = defaults(options, {
+            direction1: new Vector3(0, 1.0, 0),
+            direction2: new Vector3(0, 1.0, 0),
+            minEmitBox: new Vector3(-0.5, -0.5, -0.5),
+            maxEmitBox: new Vector3(0.5, 0.5, 0.5),
+        })
+        let boxParticleEmitter = new BoxParticleEmitter();
+        boxParticleEmitter.direction1 = vectorTypeToVector3(_options.direction1);
+        boxParticleEmitter.direction2 = vectorTypeToVector3(_options.direction2);
+        boxParticleEmitter.minEmitBox = vectorTypeToVector3(_options.minEmitBox);
+        boxParticleEmitter.maxEmitBox = vectorTypeToVector3(_options.maxEmitBox);
+        this.particleSystem.particleEmitterType = boxParticleEmitter
+    }
+
+    /**
      * 设置发射器位置
      * @param emitterPosition 发射器的位置，类型为 Vector3，默认为 Vector3.Zero()
      */
@@ -339,6 +387,10 @@ export class PlumParticle {
      */
     setTexture(url: string) {
         this.particleSystem.particleTexture = new Texture(url);
+    }
+
+    setTextureMask(value = new Color4(1.0, 1.0, 1.0, 1.0)) {
+        this.particleSystem.textureMask = value;
     }
 
     /**

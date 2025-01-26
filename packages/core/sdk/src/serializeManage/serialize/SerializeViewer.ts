@@ -264,7 +264,7 @@ export class SerializeViewer {
             }
         }
 
-        // Particles Systems
+        // 粒子系统 Systems
         if (options.serializeParticleSystems) {
             serializationObject.particleSystems = [];
             for (index = 0; index < scene.particleSystems.length; index++) {

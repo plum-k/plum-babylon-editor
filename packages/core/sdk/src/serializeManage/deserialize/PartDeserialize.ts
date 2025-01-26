@@ -764,7 +764,7 @@ export class PartDeserialize extends ChunkDeserialize {
                 // }
             }
 
-            // Particles
+            // 粒子系统
             if (parsedData.particleSystems !== undefined && parsedData.particleSystems !== null) {
                 const parser = GetIndividualParser(SceneComponentConstants.NAME_PARTICLESYSTEM);
                 if (parser) {
