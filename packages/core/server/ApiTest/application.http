@@ -1,3 +1,6 @@
+### GET request to example server https
+GET https://api.babylon.plumk.cn/application/
+
 ### GET request to example server
 GET http://127.0.0.1:5010/application/
 
