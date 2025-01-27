@@ -1,6 +1,7 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import {viteStaticCopy} from 'vite-plugin-static-copy'
+import { copy } from 'copy-vite-plugin'
 
 export default defineConfig({
     server: {
@@ -8,6 +9,11 @@ export default defineConfig({
         port: 4020,
     },
     plugins: [vue(),
+        copy({
+            pattern: [
+                { from: '../../core/sdk/dist', to: '' },
+            ]
+        }),
         viteStaticCopy({
             targets: [
                 {
@@ -17,5 +23,5 @@ export default defineConfig({
             ]
         })
     ],
-    assetsInclude: ['src/**/*.html'], // 添加更多的文件类型
+    assetsInclude: ['src/**/*.html']
 })

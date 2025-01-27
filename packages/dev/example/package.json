@@ -1,12 +1,13 @@
 {
-  "name": "@plum-render/babylon-sdk-example",
+  "name": "@plum-render/babylon-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "build-notsc": "vite build",
+    "build-notsc": "bun --filter @plum-render/babylon-sdk build && vite build",
+    "build-test": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "copy-vite-plugin": "^1.0.1",
     "vite-plugin-static-copy": "^2.2.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "typescript": "^5.7.3",
