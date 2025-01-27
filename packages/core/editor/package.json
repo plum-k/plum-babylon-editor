@@ -6,13 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build-tsc": "tsc -b && vite build",
-    "build": "vite build",
+    "build-notsc": "vite build",
     "force": "vite --force",
     "preview": "vite preview"
   },
   "dependencies": {
     "@plum-render/babylon-sdk": "workspace:*",
-    "babylonjs-loaders": "^7.45.0",
     "@microlink/react-json-view": "^1.24.0",
     "@babylonjs/core": "^7.45.0",
     "rc-field-form": "^2.7.0",
