@@ -1,4 +1,5 @@
 export * from "./EXT_mesh_gpu_instancing.js";
+export * from "./KHR_draco_mesh_compression.js";
 export * from "./KHR_lights_punctual.js";
 export * from "./KHR_materials_anisotropy.js";
 export * from "./KHR_materials_clearcoat.js";

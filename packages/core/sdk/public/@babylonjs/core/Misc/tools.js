@@ -81,6 +81,14 @@ export class Tools {
         return FileToolsOptions.ScriptBaseUrl;
     }
     /**
+     * Sets both the script base URL and the assets base URL to the same value.
+     * Setter only!
+     */
+    static set CDNBaseUrl(value) {
+        Tools.ScriptBaseUrl = value;
+        Tools.AssetBaseUrl = value;
+    }
+    /**
      * Sets a preprocessing function to run on a source URL before importing it
      * Note that this function will execute AFTER the base URL is appended to the URL
      */
@@ -347,6 +355,23 @@ export class Tools {
                 reject(exception);
             });
         });
+    }
+    /**
+     * This function will convert asset URLs if the AssetBaseUrl parameter is set.
+     * Any URL with `assets.babylonjs.com/core` will be replaced with the value of AssetBaseUrl.
+     * @param url the URL to convert
+     * @returns a new URL
+     */
+    static GetAssetUrl(url) {
+        if (!url) {
+            return "";
+        }
+        if (Tools.AssetBaseUrl && url.startsWith(Tools._DefaultAssetsUrl)) {
+            // normalize the baseUrl
+            const baseUrl = Tools.AssetBaseUrl[Tools.AssetBaseUrl.length - 1] === "/" ? Tools.AssetBaseUrl.substring(0, Tools.AssetBaseUrl.length - 1) : Tools.AssetBaseUrl;
+            return url.replace(Tools._DefaultAssetsUrl, baseUrl);
+        }
+        return url;
     }
     /**
      * Get a script URL including preprocessing
@@ -1100,6 +1125,10 @@ export class Tools {
     }
 }
 /**
+ * The base URL to use to load assets. If empty the default base url is used.
+ */
+Tools.AssetBaseUrl = "";
+/**
  * Enable/Disable Custom HTTP Request Headers globally.
  * default = false
  * @see CustomRequestHeaders
@@ -1119,6 +1148,10 @@ Tools.GetDOMTextContent = GetDOMTextContent;
  * @internal
  */
 Tools._DefaultCdnUrl = "https://cdn.babylonjs.com";
+/**
+ * @internal
+ */
+Tools._DefaultAssetsUrl = "https://assets.babylonjs.com/core";
 // eslint-disable-next-line jsdoc/require-returns-check, jsdoc/require-param
 /**
  * @returns the absolute URL of a given (relative) url

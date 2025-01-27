@@ -67,6 +67,9 @@ export class ThinGlowLayer extends ThinEffectLayer {
         this.neutralColor = new Color4(0, 0, 0, 1);
         // Adapt options
         this._options = {
+            mainTextureRatio: 0.5,
+            mainTextureFixedSize: 0,
+            mainTextureType: 0,
             blurKernelSize: 32,
             camera: null,
             renderingGroupId: -1,
@@ -137,7 +140,7 @@ export class ThinGlowLayer extends ThinEffectLayer {
         const emissiveTexture = material.emissiveTexture;
         return super._isSubMeshReady(subMesh, useInstances, emissiveTexture);
     }
-    _canRenderMesh(mesh, material) {
+    _canRenderMesh(_mesh, _material) {
         return true;
     }
     _internalCompose(effect) {

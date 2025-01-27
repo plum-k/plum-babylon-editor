@@ -19,6 +19,9 @@ export class FrameGraphPostProcessTask extends FrameGraphTask {
         this.postProcess = postProcess;
         this._postProcessDrawWrapper = this.postProcess.drawWrapper;
         this.outputTexture = this._frameGraph.textureManager.createDanglingHandle();
+        this.onTexturesAllocatedObservable.add((context) => {
+            context.setTextureSamplingMode(this.sourceTexture, this.sourceSamplingMode);
+        });
     }
     isReady() {
         return this.postProcess.isReady();
@@ -33,11 +36,10 @@ export class FrameGraphPostProcessTask extends FrameGraphTask {
         const outputTextureDescription = this._frameGraph.textureManager.getTextureDescription(this.outputTexture);
         this._outputWidth = outputTextureDescription.size.width;
         this._outputHeight = outputTextureDescription.size.height;
-        this._internalDependencies.push(this.sourceTexture);
+        this._addInternalDependencies(this.sourceTexture);
         const pass = this._frameGraph.addRenderPass(this.name);
         pass.setRenderTarget(this.outputTexture);
         pass.setExecuteFunc((context) => {
-            context.setTextureSamplingMode(this.sourceTexture, this.sourceSamplingMode);
             additionalExecute?.(context);
             context.applyFullScreenEffect(this._postProcessDrawWrapper, () => {
                 context.bindTextureHandle(this._postProcessDrawWrapper.effect, "textureSampler", this.sourceTexture);

@@ -2,7 +2,6 @@ import { GLTFExporter } from "../glTFExporter.js";
 import { Mesh } from "@babylonjs/core/Meshes/mesh.js";
 import "@babylonjs/core/Meshes/thinInstanceMesh.js";
 import { TmpVectors, Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector.js";
-import { VertexBuffer } from "@babylonjs/core/Buffers/buffer.js";
 import { ConvertToRightHandedPosition, ConvertToRightHandedRotation } from "../glTFUtilities.js";
 const NAME = "EXT_mesh_gpu_instancing";
 /**
@@ -32,10 +31,10 @@ export class EXT_mesh_gpu_instancing {
      * @param babylonNode the corresponding babylon node
      * @param nodeMap map from babylon node id to node index
      * @param convertToRightHanded true if we need to convert data from left hand to right hand system.
-     * @param dataWriter binary writer
+     * @param bufferManager buffer manager
      * @returns nullable promise, resolves with the node
      */
-    postExportNodeAsync(context, node, babylonNode, nodeMap, convertToRightHanded, dataWriter) {
+    postExportNodeAsync(context, node, babylonNode, nodeMap, convertToRightHanded, bufferManager) {
         return new Promise((resolve) => {
             if (node && babylonNode instanceof Mesh) {
                 if (babylonNode.hasThinInstances && this._exporter) {
@@ -77,16 +76,16 @@ export class EXT_mesh_gpu_instancing {
                     };
                     // do we need to write TRANSLATION ?
                     if (hasAnyInstanceWorldTranslation) {
-                        extension.attributes["TRANSLATION"] = this._buildAccessor(translationBuffer, "VEC3" /* AccessorType.VEC3 */, babylonNode.thinInstanceCount, dataWriter, 5126 /* AccessorComponentType.FLOAT */);
+                        extension.attributes["TRANSLATION"] = this._buildAccessor(translationBuffer, "VEC3" /* AccessorType.VEC3 */, babylonNode.thinInstanceCount, bufferManager);
                     }
                     // do we need to write ROTATION ?
                     if (hasAnyInstanceWorldRotation) {
-                        const componentType = 5126 /* AccessorComponentType.FLOAT */; // we decided to stay on FLOAT for now see https://github.com/BabylonJS/Babylon.js/pull/12495
-                        extension.attributes["ROTATION"] = this._buildAccessor(rotationBuffer, "VEC4" /* AccessorType.VEC4 */, babylonNode.thinInstanceCount, dataWriter, componentType);
+                        // we decided to stay on FLOAT for now see https://github.com/BabylonJS/Babylon.js/pull/12495
+                        extension.attributes["ROTATION"] = this._buildAccessor(rotationBuffer, "VEC4" /* AccessorType.VEC4 */, babylonNode.thinInstanceCount, bufferManager);
                     }
                     // do we need to write SCALE ?
                     if (hasAnyInstanceWorldScale) {
-                        extension.attributes["SCALE"] = this._buildAccessor(scaleBuffer, "VEC3" /* AccessorType.VEC3 */, babylonNode.thinInstanceCount, dataWriter, 5126 /* AccessorComponentType.FLOAT */);
+                        extension.attributes["SCALE"] = this._buildAccessor(scaleBuffer, "VEC3" /* AccessorType.VEC3 */, babylonNode.thinInstanceCount, bufferManager);
                     }
                     /* eslint-enable @typescript-eslint/naming-convention*/
                     node.extensions = node.extensions || {};
@@ -96,44 +95,13 @@ export class EXT_mesh_gpu_instancing {
             resolve(node);
         });
     }
-    _buildAccessor(buffer, type, count, binaryWriter, componentType) {
-        // write the buffer
-        const bufferOffset = binaryWriter.byteOffset;
-        switch (componentType) {
-            case 5126 /* AccessorComponentType.FLOAT */: {
-                for (let i = 0; i != buffer.length; i++) {
-                    binaryWriter.writeFloat32(buffer[i]);
-                }
-                break;
-            }
-            case 5120 /* AccessorComponentType.BYTE */: {
-                for (let i = 0; i != buffer.length; i++) {
-                    binaryWriter.writeInt8(buffer[i] * 127);
-                }
-                break;
-            }
-            case 5122 /* AccessorComponentType.SHORT */: {
-                for (let i = 0; i != buffer.length; i++) {
-                    binaryWriter.writeInt16(buffer[i] * 32767);
-                }
-                break;
-            }
-        }
+    _buildAccessor(buffer, type, count, bufferManager) {
         // build the buffer view
-        const bv = { buffer: 0, byteOffset: bufferOffset, byteLength: buffer.length * VertexBuffer.GetTypeByteLength(componentType) };
-        const bufferViewIndex = this._exporter._bufferViews.length;
-        this._exporter._bufferViews.push(bv);
+        const bv = bufferManager.createBufferView(buffer);
         // finally build the accessor
-        const accessorIndex = this._exporter._accessors.length;
-        const accessor = {
-            bufferView: bufferViewIndex,
-            componentType: componentType,
-            count: count,
-            type: type,
-            normalized: componentType == 5120 /* AccessorComponentType.BYTE */ || componentType == 5122 /* AccessorComponentType.SHORT */,
-        };
+        const accessor = bufferManager.createAccessor(bv, type, 5126 /* AccessorComponentType.FLOAT */, count);
         this._exporter._accessors.push(accessor);
-        return accessorIndex;
+        return this._exporter._accessors.length - 1;
     }
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -6,6 +6,7 @@ import { FrameGraphContext } from "./frameGraphContext.js";
 import { FrameGraphTextureManager } from "./frameGraphTextureManager.js";
 import { Observable } from "../Misc/observable.js";
 import { _retryWithInterval } from "../Misc/timingTools.js";
+import { Logger } from "../Misc/logger.js";
 var FrameGraphPassType;
 (function (FrameGraphPassType) {
     FrameGraphPassType[FrameGraphPassType["Normal"] = 0] = "Normal";
@@ -32,6 +33,7 @@ export class FrameGraph {
     constructor(engine, debugTextures = false, scene) {
         this._tasks = [];
         this._currentProcessedTask = null;
+        this._isDisposed = false;
         /**
          * Observable raised when the node render graph is built
          */
@@ -139,18 +141,37 @@ export class FrameGraph {
     /**
      * Returns a promise that resolves when the frame graph is ready to be executed
      * This method must be called after the graph has been built (FrameGraph.build called)!
-     * @param timeout Timeout in ms between retries (default is 16)
+     * @param timeStep Time step in ms between retries (default is 16)
+     * @param maxTimeout Maximum time in ms to wait for the graph to be ready (default is 30000)
      * @returns The promise that resolves when the graph is ready
      */
-    whenReadyAsync(timeout = 16) {
-        return new Promise((resolve) => {
+    whenReadyAsync(timeStep = 16, maxTimeout = 30000) {
+        return new Promise((resolve, reject) => {
             _retryWithInterval(() => {
                 let ready = this._renderContext._isReady();
                 for (const task of this._tasks) {
                     ready = task.isReady() && ready;
                 }
-                return ready;
-            }, resolve, undefined, timeout);
+                return this._isDisposed || ready;
+            }, () => {
+                if (this._isDisposed) {
+                    reject(FrameGraph.WhenReadyRejectionDisposed);
+                }
+                else {
+                    resolve();
+                }
+            }, (err) => {
+                if (err.stack) {
+                    Logger.Error("FrameGraph: An unexpected error occurred while waiting for the frame graph to be ready.");
+                    Logger.Error(err.stack);
+                }
+                else {
+                    Logger.Error("FrameGraph: Timeout while waiting for the frame graph to be ready.");
+                    if (err) {
+                        Logger.Error(err);
+                    }
+                }
+            }, timeStep, maxTimeout);
         });
     }
     /**
@@ -182,9 +203,14 @@ export class FrameGraph {
      * Disposes the frame graph
      */
     dispose() {
+        this._isDisposed = true;
         this.clear();
         this.textureManager._dispose();
         this._renderContext._dispose();
     }
 }
+/**
+ * Rejection message (from WhenReadyAsync) when the frame graph has been disposed
+ */
+FrameGraph.WhenReadyRejectionDisposed = "FrameGraph: The frame graph has been disposed.";
 //# sourceMappingURL=frameGraph.js.map

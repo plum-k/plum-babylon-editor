@@ -94,6 +94,7 @@ export class RenderingManager {
         const info = this._renderingGroupInfo;
         info.scene = this._scene;
         info.camera = this._scene.activeCamera;
+        info.renderingManager = this;
         // Dispatch sprites
         if (this._scene.spriteManagers && renderSprites) {
             for (let index = 0; index < this._scene.spriteManagers.length; index++) {

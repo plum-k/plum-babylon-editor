@@ -14,7 +14,7 @@ export class FrameGraphBloomMergeTask extends FrameGraphPostProcessTask {
         const pass = super.record(skipCreationOfDisabledPasses, undefined, (context) => {
             context.bindTextureHandle(this._postProcessDrawWrapper.effect, "bloomBlur", this.blurTexture);
         });
-        this._internalDependencies.push(this.blurTexture);
+        this._addInternalDependencies(this.blurTexture);
         return pass;
     }
 }

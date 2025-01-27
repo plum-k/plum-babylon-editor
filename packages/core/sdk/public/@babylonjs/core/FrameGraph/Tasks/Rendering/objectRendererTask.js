@@ -122,6 +122,7 @@ export class FrameGraphObjectRendererTask extends FrameGraphTask {
             passDisabled.setRenderTargetDepth(this.depthTexture);
             passDisabled.setExecuteFunc((_context) => { });
         }
+        return pass;
     }
     dispose() {
         this._renderer.onBeforeRenderObservable.remove(this._onBeforeRenderObservable);

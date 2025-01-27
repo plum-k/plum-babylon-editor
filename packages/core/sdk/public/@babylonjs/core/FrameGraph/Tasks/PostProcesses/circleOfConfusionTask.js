@@ -17,18 +17,19 @@ export class FrameGraphCircleOfConfusionTask extends FrameGraphPostProcessTask {
          * The sampling mode to use for the depth texture.
          */
         this.depthSamplingMode = 2;
+        this.onTexturesAllocatedObservable.add((context) => {
+            context.setTextureSamplingMode(this.depthTexture, this.depthSamplingMode);
+        });
     }
     record(skipCreationOfDisabledPasses = false) {
         if (this.sourceTexture === undefined || this.depthTexture === undefined || this.camera === undefined) {
             throw new Error(`FrameGraphCircleOfConfusionTask "${this.name}": sourceTexture, depthTexture and camera are required`);
         }
-        const pass = super.record(skipCreationOfDisabledPasses, (context) => {
-            context.setTextureSamplingMode(this.depthTexture, this.depthSamplingMode);
-        }, (context) => {
+        const pass = super.record(skipCreationOfDisabledPasses, undefined, (context) => {
             this.postProcess.camera = this.camera;
             context.bindTextureHandle(this._postProcessDrawWrapper.effect, "depthSampler", this.depthTexture);
         });
-        this._internalDependencies.push(this.depthTexture);
+        this._addInternalDependencies(this.depthTexture);
         return pass;
     }
 }

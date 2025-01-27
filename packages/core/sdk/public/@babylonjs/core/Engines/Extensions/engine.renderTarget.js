@@ -1,4 +1,4 @@
-import { InternalTexture } from "../../Materials/Textures/internalTexture.js";
+import { HasStencilAspect, InternalTexture } from "../../Materials/Textures/internalTexture.js";
 import { Logger } from "../../Misc/logger.js";
 import { ThinEngine } from "../thinEngine.js";
 import { WebGLRenderTargetWrapper } from "../WebGL/webGLRenderTargetWrapper.js";
@@ -99,9 +99,7 @@ ThinEngine.prototype._createDepthStencilTexture = function (size, options, rtWra
     else {
         internalTexture.format = internalOptions.generateStencil ? 13 : 16;
     }
-    const hasStencil = internalTexture.format === 17 ||
-        internalTexture.format === 13 ||
-        internalTexture.format === 18;
+    const hasStencil = HasStencilAspect(internalTexture.format);
     const type = this._getWebGLTextureTypeFromDepthTextureFormat(internalTexture.format);
     const format = hasStencil ? gl.DEPTH_STENCIL : gl.DEPTH_COMPONENT;
     const internalFormat = this._getInternalFormatFromDepthTextureFormat(internalTexture.format, true, hasStencil);

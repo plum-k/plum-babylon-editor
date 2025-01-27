@@ -51,8 +51,7 @@ finalColor=vec4f(finalColor.rgb,finalColor.a*uniforms.opacityIntensity);
 finalColor=vec4f(finalColor.rgb,finalColor.a*fragmentInputs.vColor.a);
 #endif
 #ifdef ALPHATEST
-if (finalColor.a<ALPHATESTVALUE)
-discard;
+if (finalColor.a<ALPHATESTVALUE) {discard;}
 #endif
 #ifdef EMISSIVE
 var emissive: vec4f=textureSample(emissiveSampler,emissiveSamplerSampler,fragmentInputs.vUVEmissive);

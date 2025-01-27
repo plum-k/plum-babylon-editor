@@ -3,6 +3,7 @@ import { NodeRenderGraphBlock } from "../../nodeRenderGraphBlock.js";
 import { NodeRenderGraphBlockConnectionPointTypes } from "../../Types/nodeRenderGraphTypes.js";
 import { editableInPropertyPage } from "../../../../Decorators/nodeDecorator.js";
 import { NodeRenderGraphConnectionPoint } from "../../nodeRenderGraphBlockConnectionPoint.js";
+import { NodeRenderGraphConnectionPointCustomObject } from "../../nodeRenderGraphConnectionPointCustomObject.js";
 /**
  * @internal
  */
@@ -29,6 +30,7 @@ export class NodeRenderGraphBaseObjectRendererBlock extends NodeRenderGraphBlock
         this.registerInput("shadowGenerators", NodeRenderGraphBlockConnectionPointTypes.ShadowGenerator, true);
         this.registerOutput("output", NodeRenderGraphBlockConnectionPointTypes.BasedOnInput);
         this.registerOutput("outputDepth", NodeRenderGraphBlockConnectionPointTypes.BasedOnInput);
+        this.registerOutput("objectRenderer", NodeRenderGraphBlockConnectionPointTypes.Object, new NodeRenderGraphConnectionPointCustomObject("objectRenderer", this, 1 /* NodeRenderGraphConnectionPointDirection.Output */, NodeRenderGraphBaseObjectRendererBlock, "NodeRenderGraphBaseObjectRendererBlock"));
         this.destination.addAcceptedConnectionPointTypes(NodeRenderGraphBlockConnectionPointTypes.TextureAllButBackBufferDepthStencil);
         this.depth.addAcceptedConnectionPointTypes(NodeRenderGraphBlockConnectionPointTypes.TextureDepthStencilAttachment);
         this.shadowGenerators.addAcceptedConnectionPointTypes(NodeRenderGraphBlockConnectionPointTypes.ResourceContainer);
@@ -104,10 +106,17 @@ export class NodeRenderGraphBaseObjectRendererBlock extends NodeRenderGraphBlock
     get outputDepth() {
         return this._outputs[1];
     }
+    /**
+     * Gets the objectRenderer component
+     */
+    get objectRenderer() {
+        return this._outputs[2];
+    }
     _buildBlock(state) {
         super._buildBlock(state);
         this.output.value = this._frameGraphTask.outputTexture; // the value of the output connection point is the "output" texture of the task
         this.outputDepth.value = this._frameGraphTask.outputDepthTexture; // the value of the outputDepth connection point is the "outputDepth" texture of the task
+        this.objectRenderer.value = this._frameGraphTask; // the value of the objectRenderer connection point is the task itself
         this._frameGraphTask.destinationTexture = this.destination.connectedPoint?.value;
         this._frameGraphTask.depthTexture = this.depth.connectedPoint?.value;
         this._frameGraphTask.camera = this.camera.connectedPoint?.value;

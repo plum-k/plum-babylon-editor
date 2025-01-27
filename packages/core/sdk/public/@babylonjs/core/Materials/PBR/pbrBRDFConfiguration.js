@@ -14,6 +14,7 @@ export class MaterialBRDFDefines extends MaterialDefines {
         this.MS_BRDF_ENERGY_CONSERVATION = false;
         this.SPHERICAL_HARMONICS = false;
         this.SPECULAR_GLOSSINESS_ENERGY_CONSERVATION = false;
+        this.MIX_IBL_RADIANCE_WITH_IRRADIANCE = true;
     }
 }
 /**
@@ -65,6 +66,13 @@ export class PBRBRDFConfiguration extends MaterialPluginBase {
          * In the deactivated case, the material author has to ensure energy conservation, for a physically plausible rendering.
          */
         this.useSpecularGlossinessInputEnergyConservation = PBRBRDFConfiguration.DEFAULT_USE_SPECULAR_GLOSSINESS_INPUT_ENERGY_CONSERVATION;
+        this._mixIblRadianceWithIrradiance = PBRBRDFConfiguration.DEFAULT_MIX_IBL_RADIANCE_WITH_IRRADIANCE;
+        /**
+         * Defines if IBL irradiance is used to augment rough radiance.
+         * If activated, irradiance is blended into the radiance contribution when the material is rough.
+         * This better approximates raytracing results for rough surfaces.
+         */
+        this.mixIblRadianceWithIrradiance = PBRBRDFConfiguration.DEFAULT_MIX_IBL_RADIANCE_WITH_IRRADIANCE;
         this._internalMarkAllSubMeshesAsMiscDirty = material._dirtyCallbacks[16];
         this._enable(true);
     }
@@ -73,6 +81,7 @@ export class PBRBRDFConfiguration extends MaterialPluginBase {
         defines.MS_BRDF_ENERGY_CONSERVATION = this._useEnergyConservation && this._useSmithVisibilityHeightCorrelated;
         defines.SPHERICAL_HARMONICS = this._useSphericalHarmonics;
         defines.SPECULAR_GLOSSINESS_ENERGY_CONSERVATION = this._useSpecularGlossinessInputEnergyConservation;
+        defines.MIX_IBL_RADIANCE_WITH_IRRADIANCE = this._mixIblRadianceWithIrradiance;
     }
     getClassName() {
         return "PBRBRDFConfiguration";
@@ -100,6 +109,12 @@ PBRBRDFConfiguration.DEFAULT_USE_SPHERICAL_HARMONICS = true;
  * If deactivated, a material is only physically plausible, when (albedo color + specular color) < 1.
  */
 PBRBRDFConfiguration.DEFAULT_USE_SPECULAR_GLOSSINESS_INPUT_ENERGY_CONSERVATION = true;
+/**
+ * Default value for whether IBL irradiance is used to augment rough radiance.
+ * If activated, irradiance is blended into the radiance contribution when the material is rough.
+ * This better approximates raytracing results for rough surfaces.
+ */
+PBRBRDFConfiguration.DEFAULT_MIX_IBL_RADIANCE_WITH_IRRADIANCE = true;
 __decorate([
     serialize(),
     expandToProperty("_markAllSubMeshesAsMiscDirty")
@@ -116,4 +131,8 @@ __decorate([
     serialize(),
     expandToProperty("_markAllSubMeshesAsMiscDirty")
 ], PBRBRDFConfiguration.prototype, "useSpecularGlossinessInputEnergyConservation", void 0);
+__decorate([
+    serialize(),
+    expandToProperty("_markAllSubMeshesAsMiscDirty")
+], PBRBRDFConfiguration.prototype, "mixIblRadianceWithIrradiance", void 0);
 //# sourceMappingURL=pbrBRDFConfiguration.js.map

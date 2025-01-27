@@ -12,6 +12,7 @@ import { TransformNode } from "../../Meshes/transformNode.js";
 import { Axis } from "../../Maths/math.axis.js";
 import { EngineStore } from "../../Engines/engineStore.js";
 
+import { Tools } from "../../Misc/tools.js";
 /**
  * Parts of the hands divided to writs and finger names
  */
@@ -410,15 +411,15 @@ export class WebXRHandTracking extends WebXRAbstractFeature {
             }
             const handsDefined = !!(WebXRHandTracking._RightHandGLB && WebXRHandTracking._LeftHandGLB);
             // load them in parallel
+            const defaulrHandGLBUrl = Tools.GetAssetUrl(WebXRHandTracking.DEFAULT_HAND_MODEL_BASE_URL);
             const handGLBs = await Promise.all([
-                WebXRHandTracking._RightHandGLB ||
-                    SceneLoader.ImportMeshAsync("", WebXRHandTracking.DEFAULT_HAND_MODEL_BASE_URL, WebXRHandTracking.DEFAULT_HAND_MODEL_RIGHT_FILENAME, scene),
-                WebXRHandTracking._LeftHandGLB ||
-                    SceneLoader.ImportMeshAsync("", WebXRHandTracking.DEFAULT_HAND_MODEL_BASE_URL, WebXRHandTracking.DEFAULT_HAND_MODEL_LEFT_FILENAME, scene),
+                WebXRHandTracking._RightHandGLB || SceneLoader.ImportMeshAsync("", defaulrHandGLBUrl, WebXRHandTracking.DEFAULT_HAND_MODEL_RIGHT_FILENAME, scene),
+                WebXRHandTracking._LeftHandGLB || SceneLoader.ImportMeshAsync("", defaulrHandGLBUrl, WebXRHandTracking.DEFAULT_HAND_MODEL_LEFT_FILENAME, scene),
             ]);
             WebXRHandTracking._RightHandGLB = handGLBs[0];
             WebXRHandTracking._LeftHandGLB = handGLBs[1];
-            const handShader = await NodeMaterial.ParseFromFileAsync("handShader", WebXRHandTracking.DEFAULT_HAND_MODEL_SHADER_URL, scene, undefined, true);
+            const shaderUrl = Tools.GetAssetUrl(WebXRHandTracking.DEFAULT_HAND_MODEL_SHADER_URL);
+            const handShader = await NodeMaterial.ParseFromFileAsync("handShader", shaderUrl, scene, undefined, true);
             // depth prepass and alpha mode
             handShader.needDepthPrePass = true;
             handShader.transparencyMode = Material.MATERIAL_ALPHABLEND;
@@ -730,13 +731,13 @@ WebXRHandTracking.Name = WebXRFeatureName.HAND_TRACKING;
  */
 WebXRHandTracking.Version = 1;
 /** The base URL for the default hand model. */
-WebXRHandTracking.DEFAULT_HAND_MODEL_BASE_URL = "https://assets.babylonjs.com/meshes/HandMeshes/";
+WebXRHandTracking.DEFAULT_HAND_MODEL_BASE_URL = "https://assets.babylonjs.com/core/HandMeshes/";
 /** The filename to use for the default right hand model. */
 WebXRHandTracking.DEFAULT_HAND_MODEL_RIGHT_FILENAME = "r_hand_rhs.glb";
 /** The filename to use for the default left hand model. */
 WebXRHandTracking.DEFAULT_HAND_MODEL_LEFT_FILENAME = "l_hand_rhs.glb";
 /** The URL pointing to the default hand model NodeMaterial shader. */
-WebXRHandTracking.DEFAULT_HAND_MODEL_SHADER_URL = "https://assets.babylonjs.com/meshes/HandMeshes/handsShader.json";
+WebXRHandTracking.DEFAULT_HAND_MODEL_SHADER_URL = "https://assets.babylonjs.com/core/HandMeshes/handsShader.json";
 // We want to use lightweight models, diameter will initially be 1 but scaled to the values returned from WebXR.
 WebXRHandTracking._ICOSPHERE_PARAMS = { radius: 0.5, flat: false, subdivisions: 2 };
 WebXRHandTracking._RightHandGLB = null;

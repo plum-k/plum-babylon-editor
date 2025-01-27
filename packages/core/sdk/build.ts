@@ -16,7 +16,7 @@ async function deleteNonJsFiles(dir: string): Promise<void> {
 }
 
 // 示例调用
-const targetDirectory: string = './libs/@babylonjs'; // 替换为你要拷贝到的目标目录
+const targetDirectory: string = './public/@babylonjs'; // 替换为你要拷贝到的目标目录
 (async () => {
     try {
         await deleteNonJsFiles(targetDirectory);

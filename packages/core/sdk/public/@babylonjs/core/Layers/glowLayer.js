@@ -38,43 +38,43 @@ export class GlowLayer extends EffectLayer {
      * Sets the kernel size of the blur.
      */
     set blurKernelSize(value) {
-        this._thinGlowLayer.blurKernelSize = value;
+        this._thinEffectLayer.blurKernelSize = value;
     }
     /**
      * Gets the kernel size of the blur.
      */
     get blurKernelSize() {
-        return this._thinGlowLayer.blurKernelSize;
+        return this._thinEffectLayer.blurKernelSize;
     }
     /**
      * Sets the glow intensity.
      */
     set intensity(value) {
-        this._thinGlowLayer.intensity = value;
+        this._thinEffectLayer.intensity = value;
     }
     /**
      * Gets the glow intensity.
      */
     get intensity() {
-        return this._thinGlowLayer.intensity;
+        return this._thinEffectLayer.intensity;
     }
     /**
      * Callback used to let the user override the color selection on a per mesh basis
      */
     get customEmissiveColorSelector() {
-        return this._thinGlowLayer.customEmissiveColorSelector;
+        return this._thinEffectLayer.customEmissiveColorSelector;
     }
     set customEmissiveColorSelector(value) {
-        this._thinGlowLayer.customEmissiveColorSelector = value;
+        this._thinEffectLayer.customEmissiveColorSelector = value;
     }
     /**
      * Callback used to let the user override the texture selection on a per mesh basis
      */
     get customEmissiveTextureSelector() {
-        return this._thinGlowLayer.customEmissiveTextureSelector;
+        return this._thinEffectLayer.customEmissiveTextureSelector;
     }
     set customEmissiveTextureSelector(value) {
-        this._thinGlowLayer.customEmissiveTextureSelector = value;
+        this._thinEffectLayer.customEmissiveTextureSelector = value;
     }
     /**
      * Instantiates a new glow Layer and references it to the scene.
@@ -83,9 +83,7 @@ export class GlowLayer extends EffectLayer {
      * @param options Sets of none mandatory options to use with the layer (see IGlowLayerOptions for more information)
      */
     constructor(name, scene, options) {
-        const thinGlowLayer = new ThinGlowLayer(name, scene, options);
-        super(name, scene, false, thinGlowLayer);
-        this._thinGlowLayer = thinGlowLayer;
+        super(name, scene, false, new ThinGlowLayer(name, scene, options));
         // Adapt options
         this._options = {
             mainTextureRatio: GlowLayer.DefaultTextureRatio,
@@ -116,13 +114,13 @@ export class GlowLayer extends EffectLayer {
      * to the main canvas at the end of the scene rendering.
      */
     _createMergeEffect() {
-        return this._thinGlowLayer._createMergeEffect();
+        return this._thinEffectLayer._createMergeEffect();
     }
     /**
      * Creates the render target textures and post processes used in the glow layer.
      */
     _createTextureAndPostProcesses() {
-        this._thinGlowLayer._renderPassId = this._mainTexture.renderPassId;
+        this._thinEffectLayer._renderPassId = this._mainTexture.renderPassId;
         let blurTextureWidth = this._mainTextureDesiredSize.width;
         let blurTextureHeight = this._mainTextureDesiredSize.height;
         blurTextureWidth = this._engine.needPOTTextures ? GetExponentOfTwo(blurTextureWidth, this._maxSize) : blurTextureWidth;
@@ -155,13 +153,13 @@ export class GlowLayer extends EffectLayer {
         this._blurTexture2.renderParticles = false;
         this._blurTexture2.ignoreCameraViewport = true;
         this._textures = [this._blurTexture1, this._blurTexture2];
-        this._thinGlowLayer.bindTexturesForCompose = (effect) => {
+        this._thinEffectLayer.bindTexturesForCompose = (effect) => {
             effect.setTexture("textureSampler", this._blurTexture1);
             effect.setTexture("textureSampler2", this._blurTexture2);
             effect.setFloat("offset", this.intensity);
         };
-        this._thinGlowLayer._createTextureAndPostProcesses();
-        const thinBlurPostProcesses1 = this._thinGlowLayer._postProcesses[0];
+        this._thinEffectLayer._createTextureAndPostProcesses();
+        const thinBlurPostProcesses1 = this._thinEffectLayer._postProcesses[0];
         this._horizontalBlurPostprocess1 = new BlurPostProcess("GlowLayerHBP1", thinBlurPostProcesses1.direction, thinBlurPostProcesses1.kernel, {
             samplingMode: Texture.BILINEAR_SAMPLINGMODE,
             engine: this._scene.getEngine(),
@@ -176,7 +174,7 @@ export class GlowLayer extends EffectLayer {
         this._horizontalBlurPostprocess1.onApplyObservable.add((effect) => {
             effect.setTexture("textureSampler", this._mainTexture);
         });
-        const thinBlurPostProcesses2 = this._thinGlowLayer._postProcesses[1];
+        const thinBlurPostProcesses2 = this._thinEffectLayer._postProcesses[1];
         this._verticalBlurPostprocess1 = new BlurPostProcess("GlowLayerVBP1", thinBlurPostProcesses2.direction, thinBlurPostProcesses2.kernel, {
             samplingMode: Texture.BILINEAR_SAMPLINGMODE,
             engine: this._scene.getEngine(),
@@ -185,7 +183,7 @@ export class GlowLayer extends EffectLayer {
             textureType,
             effectWrapper: thinBlurPostProcesses2,
         });
-        const thinBlurPostProcesses3 = this._thinGlowLayer._postProcesses[2];
+        const thinBlurPostProcesses3 = this._thinEffectLayer._postProcesses[2];
         this._horizontalBlurPostprocess2 = new BlurPostProcess("GlowLayerHBP2", thinBlurPostProcesses3.direction, thinBlurPostProcesses3.kernel, {
             samplingMode: Texture.BILINEAR_SAMPLINGMODE,
             engine: this._scene.getEngine(),
@@ -200,7 +198,7 @@ export class GlowLayer extends EffectLayer {
         this._horizontalBlurPostprocess2.onApplyObservable.add((effect) => {
             effect.setTexture("textureSampler", this._blurTexture1);
         });
-        const thinBlurPostProcesses4 = this._thinGlowLayer._postProcesses[3];
+        const thinBlurPostProcesses4 = this._thinEffectLayer._postProcesses[3];
         this._verticalBlurPostprocess2 = new BlurPostProcess("GlowLayerVBP2", thinBlurPostProcesses4.direction, thinBlurPostProcesses4.kernel, {
             samplingMode: Texture.BILINEAR_SAMPLINGMODE,
             engine: this._scene.getEngine(),
@@ -236,7 +234,7 @@ export class GlowLayer extends EffectLayer {
      * @returns true if ready otherwise, false
      */
     isReady(subMesh, useInstances) {
-        return this._thinGlowLayer.isReady(subMesh, useInstances);
+        return this._thinEffectLayer.isReady(subMesh, useInstances);
     }
     /**
      * @returns whether or not the layer needs stencil enabled during the mesh rendering.
@@ -251,14 +249,14 @@ export class GlowLayer extends EffectLayer {
      * @returns true if it can be rendered otherwise false
      */
     _canRenderMesh(mesh, material) {
-        return this._thinGlowLayer._canRenderMesh(mesh, material);
+        return this._thinEffectLayer._canRenderMesh(mesh, material);
     }
     /**
      * Implementation specific of rendering the generating effect on the main canvas.
      * @param effect The effect used to render through
      */
     _internalRender(effect) {
-        this._thinGlowLayer._internalCompose(effect);
+        this._thinEffectLayer._internalCompose(effect);
     }
     /**
      * Sets the required values for both the emissive texture and and the main color.
@@ -267,7 +265,7 @@ export class GlowLayer extends EffectLayer {
      * @param material
      */
     _setEmissiveTextureAndColor(mesh, subMesh, material) {
-        this._thinGlowLayer._setEmissiveTextureAndColor(mesh, subMesh, material);
+        this._thinEffectLayer._setEmissiveTextureAndColor(mesh, subMesh, material);
     }
     /**
      * Returns true if the mesh should render, otherwise false.
@@ -275,42 +273,42 @@ export class GlowLayer extends EffectLayer {
      * @returns true if it should render otherwise false
      */
     _shouldRenderMesh(mesh) {
-        return this._thinGlowLayer._shouldRenderMesh(mesh);
+        return this._thinEffectLayer._shouldRenderMesh(mesh);
     }
     /**
      * Adds specific effects defines.
      * @param defines The defines to add specifics to.
      */
     _addCustomEffectDefines(defines) {
-        this._thinGlowLayer._addCustomEffectDefines(defines);
+        this._thinEffectLayer._addCustomEffectDefines(defines);
     }
     /**
      * Add a mesh in the exclusion list to prevent it to impact or being impacted by the glow layer.
      * @param mesh The mesh to exclude from the glow layer
      */
     addExcludedMesh(mesh) {
-        this._thinGlowLayer.addExcludedMesh(mesh);
+        this._thinEffectLayer.addExcludedMesh(mesh);
     }
     /**
      * Remove a mesh from the exclusion list to let it impact or being impacted by the glow layer.
      * @param mesh The mesh to remove
      */
     removeExcludedMesh(mesh) {
-        this._thinGlowLayer.removeExcludedMesh(mesh);
+        this._thinEffectLayer.removeExcludedMesh(mesh);
     }
     /**
      * Add a mesh in the inclusion list to impact or being impacted by the glow layer.
      * @param mesh The mesh to include in the glow layer
      */
     addIncludedOnlyMesh(mesh) {
-        this._thinGlowLayer.addIncludedOnlyMesh(mesh);
+        this._thinEffectLayer.addIncludedOnlyMesh(mesh);
     }
     /**
      * Remove a mesh from the Inclusion list to prevent it to impact or being impacted by the glow layer.
      * @param mesh The mesh to remove
      */
     removeIncludedOnlyMesh(mesh) {
-        this._thinGlowLayer.removeIncludedOnlyMesh(mesh);
+        this._thinEffectLayer.removeIncludedOnlyMesh(mesh);
     }
     /**
      * Determine if a given mesh will be used in the glow layer
@@ -318,7 +316,7 @@ export class GlowLayer extends EffectLayer {
      * @returns true if the mesh will be highlighted by the current glow layer
      */
     hasMesh(mesh) {
-        return this._thinGlowLayer.hasMesh(mesh);
+        return this._thinEffectLayer.hasMesh(mesh);
     }
     /**
      * Defines whether the current material of the mesh should be use to render the effect.
@@ -326,21 +324,21 @@ export class GlowLayer extends EffectLayer {
      * @returns true if the material of the mesh should be use to render the effect
      */
     _useMeshMaterial(mesh) {
-        return this._thinGlowLayer._useMeshMaterial(mesh);
+        return this._thinEffectLayer._useMeshMaterial(mesh);
     }
     /**
      * Add a mesh to be rendered through its own material and not with emissive only.
      * @param mesh The mesh for which we need to use its material
      */
     referenceMeshToUseItsOwnMaterial(mesh) {
-        this._thinGlowLayer.referenceMeshToUseItsOwnMaterial(mesh);
+        this._thinEffectLayer.referenceMeshToUseItsOwnMaterial(mesh);
     }
     /**
      * Remove a mesh from being rendered through its own material and not with emissive only.
      * @param mesh The mesh for which we need to not use its material
      */
     unReferenceMeshFromUsingItsOwnMaterial(mesh) {
-        this._thinGlowLayer.unReferenceMeshFromUsingItsOwnMaterial(mesh, this._mainTexture.renderPassId);
+        this._thinEffectLayer.unReferenceMeshFromUsingItsOwnMaterial(mesh, this._mainTexture.renderPassId);
     }
     /**
      * Free any resources and references associated to a mesh.
@@ -349,7 +347,7 @@ export class GlowLayer extends EffectLayer {
      * @internal
      */
     _disposeMesh(mesh) {
-        this._thinGlowLayer._disposeMesh(mesh);
+        this._thinEffectLayer._disposeMesh(mesh);
     }
     /**
      * Gets the class name of the effect layer
@@ -368,7 +366,7 @@ export class GlowLayer extends EffectLayer {
         let index;
         // Included meshes
         serializationObject.includedMeshes = [];
-        const includedOnlyMeshes = this._thinGlowLayer._includedOnlyMeshes;
+        const includedOnlyMeshes = this._thinEffectLayer._includedOnlyMeshes;
         if (includedOnlyMeshes.length) {
             for (index = 0; index < includedOnlyMeshes.length; index++) {
                 const mesh = this._scene.getMeshByUniqueId(includedOnlyMeshes[index]);
@@ -379,7 +377,7 @@ export class GlowLayer extends EffectLayer {
         }
         // Excluded meshes
         serializationObject.excludedMeshes = [];
-        const excludedMeshes = this._thinGlowLayer._excludedMeshes;
+        const excludedMeshes = this._thinEffectLayer._excludedMeshes;
         if (excludedMeshes.length) {
             for (index = 0; index < excludedMeshes.length; index++) {
                 const mesh = this._scene.getMeshByUniqueId(excludedMeshes[index]);

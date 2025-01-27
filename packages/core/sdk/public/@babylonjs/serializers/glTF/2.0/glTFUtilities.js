@@ -14,49 +14,6 @@ const rotation180Y = new Quaternion(0, 1, 0, 0);
 const epsilon = 1e-6;
 const defaultTranslation = Vector3.Zero();
 const defaultScale = Vector3.One();
-/**
- * Creates a buffer view based on the supplied arguments
- * @param bufferIndex index value of the specified buffer
- * @param byteOffset byte offset value
- * @param byteLength byte length of the bufferView
- * @param byteStride byte distance between conequential elements
- * @returns bufferView for glTF
- */
-export function CreateBufferView(bufferIndex, byteOffset, byteLength, byteStride) {
-    const bufferview = { buffer: bufferIndex, byteLength: byteLength };
-    if (byteOffset) {
-        bufferview.byteOffset = byteOffset;
-    }
-    if (byteStride) {
-        bufferview.byteStride = byteStride;
-    }
-    return bufferview;
-}
-/**
- * Creates an accessor based on the supplied arguments
- * @param bufferViewIndex The index of the bufferview referenced by this accessor
- * @param type The type of the accessor
- * @param componentType The datatype of components in the attribute
- * @param count The number of attributes referenced by this accessor
- * @param byteOffset The offset relative to the start of the bufferView in bytes
- * @param minMax Minimum and maximum value of each component in this attribute
- * @param normalized Specifies whether integer data values are normalized before usage
- * @returns accessor for glTF
- */
-export function CreateAccessor(bufferViewIndex, type, componentType, count, byteOffset, minMax = null, normalized) {
-    const accessor = { bufferView: bufferViewIndex, componentType: componentType, count: count, type: type };
-    if (minMax != null) {
-        accessor.min = minMax.min;
-        accessor.max = minMax.max;
-    }
-    if (normalized) {
-        accessor.normalized = normalized;
-    }
-    if (byteOffset != null) {
-        accessor.byteOffset = byteOffset;
-    }
-    return accessor;
-}
 export function GetAccessorElementCount(accessorType) {
     switch (accessorType) {
         case "MAT2" /* AccessorType.MAT2 */:
@@ -301,13 +258,24 @@ export function IsNoopNode(node, useRightHandedSystem) {
     }
     return true;
 }
-export function IndicesArrayToUint8Array(indices, start, count, is32Bits) {
-    if (indices instanceof Array) {
-        const subarray = indices.slice(start, start + count);
-        indices = is32Bits ? new Uint32Array(subarray) : new Uint16Array(subarray);
-        return new Uint8Array(indices.buffer, indices.byteOffset, indices.byteLength);
+/**
+ * Converts an IndicesArray into either Uint32Array or Uint16Array, only copying if the data is number[].
+ * @param indices input array to be converted
+ * @param start starting index to copy from
+ * @param count number of indices to copy
+ * @returns a Uint32Array or Uint16Array
+ * @internal
+ */
+export function IndicesArrayToTypedArray(indices, start, count, is32Bits) {
+    if (indices instanceof Uint16Array || indices instanceof Uint32Array) {
+        return indices;
     }
-    return ArrayBuffer.isView(indices) ? new Uint8Array(indices.buffer, indices.byteOffset, indices.byteLength) : new Uint8Array(indices);
+    // If Int32Array, cast the indices (which are all positive) to Uint32Array
+    if (indices instanceof Int32Array) {
+        return new Uint32Array(indices.buffer, indices.byteOffset, indices.length);
+    }
+    const subarray = indices.slice(start, start + count);
+    return is32Bits ? new Uint32Array(subarray) : new Uint16Array(subarray);
 }
 export function DataArrayToUint8Array(data) {
     if (data instanceof Array) {

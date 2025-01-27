@@ -6,6 +6,7 @@ export * from "./layer.js";
 export * from "./layerSceneComponent.js";
 export * from "./thinEffectLayer.js";
 export * from "./thinGlowLayer.js";
+export * from "./thinHighlightLayer.js";
 // EffectLayer
 export * from "../Shaders/glowMapGeneration.fragment.js";
 export * from "../Shaders/glowMapGeneration.vertex.js";

@@ -2,6 +2,7 @@ import { Observable } from "../Misc/observable.js";
 import { Color4 } from "../Maths/math.color.js";
 import { EngineStore } from "../Engines/engineStore.js";
 import { VertexBuffer } from "../Buffers/buffer.js";
+import { EffectWrapper } from "../Materials/effectRenderer.js";
 import { Material } from "../Materials/material.js";
 
 import { EffectFallbacks } from "../Materials/effectFallbacks.js";
@@ -9,6 +10,53 @@ import { DrawWrapper } from "../Materials/drawWrapper.js";
 import { addClipPlaneUniforms, bindClipPlane, prepareStringDefinesForClipPlanes } from "../Materials/clipPlaneMaterialHelper.js";
 import { BindMorphTargetParameters, PrepareDefinesAndAttributesForMorphTargets, PushAttributesForInstances } from "../Materials/materialHelper.functions.js";
 import { ObjectRenderer } from "../Rendering/objectRenderer.js";
+import { Engine } from "../Engines/engine.js";
+/**
+ * Special Glow Blur post process only blurring the alpha channel
+ * It enforces keeping the most luminous color in the color channel.
+ * @internal
+ */
+export class ThinGlowBlurPostProcess extends EffectWrapper {
+    constructor(name, engine = null, direction, kernel, options) {
+        super({
+            ...options,
+            name,
+            engine: engine || Engine.LastCreatedEngine,
+            useShaderStore: true,
+            useAsPostProcess: true,
+            fragmentShader: ThinGlowBlurPostProcess.FragmentUrl,
+            uniforms: ThinGlowBlurPostProcess.Uniforms,
+        });
+        this.direction = direction;
+        this.kernel = kernel;
+        this.textureWidth = 0;
+        this.textureHeight = 0;
+    }
+    _gatherImports(useWebGPU, list) {
+        if (useWebGPU) {
+            this._webGPUReady = true;
+            list.push(import("../ShadersWGSL/glowBlurPostProcess.fragment.js"));
+        }
+        else {
+            list.push(import("../Shaders/glowBlurPostProcess.fragment.js"));
+        }
+        super._gatherImports(useWebGPU, list);
+    }
+    bind() {
+        super.bind();
+        this._drawWrapper.effect.setFloat2("screenSize", this.textureWidth, this.textureHeight);
+        this._drawWrapper.effect.setVector2("direction", this.direction);
+        this._drawWrapper.effect.setFloat("blurWidth", this.kernel);
+    }
+}
+/**
+ * The fragment shader url
+ */
+ThinGlowBlurPostProcess.FragmentUrl = "glowBlurPostProcess";
+/**
+ * The list of uniforms used by the effect
+ */
+ThinGlowBlurPostProcess.Uniforms = ["screenSize", "direction", "blurWidth"];
 /**
  * @internal
  */
@@ -142,6 +190,14 @@ export class ThinEffectLayer {
          * An event triggered when the generated texture has been merged in the scene.
          */
         this.onAfterComposeObservable = new Observable();
+        /**
+         * An event triggered when the layer is being blurred.
+         */
+        this.onBeforeBlurObservable = new Observable();
+        /**
+         * An event triggered when the layer has been blurred.
+         */
+        this.onAfterBlurObservable = new Observable();
         this._shaderLanguage = 0 /* ShaderLanguage.GLSL */;
         this._materialForRendering = {};
         /** @internal */
@@ -175,6 +231,13 @@ export class ThinEffectLayer {
     isReady(_subMesh, _useInstances) {
         return true;
     }
+    /**
+     * Returns whether or not the layer needs stencil enabled during the mesh rendering.
+     * @returns true if the effect requires stencil during the main canvas render pass.
+     */
+    needStencil() {
+        return false;
+    }
     /** @internal */
     _createMergeEffect() {
         throw new Error("Effect Layer: no merge effect defined");
@@ -193,6 +256,9 @@ export class ThinEffectLayer {
     _init(options) {
         // Adapt options
         this._options = {
+            mainTextureRatio: 0.5,
+            mainTextureFixedSize: 0,
+            mainTextureType: 0,
             alphaBlendingMode: 2,
             camera: null,
             renderingGroupId: -1,

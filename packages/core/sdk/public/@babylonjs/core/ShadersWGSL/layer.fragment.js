@@ -15,8 +15,7 @@ baseColor=toGammaSpace(baseColor);
 baseColor=toLinearSpaceVec4(baseColor);
 #endif
 #ifdef ALPHATEST
-if (baseColor.a<0.4)
-discard;
+if (baseColor.a<0.4) {discard;}
 #endif
 fragmentOutputs.color=baseColor*uniforms.color;
 #define CUSTOM_FRAGMENT_MAIN_END

@@ -1,8 +1,8 @@
-import { CreateAccessor, CreateBufferView, NormalizeTangent } from "./glTFUtilities.js";
+import { NormalizeTangent } from "./glTFUtilities.js";
 import { VertexBuffer } from "@babylonjs/core/Buffers/buffer.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { Tools } from "@babylonjs/core/Misc/tools.js";
-export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferViews, accessors, convertToRightHanded) {
+export function BuildMorphTargetBuffers(morphTarget, mesh, bufferManager, bufferViews, accessors, convertToRightHanded) {
     const result = {
         attributes: {},
         influence: morphTarget.influence,
@@ -13,16 +13,14 @@ export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferVie
     const difference = Vector3.Zero();
     let vertexStart = 0;
     let vertexCount = 0;
-    let byteOffset = 0;
-    let bufferViewIndex = 0;
     if (morphTarget.hasPositions) {
         const morphPositions = morphTarget.getPositions();
         const originalPositions = mesh.getVerticesData(VertexBuffer.PositionKind, undefined, undefined, true);
         if (originalPositions) {
+            const positionData = new Float32Array(originalPositions.length);
             const min = [Infinity, Infinity, Infinity];
             const max = [-Infinity, -Infinity, -Infinity];
             vertexCount = originalPositions.length / 3;
-            byteOffset = dataWriter.byteOffset;
             vertexStart = 0;
             for (let i = vertexStart; i < vertexCount; ++i) {
                 const originalPosition = Vector3.FromArray(originalPositions, i * 3);
@@ -35,13 +33,13 @@ export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferVie
                 max[1] = Math.max(max[1], difference.y);
                 min[2] = Math.min(min[2], difference.z);
                 max[2] = Math.max(max[2], difference.z);
-                dataWriter.writeFloat32(difference.x);
-                dataWriter.writeFloat32(difference.y);
-                dataWriter.writeFloat32(difference.z);
+                positionData[i * 3] = difference.x;
+                positionData[i * 3 + 1] = difference.y;
+                positionData[i * 3 + 2] = difference.z;
             }
-            bufferViews.push(CreateBufferView(0, byteOffset, morphPositions.length * floatSize, floatSize * 3));
-            bufferViewIndex = bufferViews.length - 1;
-            accessors.push(CreateAccessor(bufferViewIndex, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, morphPositions.length / 3, 0, { min, max }));
+            const bufferView = bufferManager.createBufferView(positionData, floatSize * 3);
+            const accessor = bufferManager.createAccessor(bufferView, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, morphPositions.length / 3, 0, { min, max });
+            accessors.push(accessor);
             result.attributes["POSITION"] = accessors.length - 1;
         }
         else {
@@ -52,20 +50,20 @@ export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferVie
         const morphNormals = morphTarget.getNormals();
         const originalNormals = mesh.getVerticesData(VertexBuffer.NormalKind, undefined, undefined, true);
         if (originalNormals) {
+            const normalData = new Float32Array(originalNormals.length);
             vertexCount = originalNormals.length / 3;
-            byteOffset = dataWriter.byteOffset;
             vertexStart = 0;
             for (let i = vertexStart; i < vertexCount; ++i) {
                 const originalNormal = Vector3.FromArray(originalNormals, i * 3).normalize();
                 const morphNormal = Vector3.FromArray(morphNormals, i * 3).normalize();
                 morphNormal.subtractToRef(originalNormal, difference);
-                dataWriter.writeFloat32(difference.x * flipX);
-                dataWriter.writeFloat32(difference.y);
-                dataWriter.writeFloat32(difference.z);
+                normalData[i * 3] = difference.x * flipX;
+                normalData[i * 3 + 1] = difference.y;
+                normalData[i * 3 + 2] = difference.z;
             }
-            bufferViews.push(CreateBufferView(0, byteOffset, morphNormals.length * floatSize, floatSize * 3));
-            bufferViewIndex = bufferViews.length - 1;
-            accessors.push(CreateAccessor(bufferViewIndex, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, morphNormals.length / 3, 0));
+            const bufferView = bufferManager.createBufferView(normalData, floatSize * 3);
+            const accessor = bufferManager.createAccessor(bufferView, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, morphNormals.length / 3, 0);
+            accessors.push(accessor);
             result.attributes["NORMAL"] = accessors.length - 1;
         }
         else {
@@ -77,8 +75,8 @@ export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferVie
         const originalTangents = mesh.getVerticesData(VertexBuffer.TangentKind, undefined, undefined, true);
         if (originalTangents) {
             vertexCount = originalTangents.length / 4;
+            const tangentData = new Float32Array(vertexCount * 3);
             vertexStart = 0;
-            byteOffset = dataWriter.byteOffset;
             for (let i = vertexStart; i < vertexCount; ++i) {
                 // Only read the x, y, z components and ignore w
                 const originalTangent = Vector3.FromArray(originalTangents, i * 4);
@@ -87,13 +85,13 @@ export function BuildMorphTargetBuffers(morphTarget, mesh, dataWriter, bufferVie
                 const morphTangent = Vector3.FromArray(morphTangents, i * 3);
                 NormalizeTangent(morphTangent);
                 morphTangent.subtractToRef(originalTangent, difference);
-                dataWriter.writeFloat32(difference.x * flipX);
-                dataWriter.writeFloat32(difference.y);
-                dataWriter.writeFloat32(difference.z);
+                tangentData[i * 3] = difference.x * flipX;
+                tangentData[i * 3 + 1] = difference.y;
+                tangentData[i * 3 + 2] = difference.z;
             }
-            bufferViews.push(CreateBufferView(0, byteOffset, vertexCount * floatSize * 3, floatSize * 3));
-            bufferViewIndex = bufferViews.length - 1;
-            accessors.push(CreateAccessor(bufferViewIndex, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, vertexCount, 0));
+            const bufferView = bufferManager.createBufferView(tangentData, floatSize * 3);
+            const accessor = bufferManager.createAccessor(bufferView, "VEC3" /* AccessorType.VEC3 */, 5126 /* AccessorComponentType.FLOAT */, vertexCount, 0);
+            accessors.push(accessor);
             result.attributes["TANGENT"] = accessors.length - 1;
         }
         else {

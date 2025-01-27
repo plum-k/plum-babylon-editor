@@ -1,4 +1,8 @@
 import { Tools } from "../../Misc/tools.js";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let NumberOfWorkers = 0;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let WorkerTimeout = null;
 /**
  * Meshopt compression (https://github.com/zeux/meshoptimizer)
  *
@@ -59,9 +63,20 @@ export class MeshoptCompression {
      */
     decodeGltfBufferAsync(source, count, stride, mode, filter) {
         return this._decoderModulePromise.then(async () => {
-            MeshoptDecoder.useWorkers(1);
+            if (NumberOfWorkers === 0) {
+                MeshoptDecoder.useWorkers(1);
+                NumberOfWorkers = 1;
+            }
             const result = await MeshoptDecoder.decodeGltfBufferAsync(count, stride, source, mode, filter);
-            MeshoptDecoder.useWorkers(0);
+            // a simple debounce to avoid switching back and forth between workers and no workers while decoding
+            if (WorkerTimeout !== null) {
+                clearTimeout(WorkerTimeout);
+            }
+            WorkerTimeout = setTimeout(() => {
+                MeshoptDecoder.useWorkers(0);
+                NumberOfWorkers = 0;
+                WorkerTimeout = null;
+            }, 1000);
             return result;
         });
     }

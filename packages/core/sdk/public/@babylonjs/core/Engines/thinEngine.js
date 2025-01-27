@@ -3221,12 +3221,8 @@ export class ThinEngine extends AbstractEngine {
      * Force the engine to release all cached effects. This means that next effect compilation will have to be done completely even if a similar effect was already compiled
      */
     releaseEffects() {
-        const keys = Object.keys(this._compiledEffects);
-        for (const name of keys) {
-            const effect = this._compiledEffects[name];
-            effect.dispose(true);
-        }
         this._compiledEffects = {};
+        this.onReleaseEffectsObservable.notifyObservers(this);
     }
     /**
      * Dispose and release all associated resources

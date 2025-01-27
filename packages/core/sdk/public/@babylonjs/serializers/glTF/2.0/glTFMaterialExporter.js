@@ -761,22 +761,32 @@ export class GLTFMaterialExporter {
         return textureInfo;
     }
     _exportImage(name, mimeType, data) {
-        const imageData = this._exporter._imageData;
-        const baseName = name.replace(/\.\/|\/|\.\\|\\/g, "_");
-        const extension = GetFileExtensionFromMimeType(mimeType);
-        let fileName = baseName + extension;
-        if (fileName in imageData) {
-            fileName = `${baseName}_${Tools.RandomId()}${extension}`;
-        }
-        imageData[fileName] = {
-            data: data,
-            mimeType: mimeType,
-        };
         const images = this._exporter._images;
-        images.push({
-            name: name,
-            uri: fileName,
-        });
+        let image;
+        if (this._exporter._shouldUseGlb) {
+            image = {
+                name: name,
+                mimeType: mimeType,
+                bufferView: undefined, // Will be updated later by BufferManager
+            };
+            const bufferView = this._exporter._bufferManager.createBufferView(new Uint8Array(data));
+            this._exporter._bufferManager.setBufferView(image, bufferView);
+        }
+        else {
+            // Build a unique URI
+            const baseName = name.replace(/\.\/|\/|\.\\|\\/g, "_");
+            const extension = GetFileExtensionFromMimeType(mimeType);
+            let fileName = baseName + extension;
+            if (images.some((image) => image.uri === fileName)) {
+                fileName = `${baseName}_${Tools.RandomId()}${extension}`;
+            }
+            image = {
+                name: name,
+                uri: fileName,
+            };
+            this._exporter._imageData[fileName] = { data: data, mimeType: mimeType }; // Save image data to be written to file later
+        }
+        images.push(image);
         return images.length - 1;
     }
     _exportTextureInfo(imageIndex, samplerIndex, coordinatesIndex) {

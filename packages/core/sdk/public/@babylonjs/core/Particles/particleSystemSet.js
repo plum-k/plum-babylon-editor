@@ -142,6 +142,7 @@ export class ParticleSystemSet {
 }
 /**
  * Gets or sets base Assets URL
+ * Only used when parsing particle systems from JSON, not part of the core assets
  */
 ParticleSystemSet.BaseAssetsUrl = "https://assets.babylonjs.com/particles";
 //# sourceMappingURL=particleSystemSet.js.map

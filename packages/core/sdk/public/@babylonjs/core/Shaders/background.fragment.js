@@ -13,6 +13,7 @@ import "./ShadersInclude/imageProcessingFunctions.js";
 import "./ShadersInclude/logDepthDeclaration.js";
 import "./ShadersInclude/clipPlaneFragmentDeclaration.js";
 import "./ShadersInclude/fogFragmentDeclaration.js";
+import "./ShadersInclude/intersectionFunctions.js";
 import "./ShadersInclude/clipPlaneFragment.js";
 import "./ShadersInclude/lightFragment.js";
 import "./ShadersInclude/logDepthFragment.js";
@@ -94,11 +95,8 @@ vec3 fresnelSchlickEnvironmentGGX(float VdotN,vec3 reflectance0,vec3 reflectance
 {float weight=mix(FRESNEL_MAXIMUM_ON_ROUGH,1.0,smoothness);return reflectance0+weight*(reflectance90-reflectance0)*pow5(saturate(1.0-VdotN));}
 #endif
 #ifdef PROJECTED_GROUND
-float diskIntersectWithBackFaceCulling(vec3 ro,vec3 rd,vec3 c,float r) {float d=rd.y;if(d>0.0) { return 1e6; }
-vec3 o=ro-c;float t=-o.y/d;vec3 q=o+rd*t;return (dot(q,q)<r*r) ? t : 1e6;}
-float sphereIntersect(vec3 ro,vec3 rd,float ra) {float b=dot(ro,rd);float c=dot(ro,ro)-ra*ra;float h=b*b-c;if(h<0.0) { return -1.0; }
-h=sqrt(h);return-b+h;}
-vec3 project(vec3 viewDirectionW,vec3 eyePosition) {float radius=projectedGroundInfos.x;float height=projectedGroundInfos.y;vec3 camDir=-viewDirectionW;float skySphereDistance=sphereIntersect(eyePosition,camDir,radius);vec3 skySpherePositionW=eyePosition+camDir*skySphereDistance;vec3 p=normalize(skySpherePositionW);eyePosition.y-=height;float sIntersection=sphereIntersect(eyePosition,p,radius);vec3 h=vec3(0.0,-height,0.0);float dIntersection=diskIntersectWithBackFaceCulling(eyePosition,p,h,radius);p=(eyePosition+min(sIntersection,dIntersection)*p);return p;}
+#include<intersectionFunctions>
+vec3 project(vec3 viewDirectionW,vec3 eyePosition) {float radius=projectedGroundInfos.x;float height=projectedGroundInfos.y;vec3 camDir=-viewDirectionW;float skySphereDistance=sphereIntersectFromOrigin(eyePosition,camDir,radius).x;vec3 skySpherePositionW=eyePosition+camDir*skySphereDistance;vec3 p=normalize(skySpherePositionW);eyePosition.y-=height;float sIntersection=sphereIntersectFromOrigin(eyePosition,p,radius).x;vec3 h=vec3(0.0,-height,0.0);float dIntersection=diskIntersectWithBackFaceCulling(eyePosition,p,h,radius);p=(eyePosition+min(sIntersection,dIntersection)*p);return p;}
 #endif
 #define CUSTOM_FRAGMENT_DEFINITIONS
 void main(void) {

@@ -1,4 +1,3 @@
-import { Effect } from "../Materials/effect.js";
 import { CustomParticleEmitter } from "./EmitterTypes/customParticleEmitter.js";
 import { UniformBufferEffectCommonAccessor } from "../Materials/uniformBufferEffectCommonAccessor.js";
 
@@ -115,7 +114,7 @@ export class WebGL2ParticleSystem {
             }
         }
         this._updateEffectOptions.defines = defines;
-        this._updateEffect = new Effect("gpuUpdateParticles", this._updateEffectOptions, this._engine);
+        this._updateEffect = this._engine.createEffect("gpuUpdateParticles", this._updateEffectOptions, this._engine);
         return new UniformBufferEffectCommonAccessor(this._updateEffect);
     }
     createVertexBuffers(updateBuffer, renderVertexBuffers) {

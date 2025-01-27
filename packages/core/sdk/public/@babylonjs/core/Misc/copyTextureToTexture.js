@@ -81,7 +81,7 @@ export class CopyTextureToTexture {
      * @returns true if "copy" can be called without delay, else false
      */
     isReady() {
-        return this._shadersLoaded && this._effectWrapper?.effect?.isReady();
+        return this._shadersLoaded && !!this._effectWrapper?.effect?.isReady();
     }
     /**
      * Copy one texture into another

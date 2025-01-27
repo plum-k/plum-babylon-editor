@@ -1697,6 +1697,7 @@ export class WebGPUEngine extends ThinWebGPUEngine {
             this._deletePipelineContext(webGPUPipelineContext);
         }
         this._compiledEffects = {};
+        this.onReleaseEffectsObservable.notifyObservers(this);
     }
     _deletePipelineContext(pipelineContext) {
         const webgpuPipelineContext = pipelineContext;

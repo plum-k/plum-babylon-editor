@@ -140,6 +140,20 @@ export class FrameGraphRenderContext extends FrameGraphContext {
         effect._bindTexture(name, texture);
     }
     /**
+     * Saves the current depth states (depth testing and depth writing)
+     */
+    saveDepthStates() {
+        this._depthTest = this._engine.getDepthBuffer();
+        this._depthWrite = this._engine.getDepthWrite();
+    }
+    /**
+     * Restores the depth states saved by saveDepthStates
+     */
+    restoreDepthStates() {
+        this._engine.setDepthBuffer(this._depthTest);
+        this._engine.setDepthWrite(this._depthWrite);
+    }
+    /**
      * Sets the depth states for the current render target
      * @param depthTest If true, depth testing is enabled
      * @param depthWrite If true, depth writing is enabled

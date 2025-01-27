@@ -57,6 +57,7 @@ export class FrameGraphClearTextureTask extends FrameGraphTask {
         passDisabled.setRenderTarget(this.destinationTexture);
         passDisabled.setRenderTargetDepth(this.depthTexture);
         passDisabled.setExecuteFunc((_context) => { });
+        return pass;
     }
 }
 //# sourceMappingURL=clearTextureTask.js.map

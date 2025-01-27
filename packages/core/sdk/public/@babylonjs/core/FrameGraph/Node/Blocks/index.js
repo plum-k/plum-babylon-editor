@@ -4,6 +4,7 @@ export * from "./inputBlock.js";
 export * from "./outputBlock.js";
 export * from "./resourceContainerBlock.js";
 export * from "./Layers/glowLayerBlock.js";
+export * from "./Layers/highlightLayerBlock.js";
 export * from "./PostProcesses/blackAndWhitePostProcessBlock.js";
 export * from "./PostProcesses/bloomPostProcessBlock.js";
 export * from "./PostProcesses/blurPostProcessBlock.js";

@@ -116,6 +116,14 @@ export class NodeRenderGraphConnectionPoint {
         return this._type;
     }
     /**
+     * Creates a block suitable to be used as an input for this input point.
+     * If null is returned, a block based on the point type will be created.
+     * @returns The returned string parameter is the name of the output point of NodeRenderGraphBlock (first parameter of the returned array) that can be connected to the input
+     */
+    createCustomInputBlock() {
+        return null;
+    }
+    /**
      * Creates a new connection point
      * @param name defines the connection point name
      * @param ownerBlock defines the block hosting this connection point
@@ -135,6 +143,8 @@ export class NodeRenderGraphConnectionPoint {
         this._typeConnectionSource = null;
         /** @internal */
         this._defaultConnectionPointType = null;
+        /** Indicates that this connection point needs dual validation before being connected to another point */
+        this.needDualDirectionValidation = false;
         /**
          * Gets or sets the additional types supported by this connection point
          */

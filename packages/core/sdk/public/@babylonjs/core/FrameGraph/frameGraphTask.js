@@ -44,7 +44,7 @@ export class FrameGraphTask {
      * @param frameGraph The frame graph this task is associated with.
      */
     constructor(name, frameGraph) {
-        this._internalDependencies = [];
+        this._internalDependencies = new Set();
         this._passes = [];
         this._passesDisabled = [];
         this._disabled = false;
@@ -60,7 +60,7 @@ export class FrameGraphTask {
     _reset() {
         this._passes.length = 0;
         this._passesDisabled.length = 0;
-        this._internalDependencies.length = 0;
+        this._internalDependencies.clear();
     }
     /** @internal */
     _addPass(pass, disabled) {
@@ -143,6 +143,16 @@ export class FrameGraphTask {
     /** @internal */
     _getPasses() {
         return this.disabled && this._passesDisabled.length > 0 ? this._passesDisabled : this._passes;
+    }
+    _addInternalDependencies(dependencies) {
+        if (Array.isArray(dependencies)) {
+            for (const dependency of dependencies) {
+                this._internalDependencies.add(dependency);
+            }
+        }
+        else {
+            this._internalDependencies.add(dependencies);
+        }
     }
     _checkSameRenderTarget(src, dst) {
         if (src === null || dst === null) {

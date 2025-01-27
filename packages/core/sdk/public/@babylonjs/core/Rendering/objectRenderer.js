@@ -357,7 +357,7 @@ export class ObjectRenderer {
             if (!currentRenderList) {
                 currentRenderList = defaultRenderList;
             }
-            if (!this._doNotChangeAspectRatio) {
+            if (!this.options.doNotChangeAspectRatio) {
                 scene.updateTransformMatrix(true);
             }
             for (let i = 0; i < currentRenderList.length && returnValue; ++i) {
@@ -496,9 +496,11 @@ export class ObjectRenderer {
      *
      * @param renderingGroupId The rendering group id corresponding to its index
      * @param autoClearDepthStencil Automatically clears depth and stencil between groups if true.
+     * @param depth Automatically clears depth between groups if true and autoClear is true.
+     * @param stencil Automatically clears stencil between groups if true and autoClear is true.
      */
-    setRenderingAutoClearDepthStencil(renderingGroupId, autoClearDepthStencil) {
-        this._renderingManager.setRenderingAutoClearDepthStencil(renderingGroupId, autoClearDepthStencil);
+    setRenderingAutoClearDepthStencil(renderingGroupId, autoClearDepthStencil, depth = true, stencil = true) {
+        this._renderingManager.setRenderingAutoClearDepthStencil(renderingGroupId, autoClearDepthStencil, depth, stencil);
         this._renderingManager._useSceneAutoClearSetup = false;
     }
     /**

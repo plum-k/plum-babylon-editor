@@ -257,7 +257,13 @@ environmentIrradiance.rgb=fromRGBD(environmentIrradiance4);
 environmentIrradiance.rgb=toLinearSpace(environmentIrradiance.rgb);
 #endif
 #endif
-environmentIrradiance*=vReflectionColor.rgb;outParams.environmentRadiance=environmentRadiance;outParams.environmentIrradiance=environmentIrradiance;outParams.reflectionCoords=reflectionCoords;return outParams;}
+environmentIrradiance*=vReflectionColor.rgb;
+#ifdef MIX_IBL_RADIANCE_WITH_IRRADIANCE
+outParams.environmentRadiance=vec4(mix(environmentRadiance.rgb,environmentIrradiance,alphaG),environmentRadiance.a);
+#else
+outParams.environmentRadiance=environmentRadiance;
+#endif
+outParams.environmentIrradiance=environmentIrradiance;outParams.reflectionCoords=reflectionCoords;return outParams;}
 #endif
 `;
 // Sideeffect

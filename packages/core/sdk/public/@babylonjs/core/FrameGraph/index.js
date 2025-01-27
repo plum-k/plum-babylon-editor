@@ -9,6 +9,7 @@ export * from "./Passes/cullPass.js";
 export * from "./Passes/pass.js";
 export * from "./Passes/renderPass.js";
 export * from "./Tasks/Layers/glowLayerTask.js";
+export * from "./Tasks/Layers/highlightLayerTask.js";
 export * from "./Tasks/Misc/executeTask.js";
 export * from "./Tasks/PostProcesses/blackAndWhiteTask.js";
 export * from "./Tasks/PostProcesses/bloomTask.js";

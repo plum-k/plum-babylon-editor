@@ -157,6 +157,7 @@ export class Effect {
             }
             this._processFinalCode = options.processFinalCode ?? null;
             this._processCodeAfterIncludes = options.processCodeAfterIncludes ?? undefined;
+            extraInitializationsAsync = options.extraInitializationsAsync;
             cachedPipeline = options.existingPipelineContext;
         }
         else {
@@ -190,6 +191,12 @@ export class Effect {
                 this._pipelineContext.program.__SPECTOR_rebuildProgram = this._rebuildProgram.bind(this);
             }
         }
+        this._engine.onReleaseEffectsObservable.addOnce(() => {
+            if (this.isDisposed) {
+                return;
+            }
+            this.dispose(true);
+        });
     }
     /** @internal */
     async _processShaderCodeAsync(shaderProcessor = null, keepExistingPipelineContext = false, shaderProcessingContext = null, extraInitializationsAsync) {
@@ -1144,6 +1151,9 @@ export class Effect {
             this._refCount = 0;
         }
         else {
+            if (Effect.PersistentMode) {
+                return;
+            }
             this._refCount--;
         }
         if (this._refCount > 0 || this._isDisposed) {
@@ -1183,6 +1193,11 @@ export class Effect {
  * Enable logging of the shader code when a compilation error occurs
  */
 Effect.LogShaderCodeOnCompilationError = true;
+/**
+ * Gets or sets a boolean indicating that effect ref counting is disabled
+ * If true, the effect will persist in memory until engine is disposed
+ */
+Effect.PersistentMode = false;
 /**
  * Use this with caution
  * See ClearCodeCache function comments

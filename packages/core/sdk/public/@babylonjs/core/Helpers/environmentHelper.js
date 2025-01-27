@@ -12,6 +12,7 @@ import { BackgroundMaterial } from "../Materials/Background/backgroundMaterial.j
 import { CreatePlane } from "../Meshes/Builders/planeBuilder.js";
 import { CreateBox } from "../Meshes/Builders/boxBuilder.js";
 import { Plane } from "../Maths/math.plane.js";
+import { Tools } from "../Misc/tools.js";
 /**
  * The EnvironmentHelper class can be used to add a fully featured non-expensive background to your scene.
  * It includes by default a skybox and a ground relying on the BackgroundMaterial.
@@ -27,7 +28,7 @@ export class EnvironmentHelper {
         return {
             createGround: true,
             groundSize: 15,
-            groundTexture: this._GroundTextureCDNUrl,
+            groundTexture: Tools.GetAssetUrl(this._GroundTextureCDNUrl),
             groundColor: new Color3(0.2, 0.2, 0.3).toLinearSpace(scene.getEngine().useExactSrgbConversions).scale(3),
             groundOpacity: 0.9,
             enableGroundShadow: true,
@@ -42,13 +43,13 @@ export class EnvironmentHelper {
             groundYBias: 0.00001,
             createSkybox: true,
             skyboxSize: 20,
-            skyboxTexture: this._SkyboxTextureCDNUrl,
+            skyboxTexture: Tools.GetAssetUrl(this._SkyboxTextureCDNUrl),
             skyboxColor: new Color3(0.2, 0.2, 0.3).toLinearSpace(scene.getEngine().useExactSrgbConversions).scale(3),
             backgroundYRotation: 0,
             sizeAuto: true,
             rootPosition: Vector3.Zero(),
             setupImageProcessing: true,
-            environmentTexture: this._EnvironmentTextureCDNUrl,
+            environmentTexture: Tools.GetAssetUrl(this._EnvironmentTextureCDNUrl),
             cameraExposure: 0.8,
             cameraContrast: 1.2,
             toneMappingEnabled: true,
@@ -434,13 +435,13 @@ export class EnvironmentHelper {
 /**
  * Default ground texture URL.
  */
-EnvironmentHelper._GroundTextureCDNUrl = "https://assets.babylonjs.com/environments/backgroundGround.png";
+EnvironmentHelper._GroundTextureCDNUrl = "https://assets.babylonjs.com/core/environments/backgroundGround.png";
 /**
  * Default skybox texture URL.
  */
-EnvironmentHelper._SkyboxTextureCDNUrl = "https://assets.babylonjs.com/environments/backgroundSkybox.dds";
+EnvironmentHelper._SkyboxTextureCDNUrl = "https://assets.babylonjs.com/core/environments/backgroundSkybox.dds";
 /**
  * Default environment texture URL.
  */
-EnvironmentHelper._EnvironmentTextureCDNUrl = "https://assets.babylonjs.com/environments/environmentSpecular.env";
+EnvironmentHelper._EnvironmentTextureCDNUrl = "https://assets.babylonjs.com/core/environments/environmentSpecular.env";
 //# sourceMappingURL=environmentHelper.js.map

@@ -23,6 +23,7 @@ export class FrameGraphExecuteTask extends FrameGraphTask {
         passDisabled.setExecuteFunc((context) => {
             this.funcDisabled?.(context);
         });
+        return pass;
     }
 }
 //# sourceMappingURL=executeTask.js.map

@@ -98,6 +98,7 @@ export class FrameGraphTAAObjectRendererTask extends FrameGraphObjectRendererTas
         passDisabled.setExecuteFunc((context) => {
             context.copyTexture(this.destinationTexture);
         });
+        return pass;
     }
 }
 //# sourceMappingURL=taaObjectRendererTask.js.map

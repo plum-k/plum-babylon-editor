@@ -361,20 +361,44 @@ export class AbstractEngine {
         this._frameId++;
         this.onEndFrameObservable.notifyObservers(this);
     }
-    /** @internal */
-    _renderLoop() {
-        // Reset the frame handler before rendering a frame to determine if a new frame has been queued.
+    /** Gets or sets max frame per second allowed. Will return undefined if not capped */
+    get maxFPS() {
+        return this._maxFPS;
+    }
+    set maxFPS(value) {
+        this._maxFPS = value;
+        if (value === undefined) {
+            return;
+        }
+        if (value <= 0) {
+            this._minFrameTime = Number.MAX_VALUE;
+            return;
+        }
+        this._minFrameTime = 1000 / (value + 1); // We need to provide a bit of leeway to ensure we don't go under because of vbl sync
+    }
+    _isOverFrameTime(timestamp) {
+        if (!timestamp) {
+            return false;
+        }
+        const elapsedTime = timestamp - this._lastFrameTime;
+        if (this._maxFPS === undefined || elapsedTime >= this._minFrameTime) {
+            this._lastFrameTime = timestamp;
+            return false;
+        }
+        return true;
+    }
+    _processFrame(timestamp) {
         this._frameHandler = 0;
-        if (!this._contextWasLost) {
+        if (!this._contextWasLost && !this._isOverFrameTime(timestamp)) {
             let shouldRender = true;
-            if (this._isDisposed || (!this.renderEvenInBackground && this._windowIsBackground)) {
+            if (this.isDisposed || (!this.renderEvenInBackground && this._windowIsBackground)) {
                 shouldRender = false;
             }
             if (shouldRender) {
                 // Start new frame
                 this.beginFrame();
                 // Child canvases
-                if (!this._renderViews()) {
+                if (!this.skipFrameRender && !this._renderViews()) {
                     // Main frame
                     this._renderFrame();
                 }
@@ -382,6 +406,10 @@ export class AbstractEngine {
                 this.endFrame();
             }
         }
+    }
+    /** @internal */
+    _renderLoop(timestamp) {
+        this._processFrame(timestamp);
         // The first condition prevents queuing another frame if we no longer have active render loops (e.g., if
         // `stopRenderLoop` is called mid frame). The second condition prevents queuing another frame if one has
         // already been queued (e.g., if `stopRenderLoop` and `runRenderLoop` is called mid frame).
@@ -741,13 +769,13 @@ export class AbstractEngine {
      */
     // Not mixed with Version for tooling purpose.
     static get NpmPackage() {
-        return "babylonjs@7.44.0";
+        return "babylonjs@7.45.0";
     }
     /**
      * Returns the current version of the framework
      */
     static get Version() {
-        return "7.44.0";
+        return "7.45.0";
     }
     /**
      * Gets the HTML canvas attached with the current webGL context
@@ -968,7 +996,14 @@ export class AbstractEngine {
         /** @internal */
         this._windowIsBackground = false;
         /** @internal */
-        this._boundRenderFunction = () => this._renderLoop();
+        this._boundRenderFunction = (timestamp) => this._renderLoop(timestamp);
+        this._lastFrameTime = 0;
+        /**
+         * Skip frame rendering but keep the frame heartbeat (begin/end frame).
+         * This is useful if you need all the plumbing but not the rendering work.
+         * (for instance when capturing a screenshot where you do not want to mix rendering to the screen and to the screenshot)
+         */
+        this.skipFrameRender = false;
         /**
          * Observable raised when the engine is about to compile a shader
          */
@@ -1036,6 +1071,10 @@ export class AbstractEngine {
          * An event triggered when the engine is disposed.
          */
         this.onDisposeObservable = new Observable();
+        /**
+         * An event triggered when a global cleanup of all effects is required
+         */
+        this.onReleaseEffectsObservable = new Observable();
         EngineStore.Instances.push(this);
         this.startTime = PrecisionDate.Now;
         this._stencilStateComposer.stencilGlobal = this._stencilState;

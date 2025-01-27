@@ -57,6 +57,8 @@ export var NodeRenderGraphBlockConnectionPointTypes;
     NodeRenderGraphBlockConnectionPointTypes[NodeRenderGraphBlockConnectionPointTypes["BasedOnInput"] = 536870912] = "BasedOnInput";
     /** Undefined */
     NodeRenderGraphBlockConnectionPointTypes[NodeRenderGraphBlockConnectionPointTypes["Undefined"] = 1073741824] = "Undefined";
+    /** Custom object */
+    NodeRenderGraphBlockConnectionPointTypes[NodeRenderGraphBlockConnectionPointTypes["Object"] = 2147483648] = "Object";
     /** Bitmask of all types */
     NodeRenderGraphBlockConnectionPointTypes[NodeRenderGraphBlockConnectionPointTypes["All"] = 4294967295] = "All";
 })(NodeRenderGraphBlockConnectionPointTypes || (NodeRenderGraphBlockConnectionPointTypes = {}));

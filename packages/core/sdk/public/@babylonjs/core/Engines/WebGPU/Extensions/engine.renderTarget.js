@@ -1,4 +1,4 @@
-import { GetTypeForDepthTexture, InternalTexture } from "../../../Materials/Textures/internalTexture.js";
+import { GetTypeForDepthTexture, HasStencilAspect, InternalTexture } from "../../../Materials/Textures/internalTexture.js";
 
 import { WebGPURenderTargetWrapper } from "../webgpuRenderTargetWrapper.js";
 import "../../AbstractEngine/abstractEngine.texture.js";
@@ -62,9 +62,7 @@ ThinWebGPUEngine.prototype._createDepthStencilTexture = function (size, options,
         depthTextureFormat: options.generateStencil ? 13 : 14,
         ...options,
     };
-    const hasStencil = internalOptions.depthTextureFormat === 17 ||
-        internalOptions.depthTextureFormat === 13 ||
-        internalOptions.depthTextureFormat === 18;
+    const hasStencil = HasStencilAspect(internalOptions.depthTextureFormat);
     wrapper._depthStencilTextureWithStencil = hasStencil;
     const internalTexture = new InternalTexture(this, hasStencil ? 12 /* InternalTextureSource.DepthStencil */ : 14 /* InternalTextureSource.Depth */);
     internalTexture.label = options.label;

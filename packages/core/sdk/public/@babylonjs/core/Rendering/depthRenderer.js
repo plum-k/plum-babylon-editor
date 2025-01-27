@@ -393,7 +393,7 @@ export class DepthRenderer {
                 onError: null,
                 indexParameters: { maxSimultaneousMorphTargets: numMorphInfluencers },
                 shaderLanguage: this._shaderLanguage,
-            }, engine));
+            }, engine), join);
         }
         return drawWrapper.effect.isReady();
     }
