@@ -1,4 +1,4 @@
-import {createBrowserRouter, RouterProvider} from "react-router";
+import {createHashRouter, RouterProvider} from "react-router";
 import {Fragment, lazy, Suspense} from "react";
 import {AntdThemeProvider, Loading} from "./component";
 import {RouteObject} from "react-router-dom";
@@ -23,7 +23,7 @@ export const routerConfig: RouteObject[] = [
 ]
 
 export default function App() {
-    const router = createBrowserRouter(routerConfig)
+    const router = createHashRouter(routerConfig)
     return (
         <Fragment>
             <AntdThemeProvider>

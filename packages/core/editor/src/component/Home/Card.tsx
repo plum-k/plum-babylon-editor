@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import {useMemo} from "react";
 import {EAppType, IApplication} from "../../interface";
 import {ApplicationApi} from "../../api";
+import {useLocation} from "react-router-dom";
 
 export interface CardProps {
     item: IApplication;
@@ -13,9 +14,10 @@ export interface CardProps {
 }
 
 export function Card(props: CardProps) {
-    const {item, reset, handleDir,handleEdit} = props
+    const {item, reset, handleDir, handleEdit} = props
     const {name, appType, createTime} = item;
-
+    const location = useLocation();
+    console.log(location);
     const remove = async () => {
         console.log("删除")
         const res = await ApplicationApi.remove(item.id);
@@ -41,13 +43,13 @@ export function Card(props: CardProps) {
         if (isDir) {
             handleDir(item)
         } else {
-            window.open(`/editor/${item.id}`, '_blank');
+            const url = `${window.location.origin}/#/editor/${item.id}`
+            window.open(url, '_blank');
         }
-        console.log("skip")
-        //     navigate(`/editor/${item.id}`);
     }
     const preview = () => {
-        window.open(`/preview/${item.id}`, '_blank');
+        const url = `${window.location.origin}/#/preview/${item.id}`
+        window.open(url, '_blank');
     }
     const formatTime = (time: Date) => {
         return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
