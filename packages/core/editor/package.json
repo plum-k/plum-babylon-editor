@@ -23,7 +23,7 @@
     "@ant-design/pro-components": "^2.8.4",
     "@plum-render/oss-api": "workspace:*",
     "ahooks": "^3.8.4",
-    "antd": "^5.23.2",
+    "antd": "^5.23.3",
     "axios": "^1.7.9",
     "auto-zustand-selectors-hook": "^3.0.1",
     "classnames": "^2.5.1",

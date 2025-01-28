@@ -3,7 +3,7 @@ import {PropsWithChildren, useEffect, useMemo, useState} from "react";
 import {Card} from "../component";
 import {IApplication} from "../interface";
 import {ApplicationApi} from "../api";
-import {Breadcrumb, Flex} from "antd";
+import {Breadcrumb, Button, Flex} from "antd";
 import {BreadcrumbItemType} from "antd/es/breadcrumb/Breadcrumb";
 import {HomeOutlined} from "@ant-design/icons";
 import EditAppModalForm from "../component/Home/EditAppModalForm.tsx";
@@ -77,6 +77,14 @@ export default function Home() {
     const reset = () => {
         getFolders(appInfo)
     }
+
+    const example = () => {
+        window.open(import.meta.env.VITE_EXAMPLE, '_blank');
+    }
+    const doc = () => {
+        window.open(import.meta.env.VITE_DOC, '_blank');
+    }
+
     return (
         <div className="bg-black/80 w-screen h-screen">
             <div
@@ -88,6 +96,13 @@ export default function Home() {
                         <div className="ml-3">
                             <Breadcrumb items={items}/>
                         </div>
+                        <div className="grow"></div>
+                        <Button color="default" variant="link" onClick={example}>
+                            示例
+                        </Button>
+                        <Button color="default" variant="link" onClick={doc}>
+                            文档
+                        </Button>
                     </Flex>
                 </div>
                 <div className="p-4 overflow-hidden">
