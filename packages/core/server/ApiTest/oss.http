@@ -3,7 +3,7 @@ GET http://127.0.0.1:5010/oss
 
 
 ### GET request to example server
-GET plum-render-babylon-example.oss-cn-chengdu.aliyuncs.com
+GET http://47.109.200.112:90/
 
 
 ### GET request to example server
@@ -11,3 +11,7 @@ GET plum-render-babylon-example.oss-cn-chengdu.aliyuncs.com/index.html
 
 ### GET request to example server
 GET http://example.babylon.plumk.cn/
+
+
+### GET request to example server00
+GET example.babylon.plumk.cn

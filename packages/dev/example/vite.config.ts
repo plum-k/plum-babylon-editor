@@ -3,30 +3,28 @@ import vue from '@vitejs/plugin-vue'
 import {viteStaticCopy} from 'vite-plugin-static-copy'
 
 export default defineConfig((env) => {
-    console.log(env)
     const isBuild = env.command === 'build';
-    console.log(isBuild)
 
     let buildTargets = [
         {
             src: '../../core/sdk/dist/@babylonjs',
-            dest: './@babylonjs'
+            dest: './'
         },
         {
             src: '../../core/sdk/dist/hdr',
-            dest: './hdr'
+            dest: './'
         },
         {
             src: '../../core/sdk/dist/particleTexture',
-            dest: './particleTexture'
+            dest: './'
         },
         {
             src: '../../core/sdk/dist/texture',
-            dest: './texture'
+            dest: './'
         },
         {
             src: '../../core/sdk/dist/wasm',
-            dest: './wasm'
+            dest: './'
         },
         {
             src: '../../core/sdk/dist/plum-render-babylon-sdk.js',
