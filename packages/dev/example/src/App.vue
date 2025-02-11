@@ -82,8 +82,7 @@ const replaceImport = (key: string, value: string) => {
   if (is) {
     return value.replace("Vite App", key)
   } else {
-    return value
-        .replace("Vite App", key)
+    return value.replace("Vite App", key).replace("./@babylonjs", "http://ossexamplebabylon.plumk.cn/%40babylonjs")
   }
 }
 const change = (key: string, value: string) => {
