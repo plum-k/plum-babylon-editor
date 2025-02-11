@@ -76,6 +76,7 @@ bun install
 - **多端访问**:
     - 只需安装一个浏览器即可访问三维系统，无需额外安装软件。
     - 虽然 UE 支持云渲染推流以实现浏览器访问，但成本较高，通常一张显卡只能支持三路视频流。
+    - qt 可以通过 emcc 编译成 wasm 浏览器运行, 但是坑太多了。
 - **国产化**:
     - UE 和 OSG 同时打包发布到 Windows 或 Linux 时，需要处理各类兼容性问题。
     - WebGPU 只需浏览器支持，无需适配多种操作系统。
@@ -87,7 +88,7 @@ bun install
 
 ## plum-babylon-editor 当前的状态
 
-现在版本的 `plum-babylon-editor` 是我在2022年6月 babylon.js 发布 5.0 刚支持 webGpu 时写的预研项目基础上开发的, 目前正在重构和添加新的功能。
+现在版本的 `plum-babylon-editor` 是在2022年6月 babylon.js 发布 5.0 刚支持 webGpu 时写的预研项目基础上开发的, 目前正在重构和添加新的功能。
 
 预计到今年6月初发布第一个版本。
 
@@ -95,7 +96,7 @@ bun install
 
 在流行的 Web 端三维框架中，Three.js 和 Babylon.js 是最常用的两个。然而，Babylon.js 更类似于 Unreal Engine（UE），并且自带粒子系统和物理系统。
 
-具体来说，Babylon.js 的粒子系统能够直接使用 UE 或 Houdini 导出的特效帧序列图，而其物理系统也非常易于使用，无需像 Three.js 一样依赖第三方库。
+Babylon.js 的粒子系统能够直接使用 UE 或 Houdini 导出的特效帧序列图，而其物理系统也非常易于使用，无需像 Three.js 一样依赖第三方库。
 
 最重要的一点是，Babylon.js 在浏览器不支持 WebGPU 时，能够自动降级到 WebGL2 渲染，而 Three.js 则需要编写额外的兼容代码
 
