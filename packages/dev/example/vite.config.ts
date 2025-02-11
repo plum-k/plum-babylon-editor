@@ -6,10 +6,10 @@ export default defineConfig((env) => {
     const isBuild = env.command === 'build';
 
     let buildTargets = [
-        {
-            src: '../../core/sdk/dist/@babylonjs',
-            dest: './'
-        },
+        // {
+        //     src: '../../core/sdk/dist/@babylonjs',
+        //     dest: './'
+        // },
         {
             src: '../../core/sdk/dist/hdr',
             dest: './'
