@@ -80,9 +80,9 @@ let show = ref(true);
 const replaceImport = (key: string, value: string) => {
   const is = isProduction();
   if (is) {
-    return value.replace("Vite App", key)
+    return value.replace("Vite App", key).replace(/.\/@babylonjs/g, "http://ossexamplebabylon.plumk.cn/%40babylonjs")
   } else {
-    return value.replace("Vite App", key).replace("./@babylonjs", "http://ossexamplebabylon.plumk.cn/%40babylonjs")
+    return value.replace("Vite App", key).replace(/.\/@babylonjs/g, "http://ossexamplebabylon.plumk.cn/%40babylonjs")
   }
 }
 const change = (key: string, value: string) => {
