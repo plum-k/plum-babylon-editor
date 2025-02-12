@@ -1,4 +1,4 @@
-import {AddMenu,HeaderTool,EditMenu,FileMenu} from "./";
+import {HeaderTool,EditMenu,FileMenu} from "./";
 
 export function Header() {
     return (
@@ -9,7 +9,6 @@ export function Header() {
             <div className="h-full flex items-center justify-center ml-3 text-2xl">
                 <FileMenu/>
                 <EditMenu/>
-                <AddMenu/>
             </div>
             <HeaderTool/>
         </header>

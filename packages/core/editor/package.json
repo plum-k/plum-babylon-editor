@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@plum-render/babylon-sdk": "workspace:*",
-    "@microlink/react-json-view": "^1.24.0",
+    "@microlink/react-json-view": "^1.25.0",
     "@babylonjs/core": "^7.48.3",
     "rc-field-form": "^2.7.0",
     "rxjs": "^7.8.1",
@@ -20,7 +20,7 @@
     "dayjs": "^1.11.13",
     "@ant-design/icons": "^5.6.1",
     "react-toastify": "^11.0.3",
-    "@ant-design/pro-components": "^2.8.4",
+    "@ant-design/pro-components": "^2.8.5",
     "@plum-render/oss-api": "workspace:*",
     "ahooks": "^3.8.4",
     "antd": "^5.24.0",

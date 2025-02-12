@@ -1,5 +1,6 @@
 import {CSSProperties} from "react";
 import classNames from 'classnames';
+
 interface IConProps {
     iconName: string;
     className?: any;
@@ -14,7 +15,7 @@ export function Icon(props: IConProps) {
 
     return (
         <svg style={style} onClick={onClick} className={_className} aria-hidden="true">
-            <use xlinkHref={`#icon-${iconName}`}/>
+            <use xlinkHref={`#${iconName}`}/>
         </svg>
     )
 }

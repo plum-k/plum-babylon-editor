@@ -1,5 +1,6 @@
 import {Tabs} from "antd";
 import {BaseResourcePanel} from "./ResourcePanel/BaseResourcePanel.tsx";
+import {ParticleResourcePanel} from "./ResourcePanel/ParticleResourcePanel.tsx";
 
 
 export function ResourcePanel() {
@@ -14,18 +15,18 @@ export function ResourcePanel() {
                         children: <BaseResourcePanel/>,
                     },
                     {
-                        label: 'Tab 2',
-                        key: '2',
-                        children: 'Tab 2',
-                        disabled: true,
-                    },
-                    {
-                        label: 'Tab 3',
-                        key: '3',
-                        children: 'Tab 3',
-                    },
-                ]}
+                        label: '粒子',
+                        key: '粒子',
+                        children: <ParticleResourcePanel/>,
+                },
+                {
+                    label: 'Tab 3',
+                    key: '3',
+                    children: 'Tab 3',
+                },
+                    ]}
             />
         </div>
     )
 }
+

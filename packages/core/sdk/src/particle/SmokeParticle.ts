@@ -15,8 +15,6 @@ export class SmokeParticle extends PlumParticle {
     }
 
     build() {
-        this.setTexture("particleTexture/Smoke_SpriteSheet_8x8.png")
-
         this.setSprite({
             startSpriteCellID: 0,
             endSpriteCellID: 63,
@@ -26,6 +24,7 @@ export class SmokeParticle extends PlumParticle {
             spriteRandomStartCell: true,
         });
 
+        this.setTexture("particleTexture/Smoke_SpriteSheet_8x8.png")
 
         this.setConeEmitter(0.1, 0.6)
 
@@ -64,6 +63,7 @@ export class SmokeParticle extends PlumParticle {
             [1, Color4.FromArray([0.1, 0.1, 0.1, 0])],
         ])
 
+         // todo
         this.addSizeGradients([[0, 1], [1, 6]])
 
         this.createNoiseTexture({

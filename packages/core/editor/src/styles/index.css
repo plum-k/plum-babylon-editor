@@ -4,7 +4,7 @@
 @import "./FilePane.css";
 @import "./SidePane.css";
 @import "./SceneTree.css";
-
+@import "./icon.css";
 
 /*去除点击自动跳转*/
 .breadcrumb-item:hover {

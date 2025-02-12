@@ -2,14 +2,14 @@ import {createRef, DragEventHandler, Fragment, RefObject, useEffect} from "react
 import {useSetAppInfo, useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
-import {ESceneLoadType, ESceneSaveType, Viewer} from "@plum-render/babylon-sdk";
+import {ESceneLoadType, ESceneSaveType, PlumParticle, SmokeParticle, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {Control, PanelCollapsed} from "../component";
 import {ApplicationApi} from "../api";
 import {IDragInfo} from "../interface/IDragInfo";
 import {IFolder} from "../interface";
-import {DirectionalLight, Light, Mesh, MeshBuilder, PointLight, SpotLight, Vector3} from "@babylonjs/core";
+import {Light, Mesh, MeshBuilder, Node, PointLight} from "@babylonjs/core";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -133,29 +133,48 @@ export function SceneView(props: ISceneViewProps) {
         const option = info.option;
         const scene = viewer!.scene;
         const position = viewer!.screenToWorldOrPick(event as unknown as DragEvent);
-        let mesh: Mesh | null = null;
+        let node: Node | PlumParticle | null = null;
         switch (info.name) {
             case "Box":
-                mesh = MeshBuilder.CreateBox("Box", {size: 1});
+                node = MeshBuilder.CreateBox("Box", {size: 1});
                 break;
             case "Sphere":
-                mesh = MeshBuilder.CreateSphere("Sphere", {diameter: 1},);
+                node = MeshBuilder.CreateSphere("Sphere", {diameter: 1});
                 break;
             case "PointLight":
-                const  pointLight = PointLight.Parse(option,scene);
-                break;
             case "DirectionalLight":
-                const  directionalLight = DirectionalLight.Parse(option,scene);
-                break;
             case "SpotLight":
-                const  spotLight = SpotLight.Parse(option,scene);
+            case "HemisphericLight":
+                node = Light.Parse(option, scene);
+                break;
+            case "Fire":
+                node = new SmokeParticle({
+                    name: "smoke",
+                    capacity: 1000,
+                    viewer: viewer!,
+                    isGpu: false
+                })
+                node.build()
+                node.start()
                 break;
             default:
                 break;
         }
-        if (mesh) {
-            mesh.position.copyFrom(position);
-            viewer?.editor.editorEventManager.sceneGraphChanged.next(true);
+        if (node) {
+            if (node instanceof Mesh) {
+                node.position.copyFrom(position);
+            } else if (node instanceof PointLight) {
+                node.position.copyFrom(position);
+            }
+            if (node instanceof PlumParticle) {
+                node.setPosition(position)
+                viewer?.editor.editorEventManager.sceneGraphChanged.next(true);
+            } else {
+                viewer!.editor.addObjectCommandExecute({
+                    source: "editor",
+                    object: node
+                });
+            }
         }
     }
 

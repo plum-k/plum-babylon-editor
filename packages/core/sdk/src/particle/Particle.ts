@@ -83,6 +83,17 @@ export function vectorTypeToVector3(value: VectorType) {
     return value;
 }
 
+// ManualEmitCount：
+// 手动发射计数可能不被所有发射器类型支持。某些发射器可能会使用自动发射机制来管理粒子的生命周期。
+// disposeOnStop：
+// 有些发射器在停止时不会自动释放资源。这意味着您可能需要手动管理粒子的清理。
+// Dual values per gradient：
+// 粒子发射器的某些属性（如大小、颜色等）只能接受单一值，而不支持双值（例如起始和结束值的梯度）。
+// Emit rate gradients：
+// 粒子的发射速率不支持梯度变化，这意味着您无法根据时间或其他因素动态地调整发射速率。
+// Start size gradients：
+// 发射器的初始大小不支持梯度变化，粒子的大小通常在发射时是固定的。
+
 /**
  * 把 babylon 粒子系统的配置 按相关性分类
  */
@@ -97,8 +108,10 @@ export class PlumParticle {
         });
 
         let scene = options.viewer.scene;
+
         if (options.isGpu) {
-            // this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
+            // todo 有问题
+            this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
         } else {
             this.particleSystem = new ParticleSystem(options.name, options.capacity, scene);
         }

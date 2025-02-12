@@ -8,7 +8,7 @@ import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} fro
 import {useToggle} from "ahooks";
 import {isMesh, isTransformNode, NodeTool, Viewer} from '@plum-render/babylon-sdk';
 import "../../styles/SceneTree.css";
-import {Node} from "@babylonjs/core";
+import {Node, TransformNode} from "@babylonjs/core";
 
 export interface ITreeNode {
     title: string;
@@ -51,7 +51,7 @@ const getSceneTree = (viewer: Viewer) => {
     return getTree(rootNodes);
 }
 
-export  function SceneTree() {
+export function SceneTree() {
     const viewer = useViewer();
     const setSelectObject3D = useSetSelectObject3D()
     const setSelectKey = useSetSelectKey()
@@ -235,6 +235,17 @@ export  function SceneTree() {
             }
         }
     }
+
+    // 添加变换节点
+    const addTransformNode = () => {
+        const transformNode = new TransformNode("TransformNode");
+        viewer.editor.addObjectCommandExecute({
+            source: "editor",
+            object: transformNode
+        });
+    }
+
+
     //----------------- 右键菜单相关逻辑 开始----------
     const [rightKey, setRightKey] = useState<number>(-1)
 
