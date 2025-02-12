@@ -4,10 +4,12 @@ import {
     EngineFactory,
     EngineOptions,
     IInspectorOptions,
+    Matrix,
     Node,
     Nullable,
     PBRMaterial,
     SceneLoader,
+    Vector3,
     WebGPUEngine,
     WebGPUEngineOptions
 } from "@babylonjs/core";
@@ -174,6 +176,7 @@ export class Viewer {
     get useLogarithmicDepth() {
         return this.#useLogarithmicDepth;
     }
+
     set useLogarithmicDepth(value: boolean) {
         this.#useLogarithmicDepth = value;
         this.scene.materials.forEach((material) => {
@@ -516,5 +519,44 @@ export class Viewer {
         } else if (isCamera(node)) {
             this.scene.removeCamera(node);
         }
+    }
+
+    //------------------
+    /**
+     * 拾取或者屏幕坐标转世界坐标
+     */
+    screenToWorldOrPick(event: DragEvent) {
+        const scene = this.scene;
+        const pickingInfo = scene.pick(event.clientX, event.clientY);
+        if (pickingInfo.hit) {
+            return pickingInfo.pickedPoint as Vector3;
+        } else {
+            return this.screenToWorld(event);
+        }
+    }
+
+    /**
+     * 屏幕坐标转世界坐标
+     * @param point
+     */
+    screenToWorld(point: MouseEvent) {
+        const width = this.engine.getRenderWidth();
+        const height = this.engine.getRenderHeight()
+        const canvas = this.engine.getRenderingCanvas();
+        const rect = canvas.getBoundingClientRect();
+        const x = point.clientX - rect.x;
+        const y = point.clientY - rect.y;
+
+        const screenPosition = new Vector3(x, y, 0.99);
+
+        const vector3 = Vector3.Unproject(
+            screenPosition,
+            width,
+            height,
+            Matrix.Identity(),
+            this.scene.getViewMatrix(),
+            this.scene.getProjectionMatrix()
+        )
+        return vector3
     }
 }

@@ -1,4 +1,4 @@
-import {createRef, Fragment, RefObject, useEffect} from "react";
+import {createRef, DragEventHandler, Fragment, RefObject, useEffect} from "react";
 import {useSetAppInfo, useSetViewer, useViewer} from "../store";
 import {isNil} from "lodash-es";
 import {useParams} from "react-router-dom";
@@ -6,8 +6,10 @@ import {ESceneLoadType, ESceneSaveType, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {Control, PanelCollapsed} from "../component";
-import testSerialize from "../testCore/testSerialize.ts";
 import {ApplicationApi} from "../api";
+import {IDragInfo} from "../interface/IDragInfo";
+import {IFolder} from "../interface";
+import {DirectionalLight, Light, Mesh, MeshBuilder, PointLight, SpotLight, Vector3} from "@babylonjs/core";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -106,7 +108,7 @@ export function SceneView(props: ISceneViewProps) {
             _viewer.initSubject.subscribe(() => {
                 _viewer.enableEditor();
                 setViewer(_viewer);
-                testSerialize(_viewer);
+                // testSerialize(_viewer);
                 // testMesh(_viewer,"scene.glb")
                 // testPhysics(_viewer)
                 // tesProjection(_viewer)
@@ -122,20 +124,44 @@ export function SceneView(props: ISceneViewProps) {
         // })
     }
 
-
-    const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
-        // console.log(e)
-        // todo
-        // event.preventDefault();
-        //     const data = event.dataTransfer.getData('data')
-        //     const value = JSON.parse(data)
-        //     loadMode(value)
+    const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
+        console.log("拖动", event)
+        if (!event.dataTransfer) return
+        const data = event.dataTransfer.getData('data');
+        const info = JSON.parse(data) as IDragInfo;
+        console.log(info)
+        const option = info.option;
+        const scene = viewer!.scene;
+        const position = viewer!.screenToWorldOrPick(event as unknown as DragEvent);
+        let mesh: Mesh | null = null;
+        switch (info.name) {
+            case "Box":
+                mesh = MeshBuilder.CreateBox("Box", {size: 1});
+                break;
+            case "Sphere":
+                mesh = MeshBuilder.CreateSphere("Sphere", {diameter: 1},);
+                break;
+            case "PointLight":
+                const  pointLight = PointLight.Parse(option,scene);
+                break;
+            case "DirectionalLight":
+                const  directionalLight = DirectionalLight.Parse(option,scene);
+                break;
+            case "SpotLight":
+                const  spotLight = SpotLight.Parse(option,scene);
+                break;
+            default:
+                break;
+        }
+        if (mesh) {
+            mesh.position.copyFrom(position);
+            viewer?.editor.editorEventManager.sceneGraphChanged.next(true);
+        }
     }
-
 
     return (
         <Fragment>
-            <div className="viewer-container w-full h-full relative" ref={canvasContainer}>
+            <div className="viewer-container w-full h-full relative" ref={canvasContainer} onDrop={onDrop}>
                 <Control/>
                 <PanelCollapsed panelRef={leftPanelRef} direction={"left"}/>
                 <PanelCollapsed panelRef={rightPanelRef} direction={"right"}/>

@@ -1,11 +1,10 @@
 import {Fragment, useRef} from "react";
 import {ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
 import {useViewer} from "../store";
-import {SceneTree} from "./SceneTree.tsx";
+import { LeftPanel } from "./LeftPanel/LeftPanel";
 import {SceneView} from "./SceneView.tsx";
-import {AttributePane} from "./AttributePane.tsx";
 
-export  function Layout() {
+export function Layout() {
     const viewer = useViewer()
     const onLayout = () => {
         if (viewer) {
@@ -20,16 +19,16 @@ export  function Layout() {
         <Fragment>
             <PanelGroup style={{height: "calc(100% - 32px)"}} direction="horizontal" onLayout={onLayout}>
                 <Panel ref={leftPanelRef} defaultSize={20} collapsible minSize={10}>
-                    <SceneTree/>
+                    <LeftPanel/>
                 </Panel>
                 <PanelResizeHandle className={"ResizeHandle"}/>
                 <Panel defaultSize={60}>
                     <SceneView leftPanelRef={leftPanelRef} rightPanelRef={rightPanelRef}/>
                 </Panel>
-                <PanelResizeHandle className={"ResizeHandle"}/>
-                <Panel ref={rightPanelRef} defaultSize={20} collapsible minSize={10}>
-                    <AttributePane/>
-                </Panel>
+                {/*<PanelResizeHandle className={"ResizeHandle"}/>*/}
+                {/*<Panel ref={rightPanelRef} defaultSize={20} collapsible minSize={10}>*/}
+                {/*    <AttributePane/>*/}
+                {/*</Panel>*/}
             </PanelGroup>
         </Fragment>
     )

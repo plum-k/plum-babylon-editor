@@ -112,6 +112,7 @@ export  function AddMenu() {
                 });
                 break;
             case "PointLight":
+                PointLight
                 const pointLight = new PointLight("PointLight", new Vector3(0, 2, 2),);
                 viewer.editor.addObjectCommandExecute({
                     source: "editor",

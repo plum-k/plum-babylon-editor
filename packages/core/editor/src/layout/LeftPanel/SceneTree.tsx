@@ -4,10 +4,10 @@ import {Item, ItemParams, Menu as RightMenu, useContextMenu} from 'react-contexi
 import 'react-contexify/dist/ReactContexify.css';
 import {isNil} from "lodash-es";
 import {EyeInvisibleOutlined, EyeOutlined} from '@ant-design/icons';
-import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} from "../store";
+import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} from "../../store";
 import {useToggle} from "ahooks";
 import {isMesh, isTransformNode, NodeTool, Viewer} from '@plum-render/babylon-sdk';
-import "../styles/SceneTree.css";
+import "../../styles/SceneTree.css";
 import {Node} from "@babylonjs/core";
 
 export interface ITreeNode {
