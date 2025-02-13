@@ -7,7 +7,7 @@ import {EyeInvisibleOutlined, EyeOutlined} from '@ant-design/icons';
 import {useSelectObject3D, useSetSelectKey, useSetSelectObject3D, useViewer} from "../../store";
 import {useToggle} from "ahooks";
 import {isMesh, isTransformNode, NodeTool, Viewer} from '@plum-render/babylon-sdk';
-import "../../styles/SceneTree.css";
+import "../../styles/sceneTree.css";
 import {Node, TransformNode} from "@babylonjs/core";
 
 export interface ITreeNode {

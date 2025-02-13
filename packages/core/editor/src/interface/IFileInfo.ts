@@ -3,7 +3,7 @@ export enum EFolder {
     FILE
 }
 
-export interface IFolder {
+export interface IFileInfo {
     name: string;
     type: EFolder
 }

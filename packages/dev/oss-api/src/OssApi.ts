@@ -136,13 +136,12 @@ export class OssApi {
             delimiter: delimiter,
             "max-keys": 1000,
         }, {timeout: 10000});
-
-        result.prefixes.forEach(function (subDir) {
-            console.log("SubDir: %s", subDir);
-        });
-        result.objects.forEach(function (obj) {
-            console.log("Object: %s", obj.name);
-        });
+        // result.prefixes.forEach(function (subDir) {
+        //     console.log("SubDir: %s", subDir);
+        // });
+        // result.objects.forEach(function (obj) {
+        //     console.log("Object: %s", obj.name);
+        // });
         return result;
     }
 
@@ -156,7 +155,7 @@ export class OssApi {
     /**
      * 获取对象
      */
-    async getObject(name: string, options?: OSS.SignatureUrlOptions,) {
+    async getObject(name: string, options?: OSS.SignatureUrlOptions) {
         const url = this.signatureUrl(name, options);
         return await fetch(url).then(res => res.blob());
     }

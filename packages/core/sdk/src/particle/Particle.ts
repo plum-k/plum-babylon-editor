@@ -3,7 +3,8 @@ import {
     BoxParticleEmitter,
     Color4,
     ConeParticleEmitter,
-    Constants, GPUParticleSystem,
+    Constants,
+    GPUParticleSystem,
     NoiseProceduralTexture,
     ParticleSystem,
     Texture,
@@ -11,6 +12,8 @@ import {
 } from "@babylonjs/core";
 import {Viewer} from "../core";
 import {defaults, defaultsDeep, isArray} from "lodash-es";
+import {isGPUParticleSystem} from "../guard/particle/isGPUParticleSystem";
+import {Tool} from "../tool";
 
 
 // 定义 PlumParticle 实例的配置选项
@@ -91,8 +94,8 @@ export function vectorTypeToVector3(value: VectorType) {
 // 粒子发射器的某些属性（如大小、颜色等）只能接受单一值，而不支持双值（例如起始和结束值的梯度）。
 // Emit rate gradients：
 // 粒子的发射速率不支持梯度变化，这意味着您无法根据时间或其他因素动态地调整发射速率。
-// Start size gradients：
-// 发射器的初始大小不支持梯度变化，粒子的大小通常在发射时是固定的。
+// gpu 粒子不支持:
+//     - addSizeGradient  大小是固定的, 不支持梯度变化
 
 /**
  * 把 babylon 粒子系统的配置 按相关性分类
@@ -110,15 +113,14 @@ export class PlumParticle {
         let scene = options.viewer.scene;
 
         if (options.isGpu) {
-            // todo 有问题
             this.particleSystem = new GPUParticleSystem(options.name, {capacity: options.capacity}, scene);
         } else {
             this.particleSystem = new ParticleSystem(options.name, options.capacity, scene);
         }
     }
 
-    isGpu(){
-        this.options.isGpu;
+    isGpu() {
+        return this.options.isGpu;
     }
 
     /**
@@ -406,25 +408,32 @@ export class PlumParticle {
         this.particleSystem.textureMask = value;
     }
 
+
     /**
      * 为粒子系统添加颜色渐变
      * @param gradients 颜色渐变数组，每个元素是一个包含两个元素的数组，第一个元素是渐变位置（0 - 1之间），第二个元素是 Color4 对象或颜色数组（RGBA）
      */
-    addColorGradients(gradients: [number, Color4 | number[]][]) {
-        for (const [gradientPosition, colorValue] of gradients) {
-            let color: Color4;
-            if (Array.isArray(colorValue)) {
-                color = Color4.FromArray(colorValue);
+    addColorGradients(gradients: [number, Color4 | number[], (Color4 | number[])?][]) {
+        for (const [gradient, color1, color2] of gradients) {
+            if (isGPUParticleSystem(this.particleSystem)) {
+                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1));
             } else {
-                color = colorValue;
+                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1), Tool.color4FromArray(color2));
             }
-            this.particleSystem.addColorGradient(gradientPosition, color);
         }
     }
 
+    /**
+     * 为粒子系统添加大小渐变
+     * @param gradients
+     */
     addSizeGradients(gradients: [number, number, number?][]) {
-        for (const [gradient, factor, factor2] of gradients) {
-            this.particleSystem.addSizeGradient(gradient, factor, factor2);
+        if (isGPUParticleSystem(this.particleSystem)) {
+
+        }else {
+            for (const [gradient, factor, factor2] of gradients) {
+                this.particleSystem.addSizeGradient(gradient, factor, factor2);
+            }
         }
     }
 

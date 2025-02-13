@@ -1,2 +1,2 @@
-export * from './IFolder';
+export * from './IFileInfo';
 export * from './IApplication';

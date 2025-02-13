@@ -7,7 +7,7 @@ import {Mesh} from "@babylonjs/core";
 export function BaseResourcePanel() {
     const geometryList: IDragInfo[] = [
         {
-            name: 'Box',
+            type: 'Box',
             label: '盒子',
             option: {
                 width: 1,
@@ -17,13 +17,13 @@ export function BaseResourcePanel() {
             icon: 'icon-component-full2',
         },
         {
-            name: 'Sphere',
+            type: 'Sphere',
             label: '球体',
             option: {diameter: 1},
             icon: 'icon-qiuti',
         },
         {
-            name: 'Plane',
+            type: 'Plane',
             label: '平面',
             option: {
                 height: 2,
@@ -33,7 +33,7 @@ export function BaseResourcePanel() {
             icon: 'icon-pingmian',
         },
         {
-            name: 'Torus',
+            type: 'Torus',
             label: '圆环',
             option: {
                 diameter: 1, thickness: 0.2
@@ -43,7 +43,7 @@ export function BaseResourcePanel() {
     ]
     const lightList: IDragInfo[] = [
         {
-            name: 'PointLight',
+            type: 'PointLight',
             label: '点光源',
             option: {
                 "tags": null,
@@ -85,7 +85,7 @@ export function BaseResourcePanel() {
             icon: 'icon-dengpao',
         },
         {
-            name: 'DirectionalLight',
+            type: 'DirectionalLight',
             label: '方向光',
             option: {
                 "tags": null,
@@ -139,7 +139,7 @@ export function BaseResourcePanel() {
             icon: 'icon-fangxiangguang',
         },
         {
-            name: 'HemisphericLight',
+            type: 'HemisphericLight',
             label: '半球光',
             option: {
                 "tags": null,
@@ -185,7 +185,7 @@ export function BaseResourcePanel() {
             icon: 'icon-banqiuguang',
         },
         {
-            name: 'SpotLight',
+            type: 'SpotLight',
             label: '聚光灯',
             option: {
                 "tags": null,

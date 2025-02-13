@@ -1,4 +1,4 @@
-import {ISceneLoaderProgressEvent, MeshAssetTask, Scene, SceneLoader} from "@babylonjs/core";
+import {ISceneLoaderProgressEvent, LoadAssetContainerAsync, MeshAssetTask, Scene, SceneLoader} from "@babylonjs/core";
 
 export class PlumSceneAssetTask extends MeshAssetTask {
     constructor(
@@ -31,6 +31,7 @@ export class PlumSceneAssetTask extends MeshAssetTask {
     }
 
     public override runTask(scene: Scene, onSuccess: () => void, onError: (message?: string, exception?: any) => void) {
+        // todo LoadAssetContainerAsync
         SceneLoader.AppendAsync(
             this.rootUrl,
             this.sceneFilename,

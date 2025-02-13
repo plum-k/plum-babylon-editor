@@ -1,4 +1,4 @@
-import {CSSProperties, FC, Fragment, PropsWithChildren, useEffect, useMemo, useState} from "react";
+import {Flex, Form, Input, Modal} from "antd";
 import {
     ArrowLeftOutlined,
     ArrowRightOutlined,
@@ -8,10 +8,10 @@ import {
     RedoOutlined,
     VerticalAlignTopOutlined
 } from "@ant-design/icons";
-import {Flex, Form, Input, Modal} from "antd";
-import {COSApi} from "cos-api";
-import { IFolder } from "../interface";
-import {useToken} from "../hooks";
+import {useViewer} from "../../../../store";
+import {CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState} from "react";
+import {EFolder, IFileInfo} from "../../../../interface";
+import {useToken} from "../../../../hooks";
 
 function countOccurrences(str: string, subStr: string) {
     if (subStr === "") return str.length + 1;
@@ -33,104 +33,66 @@ const SearchBar = () => (
     </div>
 );
 
-export const FilePane: FC = () => {
+// oss 数据整理
+function getInfo(basePath: string, res: any) {
+    let mergedArray = []
+    res.prefixes.forEach(prefix => {
+        mergedArray.push({name: prefix.replace(basePath, ''), type: EFolder.FOLDER});
+    });
+    res.objects
+        .filter(object => !object.name.endsWith('/')) // 只保留文件
+        .forEach(object => {
+            mergedArray.push({
+                ...object, name: object.name.replace(basePath, ''),
+                type: EFolder.FILE,
+                rawName: object.name,
+            });
+        });
+    return mergedArray;
+}
+
+interface CubeFlexProps extends PropsWithChildren {
+    style?: CSSProperties
+}
+
+const CubeFlex: FC<CubeFlexProps> = (props) => {
+    return (
+        <Flex justify={"center"} align={"center"}
+              style={{
+                  width: "25px", height: "25px",
+                  ...props.style
+              }}
+        >
+            {props.children}
+        </Flex>
+    )
+}
+
+export function ModelAsset() {
+    const viewer = useViewer()
     const token = useToken()
-    const [folders, setFolders] = useState<Array<IFolder>>([]);
-    const [path, setPath] = useState<string>("/");
-    const [history, setHistory] = useState<Array<string>>(["/"]);
-    const [currentNum, setCurrentNum] = useState<number>(0);
-    const isLeftClick = useMemo(
-        () => {
-            return currentNum !== 0;
-        },
-        [currentNum]
-    );
-    const isRightClick = useMemo(
-        () => {
-            return currentNum !== history.length - 1;
-        },
-        [currentNum, history]
-    );
-    const isParentClick = useMemo(
-        () => {
-            return path !== "/";
-        },
-        [path]
-    );
-    const getFolder = () => {
-        COSApi.getBucket({
-            Prefix: path === "/" ? "" : path,
-            Delimiter: "/"
-        }).then((data) => {
-            // console.log(data)
-            setFolders(data)
-        })
-    }
-    const selectPath = (item: IFolder) => {
-        // item.name;
-        // setPath(path)
-        if (item.type === EFolder.FOLDER) {
-            setCurrentNum(history.length + 1)
-            setHistory([...history, item.name])
-            setPath(item.name);
-        } else {
-
-        }
-    }
-    useEffect(() => {
-        getFolder();
-    }, [path]);
-
-    const getName = (item: IFolder) => {
-        if (item.type === EFolder.FOLDER) {
-            return item.name.slice(0, -1);
-        } else {
-
-        }
-        return item.name;
-    }
-
-    const parentClick = () => {
-        const count = countOccurrences(path, "/")
-        if (count === 1) {
-            let node: IFolder = {
-                type: EFolder.FOLDER,
-                name: "/"
-            }
-            selectPath(node)
-        } else {
-
-        }
-
-    }
-
-    const leftClick = () => {
-        const length = history.length;
-        const _currentNum = currentNum - 1;
-        // debugger
-        if (length > 0 && isLeftClick) {
-            setPath(history[_currentNum]);
-            setCurrentNum(_currentNum);
-            // setHistory(history.slice(0, -1));
-        }
-    }
-
-    const rightClick = () => {
-        const length = history.length;
-        if (length > 0 && isRightClick) {
-            const _currentNum = currentNum + 1;
-            setPath(history[_currentNum]);
-            setCurrentNum(_currentNum);
-            // setPath(history[length - 1]);
-            // setHistory(history.slice(0, -1));
-        }
-    }
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [form] = Form.useForm();
     const showModal = () => {
         setIsModalOpen(true);
     };
-
+    const getFolder = () => {
+        if (!viewer) return;
+        const oss = viewer!.ossApi!;
+        oss.list(path, "/").then((res) => {
+            console.log(res)
+            const info = getInfo(path, res)
+            console.log(info)
+            setFolders(info)
+        })
+    }
+    const [folders, setFolders] = useState<Array<IFileInfo>>([]);
+    const [path, setPath] = useState<string>("models/");
+    const [history, setHistory] = useState<Array<string>>(["/"]);
+    const [currentNum, setCurrentNum] = useState<number>(0);
+    useEffect(() => {
+        getFolder();
+    }, []);
     const handleOk = () => {
         const value = form.getFieldsValue();
         console.log(value)
@@ -153,31 +115,74 @@ export const FilePane: FC = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
     };
-    const [form] = Form.useForm();
+    const isLeftClick = useMemo(
+        () => {
+            return currentNum !== 0;
+        },
+        [currentNum]
+    );
+    const isRightClick = useMemo(
+        () => {
+            return currentNum !== history.length - 1;
+        },
+        [currentNum, history]
+    );
+    const isParentClick = useMemo(
+        () => {
+            return path !== "/";
+        },
+        [path]
+    );
+    const handlerDragstart = (e: DragEvent, item: IFileInfo) => {
+        e.dataTransfer!.setData("data", JSON.stringify({...item, type: "model"}))
+    }
+    const selectPath = (item: IFileInfo) => {
+        // item.name;
+        // setPath(path)
+        if (item.type === EFolder.FOLDER) {
+            setCurrentNum(history.length + 1)
+            setHistory([...history, item.name])
+            setPath(item.name);
+        } else {
 
-    const handlerDragstart = (e: React.DragEvent<HTMLDivElement>, item: IFolder) => {
-        e.dataTransfer.setData("data", JSON.stringify(item))
+        }
+    }
+    const leftClick = () => {
+        const length = history.length;
+        const _currentNum = currentNum - 1;
+        // debugger
+        if (length > 0 && isLeftClick) {
+            setPath(history[_currentNum]);
+            setCurrentNum(_currentNum);
+            // setHistory(history.slice(0, -1));
+        }
     }
 
-    interface CubeFlexProps extends PropsWithChildren {
-        style?: CSSProperties
+    const rightClick = () => {
+        const length = history.length;
+        if (length > 0 && isRightClick) {
+            const _currentNum = currentNum + 1;
+            setPath(history[_currentNum]);
+            setCurrentNum(_currentNum);
+            // setPath(history[length - 1]);
+            // setHistory(history.slice(0, -1));
+        }
     }
+    const parentClick = () => {
+        const count = countOccurrences(path, "/")
+        if (count === 1) {
+            let node: IFileInfo = {
+                type: EFolder.FOLDER,
+                name: "/"
+            }
+            selectPath(node)
+        } else {
 
-    const CubeFlex: FC<CubeFlexProps> = (props) => {
-        return (
-            <Flex justify={"center"} align={"center"}
-                  style={{
-                      width: "25px", height: "25px",
-                      ...props.style
-                  }}
-            >
-                {props.children}
-            </Flex>
-        )
+        }
     }
 
     return (
-        <Fragment>
+        <div>
             <Modal
                 title="新建文件夹"
                 okText={"确认"}
@@ -235,50 +240,55 @@ export const FilePane: FC = () => {
                     >
                         <FolderAddOutlined onClick={showModal}/>
                     </CubeFlex>
-                    <div style={{
-                        width: '100px',
-                        border: '1px solid #555',
-                        height: '25px',
-                        lineHeight: '25px',
-                        paddingLeft: '5px'
-                    }}>
-                        {path}
-                    </div>
+                    {/*<div style={{*/}
+                    {/*    width: '100px',*/}
+                    {/*    border: '1px solid #555',*/}
+                    {/*    height: '25px',*/}
+                    {/*    lineHeight: '25px',*/}
+                    {/*    paddingLeft: '5px'*/}
+                    {/*}}>*/}
+                    {/*    {path}*/}
+                    {/*</div>*/}
                     {/*<div className="controls" style={{marginLeft: "20px"}}>*/}
                     {/*<SearchBar/>*/}
                     {/*<ViewOptions/>*/}
                     {/*</div>*/}
                 </Flex>
-                <div className="folder-container">
-                    <div className="folder-grid">
+                <div className="overflow-auto h-full mt-[5px]">
+                    <div className="flex gap-2 flex-wrap">
                         {folders.map((item, index) => {
                             const isFolder = item.type === EFolder.FOLDER;
+                            if (isFolder) {
+                                return <div
+                                    style={{
+                                        background: token.colorBgLayout,
+                                        borderRadius: token.borderRadiusLG,
+                                    }}
+                                    key={index} onClick={() => selectPath(item)}
+                                    className="w-[80px] h-[80px] text-center">
+                                    <div className="folder-icon text-[2em] mt-[10px]">
+                                        <FolderFilled/>
+                                    </div>
+                                    <div className="mt-[5px] text-[1em]">{item.name}</div>
+                                </div>
+                            }
                             return <div
                                 style={{
                                     background: token.colorBgLayout,
                                     borderRadius: token.borderRadiusLG,
-                                    textAlign: "center",
-                                    width: "80px",
-                                    height: "80px",
                                 }}
-
                                 key={index} onClick={() => selectPath(item)}
                                 onDragStart={(e) => handlerDragstart(e, item)}
-                                className="folder" draggable={!isFolder}>
-                                <div className="folder-icon">
-                                    {
-                                        isFolder ?
-                                            <FolderFilled/> :
-                                            <FileFilled/>
-                                    }
+                                className="w-[80px] h-[80px] text-center cursor-pointer" draggable={true}>
+                                <div className="folder-icon text-[2em] mt-[10px]">
+                                    <FileFilled/>
                                 </div>
-                                <div className="folder-name">{getName(item)}</div>
+                                <div className="mt-[5px] text-[1em]">{item.name}</div>
                             </div>
                         })}
                     </div>
                 </div>
             </div>
-        </Fragment>
-    );
+        </div>
+    )
 }
-

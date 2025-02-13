@@ -124,8 +124,6 @@ export interface IViewerOptions {
 }
 
 export class Viewer {
-
-
     //---------- HTML 容器
     container!: HTMLElement; // 用于渲染的容器
     canvas!: HTMLCanvasElement; // 渲染画布

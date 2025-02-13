@@ -63,7 +63,6 @@ export class SmokeParticle extends PlumParticle {
             [1, Color4.FromArray([0.1, 0.1, 0.1, 0])],
         ])
 
-         // todo
         this.addSizeGradients([[0, 1], [1, 6]])
 
         this.createNoiseTexture({

@@ -2,7 +2,7 @@
  * 拖动信息
  */
 export interface IDragInfo {
-    name: string;
+    type: string;
     label: string;
     option: any;
 

@@ -5,3 +5,4 @@ export * from "./NodeTool";
 export * from "./core";
 export * from "./throw";
 export * from "./drop";
+export * from "./Tool";

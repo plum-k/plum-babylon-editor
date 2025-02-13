@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-@import "./ResizeHandle.css";
-@import "./FilePane.css";
-@import "./SidePane.css";
-@import "./SceneTree.css";
+@import "./resizeHandle.css";
+@import "./filePane.css";
+@import "./sidePane.css";
+@import "./sceneTree.css";
 @import "./icon.css";
 
 /*去除点击自动跳转*/

@@ -1,6 +1,6 @@
 import {createRef, DragEventHandler, Fragment, RefObject, useEffect} from "react";
 import {useSetAppInfo, useSetViewer, useViewer} from "../store";
-import {isNil} from "lodash-es";
+import {isNil, uniqueId} from "lodash-es";
 import {useParams} from "react-router-dom";
 import {ESceneLoadType, ESceneSaveType, PlumParticle, SmokeParticle, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
@@ -8,7 +8,6 @@ import {ImperativePanelHandle} from "react-resizable-panels";
 import {Control, PanelCollapsed} from "../component";
 import {ApplicationApi} from "../api";
 import {IDragInfo} from "../interface/IDragInfo";
-import {IFolder} from "../interface";
 import {Light, Mesh, MeshBuilder, Node, PointLight} from "@babylonjs/core";
 
 export interface ISceneViewProps {
@@ -124,7 +123,7 @@ export function SceneView(props: ISceneViewProps) {
         // })
     }
 
-    const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
+    const onDrop: DragEventHandler<HTMLDivElement> = async (event) => {
         console.log("拖动", event)
         if (!event.dataTransfer) return
         const data = event.dataTransfer.getData('data');
@@ -134,7 +133,7 @@ export function SceneView(props: ISceneViewProps) {
         const scene = viewer!.scene;
         const position = viewer!.screenToWorldOrPick(event as unknown as DragEvent);
         let node: Node | PlumParticle | null = null;
-        switch (info.name) {
+        switch (info.type) {
             case "Box":
                 node = MeshBuilder.CreateBox("Box", {size: 1});
                 break;
@@ -151,11 +150,25 @@ export function SceneView(props: ISceneViewProps) {
                 node = new SmokeParticle({
                     name: "smoke",
                     capacity: 1000,
-                    viewer: viewer!,
-                    isGpu: false
+                    viewer: viewer!
                 })
                 node.build()
                 node.start()
+                break;
+            case "model":
+                const {rawName, name, url} = info;
+                const blob = await viewer!.ossApi!.getObject(rawName);
+                let file = new File([blob], rawName);
+                let meshAssetTask = viewer!.assetsManager.addPlumMeshTask(`${uniqueId(name)}`, "", "file:", file);
+                meshAssetTask.onSuccess = (task) => {
+                    const baseMesh = task.loadedMeshes[0];
+                    baseMesh.position.copyFrom(position);
+                    viewer!.editor.addObjectCommandExecute({
+                        source: "editor",
+                        object: baseMesh
+                    });
+                }
+                viewer!.assetsManager.load();
                 break;
             default:
                 break;
