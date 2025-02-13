@@ -32,8 +32,6 @@ export abstract class Package extends BasePlum {
     abstract loadScene(): void
 
 
-
-
 }
 
 

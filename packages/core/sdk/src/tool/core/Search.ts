@@ -28,7 +28,7 @@ export enum SearchOperator {
     EndWith           // 以...结尾
 }
 
-export  class Search {
+export class Search {
     conditions: Array<ICondition> = []
     searchMode: ESearchMode = ESearchMode.MatchAll
 

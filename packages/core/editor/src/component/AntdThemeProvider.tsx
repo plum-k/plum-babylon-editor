@@ -28,7 +28,7 @@ export function AntdThemeProvider(props: PropsWithChildren) {
                 disabled: true
             }}
         >
-                {children}
+            {children}
         </ConfigProvider>
     )
 }

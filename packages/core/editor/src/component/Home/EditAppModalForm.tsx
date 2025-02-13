@@ -44,7 +44,7 @@ export default function EditAppModalForm(props: EditAppModalFormProps) {
             // 排除当前编辑的对象
             if (item.id === currentId) {
 
-            }else {
+            } else {
                 nodeMap[item.id] = {
                     children: [],
                     ...item,
@@ -55,7 +55,7 @@ export default function EditAppModalForm(props: EditAppModalFormProps) {
         });
         data.forEach(item => {
             const currentNode = nodeMap[item.id];
-            if (!currentNode){
+            if (!currentNode) {
                 return
             }
             const parentId = item.parentId;

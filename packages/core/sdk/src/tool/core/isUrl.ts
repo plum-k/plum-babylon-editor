@@ -1,4 +1,4 @@
-export  function isUrl(string: string) {
+export function isUrl(string: string) {
     try {
         new URL(string);
         return true;

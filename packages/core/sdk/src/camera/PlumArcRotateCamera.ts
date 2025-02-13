@@ -1,5 +1,5 @@
-import {ArcRotateCamera, RegisterClass, Scene, Vector3,Node} from "@babylonjs/core";
-import { PlumArcRotateCameraInputsManager } from "./PlumArcRotateCameraInputsManager";
+import {ArcRotateCamera, Node, RegisterClass, Scene, Vector3} from "@babylonjs/core";
+import {PlumArcRotateCameraInputsManager} from "./PlumArcRotateCameraInputsManager";
 
 
 Node.AddNodeConstructor("PlumArcRotateCamera", (name, scene) => {

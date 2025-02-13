@@ -4,7 +4,8 @@ import {
     AbstractMesh,
     ArcRotateCamera,
     Color3,
-    Mesh, MeshBuilder,
+    Mesh,
+    MeshBuilder,
     Nullable,
     Observer,
     PBRMaterial,
@@ -12,7 +13,7 @@ import {
     Vector3
 } from "@babylonjs/core";
 import {isNil} from "lodash-es";
-import { PlumArcRotateCamera } from "../camera";
+import {PlumArcRotateCamera} from "../camera";
 
 
 export interface ICameraControlsOptions extends IBasePlumOptions {
@@ -20,6 +21,9 @@ export interface ICameraControlsOptions extends IBasePlumOptions {
 
 
 export class CameraControls extends BasePlum {
+    debugBox: Mesh | null = null;
+    debugCameraObserver: Nullable<Observer<any>> = null;
+
     constructor(options: ICameraControlsOptions) {
         super(options);
         const {viewer} = options;
@@ -58,8 +62,6 @@ export class CameraControls extends BasePlum {
             // });
         }
     }
-    debugBox: Mesh | null = null;
-    debugCameraObserver: Nullable<Observer<any>> = null;
 
     initDebugBox() {
         const backScene = UtilityLayerRenderer.DefaultKeepDepthUtilityLayer.utilityLayerScene;

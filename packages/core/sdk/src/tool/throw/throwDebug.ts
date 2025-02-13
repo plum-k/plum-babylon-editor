@@ -1,3 +1,3 @@
-export  function throwDebug() {
+export function throwDebug() {
     throw new Error("")
 }

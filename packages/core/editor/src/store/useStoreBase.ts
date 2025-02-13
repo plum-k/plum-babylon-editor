@@ -22,7 +22,7 @@ export const useStoreBase = create<State & Action>((set) => ({
     viewer: null,
     selectKey: [],
     selectObject3D: null,
-    appInfo:null,
+    appInfo: null,
     isDebug: false,
     setViewer: (viewer) => {
         set(() => {

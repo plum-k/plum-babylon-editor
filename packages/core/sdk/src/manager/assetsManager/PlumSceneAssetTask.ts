@@ -1,4 +1,4 @@
-import {ISceneLoaderProgressEvent, LoadAssetContainerAsync, MeshAssetTask, Scene, SceneLoader} from "@babylonjs/core";
+import {ISceneLoaderProgressEvent, MeshAssetTask, Scene, SceneLoader} from "@babylonjs/core";
 
 export class PlumSceneAssetTask extends MeshAssetTask {
     constructor(

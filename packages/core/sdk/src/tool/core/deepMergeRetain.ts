@@ -1,6 +1,6 @@
 import {get, isNil, isPlainObject} from "lodash-es";
 
-export  function deepMergeRetain(target: object, source?: Object): any {
+export function deepMergeRetain(target: object, source?: Object): any {
     if (isNil(source)) {
         return target;
     }

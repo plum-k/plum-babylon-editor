@@ -1,4 +1,4 @@
-import { ModelAsset } from "./ModelAsset";
+import {ModelAsset} from "./ModelAsset";
 import {Tabs} from "antd";
 
 export function AssetLibrary() {

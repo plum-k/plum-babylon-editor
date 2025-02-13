@@ -1,8 +1,6 @@
-import {ChunkSerialize, Viewer} from "@plum-render/babylon-sdk";
+import {Viewer} from "@plum-render/babylon-sdk";
 import {Pane} from 'tweakpane';
 import testMesh from "./testMesh.ts";
-import {useRef} from "react";
-import {Id, toast} from "react-toastify";
 
 export default function testSerialize(viewer: Viewer) {
     const pane = new Pane();
@@ -12,7 +10,7 @@ export default function testSerialize(viewer: Viewer) {
     pane.addButton({
         title: '加载大模型',
     }).on('click', () => {
-        testMesh(viewer,"大场景_WEBGL.glb")
+        testMesh(viewer, "大场景_WEBGL.glb")
     });
     pane.addButton({
         title: '导出',

@@ -5,7 +5,7 @@ import '../styles/index.css'
 import {ToastContainer} from "react-toastify";
 import {Header, Layout} from "../layout";
 
-export default   function Editor() {
+export default function Editor() {
     const viewer = useViewer()
     const selectObject3D = useSelectObject3D()
     useHotkeys('ctrl+z', () => {

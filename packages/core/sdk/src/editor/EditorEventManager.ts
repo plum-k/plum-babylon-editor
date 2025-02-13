@@ -41,7 +41,7 @@ export class EditorEventManager extends BasePlum {
         // 模型加载成功后 派发场景变化事件
         this.viewer.assetsManager.onTaskSuccessObservable.add((task) => {
             if (this.viewer.isLoad) {
-                if (task instanceof PlumMeshAssetTask){
+                if (task instanceof PlumMeshAssetTask) {
                     this.sceneGraphChanged.next(true);
                 }
             }

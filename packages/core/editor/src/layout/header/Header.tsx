@@ -1,4 +1,4 @@
-import {HeaderTool,EditMenu,FileMenu} from "./";
+import {EditMenu, FileMenu, HeaderTool} from "./";
 
 export function Header() {
     return (

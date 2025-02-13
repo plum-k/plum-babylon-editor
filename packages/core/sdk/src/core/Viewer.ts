@@ -169,18 +169,8 @@ export class Viewer {
     isWebGPU = false;
     // 是否初始化完成
     isLoad = false;
-
+    isInitDebugModule = false
     #useLogarithmicDepth: boolean = true;
-    get useLogarithmicDepth() {
-        return this.#useLogarithmicDepth;
-    }
-
-    set useLogarithmicDepth(value: boolean) {
-        this.#useLogarithmicDepth = value;
-        this.scene.materials.forEach((material) => {
-            material.useLogarithmicDepth = this.#useLogarithmicDepth;
-        })
-    }
 
     constructor(container: string | HTMLDivElement, options ?: IViewerOptions) {
         this.options = defaultsDeep({}, options);
@@ -202,6 +192,16 @@ export class Viewer {
         })
     }
 
+    get useLogarithmicDepth() {
+        return this.#useLogarithmicDepth;
+    }
+
+    set useLogarithmicDepth(value: boolean) {
+        this.#useLogarithmicDepth = value;
+        this.scene.materials.forEach((material) => {
+            material.useLogarithmicDepth = this.#useLogarithmicDepth;
+        })
+    }
 
     /**
      * 启用/禁用 HTML 网格渲染器
@@ -337,7 +337,6 @@ export class Viewer {
         })
     }
 
-
     /**
      * 设置默认材质
      */
@@ -369,9 +368,6 @@ export class Viewer {
             this.editor = new Editor({viewer: this});
         }
     }
-
-
-    isInitDebugModule = false
 
     /**
      * 开启调试模式
@@ -536,8 +532,9 @@ export class Viewer {
     /**
      * 屏幕坐标转世界坐标
      * @param point
+     * @param z
      */
-    screenToWorld(point: MouseEvent) {
+    screenToWorld(point: MouseEvent, z = 0.99) {
         const width = this.engine.getRenderWidth();
         const height = this.engine.getRenderHeight()
         const canvas = this.engine.getRenderingCanvas();
@@ -545,7 +542,7 @@ export class Viewer {
         const x = point.clientX - rect.x;
         const y = point.clientY - rect.y;
 
-        const screenPosition = new Vector3(x, y, 0.99);
+        const screenPosition = new Vector3(x, y, z);
 
         const vector3 = Vector3.Unproject(
             screenPosition,

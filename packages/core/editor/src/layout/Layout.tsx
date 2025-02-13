@@ -1,7 +1,7 @@
 import {Fragment, useRef} from "react";
 import {ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
 import {useViewer} from "../store";
-import { LeftPanel } from "./LeftPanel/LeftPanel";
+import {LeftPanel} from "./LeftPanel/LeftPanel";
 import {SceneView} from "./SceneView.tsx";
 
 export function Layout() {

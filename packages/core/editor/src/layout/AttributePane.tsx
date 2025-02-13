@@ -19,7 +19,7 @@ import {
     StatisticsData
 } from "../component";
 
-export  function AttributePane() {
+export function AttributePane() {
     const items = [
         {
             label: (

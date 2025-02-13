@@ -62,8 +62,8 @@ export class RainParticle extends PlumParticle {
 
 
         this.addColorGradients([
-            [0, Color4.FromArray([1,1,1,0.3])],
-            [1, Color4.FromArray([1,1,1,0.3])],
+            [0, Color4.FromArray([1, 1, 1, 0.3])],
+            [1, Color4.FromArray([1, 1, 1, 0.3])],
         ])
     }
 }

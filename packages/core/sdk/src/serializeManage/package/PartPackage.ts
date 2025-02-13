@@ -6,9 +6,9 @@ import pako from "pako";
 import {BlobReader, BlobWriter, Uint8ArrayReader, Uint8ArrayWriter, ZipReader, ZipWriter} from "@zip.js/zip.js";
 import {Package} from "./Package";
 import {SerializeViewer} from "../serialize";
-import { IBasePlumOptions } from "../../core";
-import { SceneSerializeObject } from "../SerializeJsonType";
-import { SerializerTool } from "../SerializerTool";
+import {IBasePlumOptions} from "../../core";
+import {SceneSerializeObject} from "../SerializeJsonType";
+import {SerializerTool} from "../SerializerTool";
 
 export interface ISerializeSubject {
     blob: Blob;

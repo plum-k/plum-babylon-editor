@@ -1,5 +1,5 @@
 import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
-import {FilesInput, Node, Nullable,UtilityLayerRenderer} from "@babylonjs/core";
+import {FilesInput, Node, Nullable, UtilityLayerRenderer} from "@babylonjs/core";
 import {History} from "./History"
 import {
     AddObjectCommand,
@@ -28,7 +28,7 @@ import {
 } from "./commands/SetObjectValueCommand/SetObjectQuaternionCommand";
 import {GridTool} from "../tool/GridTool";
 import {Select} from "./Select";
-import { EditorEventManager } from "./EditorEventManager";
+import {EditorEventManager} from "./EditorEventManager";
 import {loadFiles, loadItemList} from "../tool";
 
 export interface IEditorOptions extends IBasePlumOptions {
@@ -50,7 +50,7 @@ export class Editor extends BasePlum {
 
         this.history = new History(this);
         const scene = this.viewer.scene;
-        this.gizmoManager = new PlumGizmoManager(scene,undefined, new UtilityLayerRenderer(scene), new UtilityLayerRenderer(scene));
+        this.gizmoManager = new PlumGizmoManager(scene, undefined, new UtilityLayerRenderer(scene), new UtilityLayerRenderer(scene));
         this.gizmoManager.usePointerToAttachGizmos = false;
 
         this.addLightEvent();

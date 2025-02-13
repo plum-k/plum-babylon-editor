@@ -430,7 +430,7 @@ export class PlumParticle {
     addSizeGradients(gradients: [number, number, number?][]) {
         if (isGPUParticleSystem(this.particleSystem)) {
 
-        }else {
+        } else {
             for (const [gradient, factor, factor2] of gradients) {
                 this.particleSystem.addSizeGradient(gradient, factor, factor2);
             }

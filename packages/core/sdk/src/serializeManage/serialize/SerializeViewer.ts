@@ -306,7 +306,7 @@ export class SerializeViewer {
     /**
      * 异步导出
      */
-    async serializeAsync(){
+    async serializeAsync() {
         const serializationObject = this.serialize(false);
 
         const promises: Array<Promise<any>> = [];

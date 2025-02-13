@@ -1,13 +1,8 @@
 import {
     AbstractMesh,
     ActionManager,
-    AmmoJSPlugin,
     AssetContainer,
-    BabylonFileLoaderConfiguration,
     Camera,
-    CannonJSPlugin,
-    Color3,
-    Color4,
     CubeTexture,
     Geometry,
     GetClass,
@@ -23,7 +18,6 @@ import {
     MultiMaterial,
     Node,
     Nullable,
-    OimoJSPlugin,
     Parse,
     PostProcess,
     ReflectionProbe,
@@ -32,8 +26,7 @@ import {
     SceneLoader,
     Skeleton,
     SpriteManager,
-    TransformNode,
-    Vector3
+    TransformNode
 } from "@babylonjs/core";
 import {
     ChunkDeserialize,

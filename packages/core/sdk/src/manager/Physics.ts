@@ -1,5 +1,5 @@
 import HavokPhysics from "@babylonjs/havok";
-import {HavokPlugin, TransformNode, Vector3,PhysicsViewer} from "@babylonjs/core";
+import {HavokPlugin, PhysicsViewer, TransformNode, Vector3} from "@babylonjs/core";
 import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
 
 export interface IPhysicsOptions extends IBasePlumOptions {

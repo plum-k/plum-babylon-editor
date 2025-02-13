@@ -14,7 +14,7 @@ import {Fragment, useState} from "react";
 
 let videoRecorder: Nullable<VideoRecorder> = null;
 
-export  function HeaderTool() {
+export function HeaderTool() {
     const viewer = useViewer();
     const appInfo = useAppInfo();
     // 焦点到场景
@@ -32,7 +32,7 @@ export  function HeaderTool() {
     const createScreenshot = () => {
         debugger
         if (viewer && appInfo) {
-            Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1},(data)=>{
+            Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1}, (data) => {
                 const link = document.createElement('a');
                 link.href = data;
                 link.download = `${appInfo.name}.png`;
