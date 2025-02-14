@@ -37,6 +37,7 @@
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
+    "@types/ali-oss":"^6.16.11",
     "vite": "^6.1.0",
     "tailwindcss": "^4.0.6",
     "@tailwindcss/vite": "^4.0.6",

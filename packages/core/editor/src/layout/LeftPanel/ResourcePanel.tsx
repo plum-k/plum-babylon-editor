@@ -6,9 +6,8 @@ import {AssetLibrary} from "./ResourcePanel/assetLibrary/AssetLibrary.tsx";
 
 export function ResourcePanel() {
     return (
-        <div>
             <Tabs
-                defaultActiveKey="基础"
+                defaultActiveKey="资产库"
                 items={[
                     {
                         label: '基础',
@@ -27,7 +26,6 @@ export function ResourcePanel() {
                     }
                 ]}
             />
-        </div>
     )
 }
 

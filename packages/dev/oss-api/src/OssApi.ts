@@ -100,49 +100,55 @@ export class OssApi {
     }
 
     /**
+     * 创建目录
+     */
+    async mkdir(name: string): Promise<OSS.PutObjectResult> {
+        return await this.client.put(name, new Blob([]))
+    }
+
+    /**
+     * 删除目录
+     */
+    async deleteDir(prefix: string) {
+        const handleDel = async (name: string) => {
+            try {
+                await this.client.delete(name);
+            } catch (error) {
+                return error;
+            }
+        }
+
+        const list = await this.client.list({
+            prefix: prefix,
+        });
+
+        list.objects = list.objects || [];
+        const result = await Promise.all(
+            list.objects.map((v) => handleDel(v.name))
+        );
+        console.log(result);
+        return result;
+    }
+
+
+    /**
      * 获取文件
      */
-    async get(name: string, file: any, options?:  OSS.GetObjectOptions): Promise<OSS.GetObjectResult> {
+    async get(name: string, file: any, options?: OSS.GetObjectOptions): Promise<OSS.GetObjectResult> {
         return await this.client.get(name, file, options);
     }
-    // 组装路径
-    // let list: Array<IFolder> = []
-    // let list = []
-    // const {Contents, CommonPrefixes} = data;
-    // for (let i = 0; i < CommonPrefixes.length; i++) {
-    //     const CommonPrefixe = CommonPrefixes[i];
-    //     let node = {
-    //         name: CommonPrefixe.Prefix,
-    //         type: EFolder.FOLDER
-    //     }
-    //     list.push(node);
-    // }
-    // for (let i = 0; i < Contents.length; i++) {
-    //     const Content = Contents[i];
-    //     let node = {
-    //         name: Content.Key,
-    //         type: EFolder.FILE
-    //     }
-    //     list.push(node);
-    // }
+
     /**
      * 获取文件夹
      * @param prefix
      * @param delimiter
      */
     async list(prefix: string, delimiter: string) {
-        let result = await this.client.list({
+        return await this.client.list({
             prefix: prefix,
             delimiter: delimiter,
             "max-keys": 1000,
         }, {timeout: 10000});
-        // result.prefixes.forEach(function (subDir) {
-        //     console.log("SubDir: %s", subDir);
-        // });
-        // result.objects.forEach(function (obj) {
-        //     console.log("Object: %s", obj.name);
-        // });
-        return result;
     }
 
     /**

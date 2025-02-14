@@ -5,6 +5,7 @@ export interface IDragInfo {
     type: string;
     label: string;
     option: any;
+    icon: string;
 
     [key: string]: any;
 }

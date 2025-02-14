@@ -10,7 +10,7 @@ import EditAppModalForm from "../component/Home/EditAppModalForm.tsx";
 import {findIndex} from "lodash-es";
 
 export default function Home() {
-    const [folders, setFolders] = useState<Array<IApplication>>([]);
+    const [folders, setFolders] = useState<IApplication[]>([]);
     const [appInfo, setAppInfo] = useState<null | IApplication>(null);
     const [editAppInfo, setEditAppInfo] = useState<null | IApplication>(null);
     const [dirList, setDirList] = useState<IApplication[]>([]);

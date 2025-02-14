@@ -30,6 +30,8 @@ export function SceneView(props: ISceneViewProps) {
             if (res.code === 1) {
                 console.log(res)
                 setAppInfo(res.data);
+
+                document.title = res.data.name;
             }
         })
     }, []);
@@ -116,13 +118,6 @@ export function SceneView(props: ISceneViewProps) {
 
     }, [canvasContainer])
 
-    const loadMode = (node: IFolder) => {
-        const {name} = node;
-        // COSApi.getObjectUrl(name).then((url) => {
-        //     console.log(url)
-        // })
-    }
-
     const onDrop: DragEventHandler<HTMLDivElement> = async (event) => {
         console.log("拖动", event)
         if (!event.dataTransfer) return
@@ -146,11 +141,12 @@ export function SceneView(props: ISceneViewProps) {
             case "HemisphericLight":
                 node = Light.Parse(option, scene);
                 break;
-            case "Fire":
+            case "SmokeParticle":
                 node = new SmokeParticle({
                     name: "smoke",
                     capacity: 1000,
-                    viewer: viewer!
+                    viewer: viewer!,
+                    ...option
                 })
                 node.build()
                 node.start()

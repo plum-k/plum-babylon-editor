@@ -11,4 +11,3 @@ export function vector3RotationToForm(value: Vector3) {
         z: Tools.ToDegrees(value.z)
     }
 }
-

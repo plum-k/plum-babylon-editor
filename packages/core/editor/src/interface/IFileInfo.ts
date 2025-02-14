@@ -5,5 +5,7 @@ export enum EFolder {
 
 export interface IFileInfo {
     name: string;
-    type: EFolder
+    type: EFolder;
+    rawName: string;
+    parent: string;
 }

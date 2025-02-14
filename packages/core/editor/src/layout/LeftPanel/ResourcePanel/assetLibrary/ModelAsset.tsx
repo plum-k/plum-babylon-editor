@@ -1,43 +1,21 @@
-import {Flex, Form, Input, Modal} from "antd";
-import {
-    ArrowLeftOutlined,
-    ArrowRightOutlined,
-    FileFilled,
-    FolderAddOutlined,
-    FolderFilled,
-    RedoOutlined,
-    VerticalAlignTopOutlined
-} from "@ant-design/icons";
+import {Breadcrumb, Button, Flex, Form, Input, Modal} from "antd";
+import {FileFilled, FolderAddOutlined, FolderFilled, HomeOutlined, RedoOutlined} from "@ant-design/icons";
 import {useViewer} from "../../../../store";
-import {CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState} from "react";
+import {CSSProperties, FC, Fragment, PropsWithChildren, useEffect, useMemo, useState} from "react";
 import {EFolder, IFileInfo} from "../../../../interface";
 import {useToken} from "../../../../hooks";
-
-function countOccurrences(str: string, subStr: string) {
-    if (subStr === "") return str.length + 1;
-    let count = 0;
-    let pos = str.indexOf(subStr);
-
-    while (pos !== -1) {
-        count++;
-        pos = str.indexOf(subStr, pos + subStr.length);
-    }
-
-    return count;
-}
-
-
-const SearchBar = () => (
-    <div className="search-bar">
-        <input type="text" placeholder="搜索"/>
-    </div>
-);
+import {ListObjectResult} from "ali-oss";
+import {BreadcrumbItemType} from "antd/es/breadcrumb/Breadcrumb";
+import {findIndex} from "lodash-es";
 
 // oss 数据整理
-function getInfo(basePath: string, res: any) {
-    let mergedArray = []
-    res.prefixes.forEach(prefix => {
-        mergedArray.push({name: prefix.replace(basePath, ''), type: EFolder.FOLDER});
+function getInfo(basePath: string, res: ListObjectResult) {
+    let mergedArray: IFileInfo[] = []
+    res.prefixes?.forEach(prefix => {
+        mergedArray.push({
+            name: prefix.replace(basePath, ''), type: EFolder.FOLDER, rawName: prefix,
+            parent: basePath,
+        });
     });
     res.objects
         .filter(object => !object.name.endsWith('/')) // 只保留文件
@@ -45,7 +23,8 @@ function getInfo(basePath: string, res: any) {
             mergedArray.push({
                 ...object, name: object.name.replace(basePath, ''),
                 type: EFolder.FILE,
-                rawName: object.name,
+                parent: "",
+                rawName: object.name
             });
         });
     return mergedArray;
@@ -73,116 +52,96 @@ export function ModelAsset() {
     const token = useToken()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [folders, setFolders] = useState<IFileInfo[]>([]);
+    const [fileInfo, setFileInfo] = useState<IFileInfo>({
+        rawName: "models/"
+    } as IFileInfo);
+    const [dirList, setDirList] = useState<IFileInfo[]>([]);
+
     const showModal = () => {
         setIsModalOpen(true);
     };
-    const getFolder = () => {
+    const getFolder = (info: IFileInfo = fileInfo) => {
         if (!viewer) return;
         const oss = viewer!.ossApi!;
-        oss.list(path, "/").then((res) => {
+        const {rawName} = info;
+        console.log("请求 path", rawName);
+        oss.list(rawName, "/").then((res) => {
+            const info = getInfo(rawName, res)
             console.log(res)
-            const info = getInfo(path, res)
             console.log(info)
             setFolders(info)
         })
     }
-    const [folders, setFolders] = useState<Array<IFileInfo>>([]);
-    const [path, setPath] = useState<string>("models/");
-    const [history, setHistory] = useState<Array<string>>(["/"]);
-    const [currentNum, setCurrentNum] = useState<number>(0);
     useEffect(() => {
-        getFolder();
+        getFolder(fileInfo);
     }, []);
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    // ------------------------- 工具栏点击事件-------------------
+
     const handleOk = () => {
         const value = form.getFieldsValue();
         console.log(value)
-        let name = value.name;
+        let newName = value.name;
+        const ossApi = viewer!.ossApi!;
+        let {name} = path;
+        name = `${name}/newName`
 
-        if (path === "/") {
-            name = `${name}/`
-        } else {
-            name = `${path}/${name}`
-        }
-        COSApi.uploadFile({
-            Body: "",
-            Key: name
-        }).then(() => {
+        ossApi.mkdir(name).then(() => {
             getFolder();
             setIsModalOpen(false);
         })
     };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
-    const isLeftClick = useMemo(
-        () => {
-            return currentNum !== 0;
-        },
-        [currentNum]
-    );
-    const isRightClick = useMemo(
-        () => {
-            return currentNum !== history.length - 1;
-        },
-        [currentNum, history]
-    );
-    const isParentClick = useMemo(
-        () => {
-            return path !== "/";
-        },
-        [path]
-    );
+    //---------------------拖拽文件到画布----------------------
     const handlerDragstart = (e: DragEvent, item: IFileInfo) => {
         e.dataTransfer!.setData("data", JSON.stringify({...item, type: "model"}))
     }
-    const selectPath = (item: IFileInfo) => {
-        // item.name;
-        // setPath(path)
-        if (item.type === EFolder.FOLDER) {
-            setCurrentNum(history.length + 1)
-            setHistory([...history, item.name])
-            setPath(item.name);
-        } else {
-
-        }
+    const handleDir = (item: IFileInfo) => {
+        setFileInfo(item);
+        console.log("item", item)
+        setDirList([...dirList, item]);
+        getFolder(item);
     }
-    const leftClick = () => {
-        const length = history.length;
-        const _currentNum = currentNum - 1;
-        // debugger
-        if (length > 0 && isLeftClick) {
-            setPath(history[_currentNum]);
-            setCurrentNum(_currentNum);
-            // setHistory(history.slice(0, -1));
+    const items = useMemo<BreadcrumbItemType[]>(() => {
+        const list = [{
+            title:
+                <HomeOutlined onClick={() => {
+                    setFileInfo({
+                        rawName: "models/"
+                    } as IFileInfo);
+                    getFolder({
+                        rawName: "models/"
+                    } as IFileInfo)
+                    setDirList([]);
+                }}/>
+        }]
+        console.log("dirList", dirList)
+        for (let i = 0, len = dirList.length; i < len; i++) {
+            const dir = dirList[i]
+            console.log(dir.name.slice(0, -1))
+            const name = dir.name.slice(0, -1)
+            list.push({
+                title:
+                    <div className="cursor-pointer hover:text-[#69b1ff]" onClick={() => {
+                        setFileInfo(dir as IFileInfo);
+                        getFolder(dir as IFileInfo)
+                        const index = findIndex(dirList, {name: dir.name});
+                        const newList = dirList.slice(0, index + 1);
+                        setDirList(newList);
+                    }}>
+                        {name}
+                    </div>
+            })
         }
-    }
-
-    const rightClick = () => {
-        const length = history.length;
-        if (length > 0 && isRightClick) {
-            const _currentNum = currentNum + 1;
-            setPath(history[_currentNum]);
-            setCurrentNum(_currentNum);
-            // setPath(history[length - 1]);
-            // setHistory(history.slice(0, -1));
-        }
-    }
-    const parentClick = () => {
-        const count = countOccurrences(path, "/")
-        if (count === 1) {
-            let node: IFileInfo = {
-                type: EFolder.FOLDER,
-                name: "/"
-            }
-            selectPath(node)
-        } else {
-
-        }
-    }
-
+        return list
+    }, [dirList])
     return (
-        <div>
+        <Fragment>
             <Modal
                 title="新建文件夹"
                 okText={"确认"}
@@ -199,61 +158,26 @@ export function ModelAsset() {
                     </Form.Item>
                 </Form>
             </Modal>
+            <Flex>
+                <CubeFlex>
+                    <FolderAddOutlined onClick={showModal}/>
+                </CubeFlex>
+                <CubeFlex>
+                    <RedoOutlined onClick={() => getFolder(fileInfo)}/>
+                </CubeFlex>
+                <div
+                    style={{width: "100%"}}
+                    className={"flex items-center h-[25px] ml-[4px]"}
+                >
+                    <Breadcrumb items={items}/>
+                </div>
+            </Flex>
             <div style={{
-                // backgroundColor: token.colorBgBase,
                 backgroundColor: token.colorBgContainer,
                 color: token.colorTextBase,
-                padding: '10px',
-                height: '100%',
-                width: '100%'
-            }}>
-                <Flex gap={2}>
-                    <CubeFlex
-                        style={{
-                            // background: isLeftClick ? "" : token.colorBgContainerDisabled,
-                            color: isLeftClick ? "" : token.colorTextDisabled
-                        }}
-                    >
-                        <ArrowLeftOutlined onClick={leftClick}/>
-                    </CubeFlex>
-                    <CubeFlex
-                        style={{
-                            // background: isRightClick ? "" : token.controlItemBgActive,
-                            color: isRightClick ? "" : token.colorTextDisabled
-                        }}
-                    >
-                        <ArrowRightOutlined onClick={rightClick}/>
-                    </CubeFlex>
-                    <CubeFlex
-                        style={{
-                            // background: isParentClick ? "" : "#262626",
-                            color: isParentClick ? "" : token.colorTextDisabled
-                        }}
-                    >
-                        <VerticalAlignTopOutlined onClick={parentClick}/>
-                    </CubeFlex>
-                    <CubeFlex>
-                        <RedoOutlined onClick={getFolder}/>
-                    </CubeFlex>
-                    <CubeFlex
-                        // style={{marginLeft: "5px"}}
-                    >
-                        <FolderAddOutlined onClick={showModal}/>
-                    </CubeFlex>
-                    {/*<div style={{*/}
-                    {/*    width: '100px',*/}
-                    {/*    border: '1px solid #555',*/}
-                    {/*    height: '25px',*/}
-                    {/*    lineHeight: '25px',*/}
-                    {/*    paddingLeft: '5px'*/}
-                    {/*}}>*/}
-                    {/*    {path}*/}
-                    {/*</div>*/}
-                    {/*<div className="controls" style={{marginLeft: "20px"}}>*/}
-                    {/*<SearchBar/>*/}
-                    {/*<ViewOptions/>*/}
-                    {/*</div>*/}
-                </Flex>
+            }}
+                 className={"w-full h-full p-[10px]"}>
+
                 <div className="overflow-auto h-full mt-[5px]">
                     <div className="flex gap-2 flex-wrap">
                         {folders.map((item, index) => {
@@ -264,7 +188,7 @@ export function ModelAsset() {
                                         background: token.colorBgLayout,
                                         borderRadius: token.borderRadiusLG,
                                     }}
-                                    key={index} onClick={() => selectPath(item)}
+                                    key={index} onClick={() => handleDir(item)}
                                     className="w-[80px] h-[80px] text-center">
                                     <div className="folder-icon text-[2em] mt-[10px]">
                                         <FolderFilled/>
@@ -277,7 +201,7 @@ export function ModelAsset() {
                                     background: token.colorBgLayout,
                                     borderRadius: token.borderRadiusLG,
                                 }}
-                                key={index} onClick={() => selectPath(item)}
+                                key={index} onClick={() => handleDir(item)}
                                 onDragStart={(e) => handlerDragstart(e, item)}
                                 className="w-[80px] h-[80px] text-center cursor-pointer" draggable={true}>
                                 <div className="folder-icon text-[2em] mt-[10px]">
@@ -289,6 +213,6 @@ export function ModelAsset() {
                     </div>
                 </div>
             </div>
-        </div>
+        </Fragment>
     )
 }
