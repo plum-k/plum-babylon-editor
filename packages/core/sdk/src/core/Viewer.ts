@@ -1,6 +1,7 @@
 import {
     AbstractEngine,
     AbstractMesh,
+    AxesViewer,
     EngineFactory,
     EngineOptions,
     IInspectorOptions,
@@ -180,12 +181,12 @@ export class Viewer {
 
         const {engineOptions} = this.options;
 
-        const _engineOptions = defaults(engineOptions,{
-            glslangOptions:{
+        const _engineOptions = defaults(engineOptions, {
+            glslangOptions: {
                 jsPath: `./wasm/glslang/glslang.js`,
                 wasmPath: `./wasm/glslang/glslang.wasm`,
             },
-            twgslOptions:{
+            twgslOptions: {
                 jsPath: `./wasm/twgsl/twgsl.js`,
                 wasmPath: `./wasm/twgsl/twgsl.wasm`,
             }
@@ -566,4 +567,21 @@ export class Viewer {
         )
         return vector3
     }
+
+    axesViewer?: AxesViewer
+
+    showAxesViewer(show:boolean = true, scaleLines: number=10) {
+        if (show && !this.axesViewer){
+            this.axesViewer = new AxesViewer(this.scene, scaleLines)
+        }else if(!show && this.axesViewer){
+            this.axesViewer.dispose()
+            this.axesViewer = null
+        }
+    }
+
+    debug() {
+        // 射线帮助
+        // BABYLON.RayHelper.CreateAndShow(ray, scene, BABYLON.Color3.White())
+    }
+
 }

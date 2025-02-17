@@ -7,3 +7,4 @@ export * from "./tool";
 export * from "./serializeManage";
 export * from "./particle"
 export * from "./guard"
+export * from "./meshTool"
