@@ -13,7 +13,7 @@ import {
     WebGPUEngine,
     WebGPUEngineOptions
 } from "@babylonjs/core";
-import {defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
+import {defaults, defaultsDeep, isNil, isString, uniqueId} from "lodash-es";
 import {IOssApiOptions, OssApi} from "@plum-render/oss-api";
 import {HtmlMeshRenderer} from "@babylonjs/addons";
 import {isCamera, isLight, isMesh} from "../guard";
@@ -180,9 +180,20 @@ export class Viewer {
 
         const {engineOptions} = this.options;
 
+        const _engineOptions = defaults(engineOptions,{
+            glslangOptions:{
+                jsPath: `./wasm/glslang/glslang.js`,
+                wasmPath: `./wasm/glslang/glslang.wasm`,
+            },
+            twgslOptions:{
+                jsPath: `./wasm/twgsl/twgsl.js`,
+                wasmPath: `./wasm/twgsl/twgsl.wasm`,
+            }
+        })
+
         import("@babylonjs/loaders/glTF/index.js").then((gltf) => {
             // 根据不同环境创建不同的引擎
-            EngineFactory.CreateAsync(this.canvas, engineOptions).then(async (engine) => {
+            EngineFactory.CreateAsync(this.canvas, _engineOptions).then(async (engine) => {
                 this.engine = engine;
                 if (this.engine instanceof WebGPUEngine) {
                     this.isWebGPU = true;
@@ -202,6 +213,7 @@ export class Viewer {
             material.useLogarithmicDepth = this.#useLogarithmicDepth;
         })
     }
+
 
     /**
      * 启用/禁用 HTML 网格渲染器
