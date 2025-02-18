@@ -33,13 +33,29 @@
     }
 </script>
 <script async type="module">
-    import {Viewer} from "@plum-render/babylon-sdk";
+    import {Line, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,
     });
 
+    const line = new Line({
+        name: "line1",
+        viewer
+    })
+    const pane = new Pane();
+
+    let folder = pane.addFolder({
+        title: "虚线动画"
+    });
+
+    line.setPoints([
+        -5, 2, 0,
+        0, 5, 0,
+        5, 2, 0
+    ]).setRibbonOptions({}).setGetArrowCap().setWidth(0.2).setUseDash(true,8,0.2).build();
 
 </script>
 </body>

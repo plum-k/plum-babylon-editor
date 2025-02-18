@@ -33,27 +33,26 @@
     }
 </script>
 <script async type="module">
-    import {Viewer} from "@plum-render/babylon-sdk";
-    import {StandardMaterial, MeshBuilder, Plane} from "@babylonjs/core";
+    import {Line, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
+    import {Color3} from "@babylonjs/core";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,
     });
 
+    const line = new Line({
+        name: "line1",
+        viewer
+    })
 
-    let sphere = MeshBuilder.CreateSphere('sphere1', {
-        diameter: 2
-    });
-    sphere.position.y = 1;
+    line.setPoints([
+        -1, 8, 0,
+        0, 8, 0,
+        1, 7, 0,
+    ]).setRibbonOptions({}).setColor(Color3.Blue()).setWidth(1).build();
 
-    const ground = MeshBuilder.CreateGround('ground1', {
-        width: 6,
-        height: 6,
-        subdivisions: 2
-    });
-
-    scene.clipPlane = new Plane(1, 0, 0, 0);
 
 </script>
 </body>

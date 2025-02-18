@@ -1,4 +1,4 @@
-import {defaults} from "lodash-es";
+import {defaults, isNumber} from "lodash-es";
 import {
     Color3,
     CreateGreasedLine,
@@ -20,6 +20,7 @@ import {
 import {Viewer} from "../core/Viewer";
 import {PScene} from "../core/PScene";
 import {GreasedLineRibbonOptions} from "@babylonjs/core/Meshes/GreasedLine/greasedLineBaseMesh";
+import {Tool} from "../tool";
 
 // 定义线段的选项接口
 export interface ILine {
@@ -28,7 +29,7 @@ export interface ILine {
 }
 
 // 主要的 Line 类定义
-export  class Line {
+export class Line {
     options: ILine;                       // 线段的选项
     viewer!: Viewer;                      // 视图实例
     scene!: PScene;                       // 渲染线段的场景
@@ -54,19 +55,32 @@ export  class Line {
         }
         // 添加新的观察者，在每次渲染之前更新可见性
         this.visibilityBeforeRenderObserver = this.scene.onBeforeRenderObservable.add(() => {
+            if (!this.line.isVisible) {
+                this.line.isVisible = true;
+            }
             this.visibility += speed * this.scene.getAnimationRatio(); // 增加可见性
             this.line.greasedLineMaterial.visibility = this.visibility; // 更新线段材料的可见性
+            if (this.visibility >= 1) {
+                this.stopVisibilityAnimation();
+            }
         });
+        return this;
     }
 
     // 停止可见性动画
     stopVisibilityAnimation() {
         this.visibilityBeforeRenderObserver?.remove(); // 安全地移除观察者
+        return this;
     }
 
     // 设置可见性为特定值（默认为 0）
     setVisibility(value: number = 0) {
         this.visibility = value; // 设置可见性为给定值
+        this.line.greasedLineMaterial.visibility = this.visibility; // 更新线段材料的可见性
+        if (value === 0) {
+            this.line.isVisible = false;
+        }
+        return this;
     }
 
     // -------------------- UV 动画设置 --------------------
@@ -100,11 +114,13 @@ export  class Line {
         this.uvAnimationBeforeRenderObserver = this.scene.onBeforeRenderObservable.add(() => {
             texture.uOffset += 0.01 * this.scene.getAnimationRatio(); // 增加 UV 偏移
         });
+        return this;
     }
 
     // 停止 UV 动画
     stopUvAnimation() {
         this.uvAnimationBeforeRenderObserver?.remove(); // 安全地移除观察者
+        return this;
     }
 
     //---------------- 虚线动画 --------------
@@ -112,31 +128,38 @@ export  class Line {
     dashOffsetBeforeRenderObserver: Observer<any> | null = null; // 可见性更新的观察者
 
     dashOffsetAnimation(speed: number = 0.001) {
-        if (this.dashOffset !== 0) {
-            this.dashOffset = 0;
-        }
+        // if (this.dashOffset !== 0) {
+        //     this.dashOffset = 0;
+        // }
         const material = this.line.greasedLineMaterial
         this.dashOffsetBeforeRenderObserver = this.scene.onBeforeRenderObservable.add(() => {
             material.dashOffset = this.dashOffset
             this.dashOffset += speed;
         })
+        return this;
     }
 
     stopDashOffsetAnimation() {
         this.dashOffsetBeforeRenderObserver?.remove(); // 安全地移除观察者
+        return this;
     }
 
     // -------------------- 创建箭头帽 --------------------
     setGetArrowCap() {
+        console.log(this.sourcePoints)
+        let position = isNumber(this.sourcePoints[0])
+            ? Tool.toVector3([this.sourcePoints[0], this.sourcePoints[1], this.sourcePoints[2]] as number[])
+            : Tool.toVector3(this.sourcePoints[0] as Vector3);
         // 在线段的起始位置创建一个箭头帽
         const cap1 = GreasedLineTools.GetArrowCap(
-            this.sourcePoints[1] as Vector3, // 箭头的位置
+            position, // 箭头的位置
             Vector3.Right(),                 // 箭头的方向
             0.4,                             // 箭头的大小
             4, 4                             // 箭头的段数
         );
         this.points = cap1.points; // 设置线段的点
         this.widths = cap1.widths; // 设置线段的宽度
+        return this;
     }
 
     //---------------------- 线段相关属性 -----------------------
@@ -152,17 +175,20 @@ export  class Line {
     setPoints(points: GreasedLinePoints) {
         this.points = points; // 更新点
         this.sourcePoints = points; // 存储原始点
+        return this;
     }
 
     // 设置线段的实例
     setInstance(instance: GreasedLineBaseMesh) {
         this.instance = instance; // 更新实例
+        return this;
     }
 
     // 设置线段的宽度及其分布
     setWidths(widths?: number[], widthDistribution?: GreasedLineMeshWidthDistribution) {
         this.widths = widths; // 更新宽度
         this.widthDistribution = widthDistribution; // 更新宽度分布
+        return this;
     }
 
     /**
@@ -171,12 +197,14 @@ export  class Line {
      */
     setRibbonOptions(options: GreasedLineRibbonOptions) {
         this.ribbonOptions = options; // 更新带状选项
+        return this;
     }
 
     // 基于网格设置点
     setPointsByMesh(mesh: Mesh) {
         const points = GreasedLineTools.MeshesToLines([mesh], GreasedLineTools.OmitDuplicatesPredicate); // 将网格转换为点
         this.setPoints(points); // 更新线段的点
+        return this;
     }
 
     //--------------------- 材质相关属性 ----------------------
@@ -195,34 +223,39 @@ export  class Line {
     dashRatio: number = 0.5; // 虚线段长度与间隙长度的比率
 
     // 设置单一颜色
-    setColor(color: Color3, colorMode: GreasedLineMeshColorMode.COLOR_MODE_SET, colorDistributionType: GreasedLineMeshColorDistributionType = GreasedLineMeshColorDistributionType.COLOR_DISTRIBUTION_TYPE_SEGMENT) {
+    setColor(color: Color3, colorMode: GreasedLineMeshColorMode = GreasedLineMeshColorMode.COLOR_MODE_SET, colorDistributionType: GreasedLineMeshColorDistributionType = GreasedLineMeshColorDistributionType.COLOR_DISTRIBUTION_TYPE_SEGMENT) {
         this.color = color; // 设置颜色
         this.useColors = false; // 禁用多颜色使用
         this.colorMode = colorMode; // 设置颜色模式
         this.colorDistributionType = colorDistributionType; // 设置颜色分布类型
+        return this;
     }
 
     // 设置多种颜色
-    serColors(colors: Color3[], colorMode: GreasedLineMeshColorMode.COLOR_MODE_SET, colorDistributionType: GreasedLineMeshColorDistributionType = GreasedLineMeshColorDistributionType.COLOR_DISTRIBUTION_TYPE_SEGMENT) {
+    serColors(colors: Color3[], colorMode: GreasedLineMeshColorMode = GreasedLineMeshColorMode.COLOR_MODE_SET, colorDistributionType: GreasedLineMeshColorDistributionType = GreasedLineMeshColorDistributionType.COLOR_DISTRIBUTION_TYPE_SEGMENT) {
         this.colors = colors; // 更新颜色
         this.useColors = true; // 启用多颜色使用
         this.colorMode = colorMode; // 设置颜色模式
         this.colorDistributionType = colorDistributionType; // 设置颜色分布类型
+        return this;
     }
 
     // 设置线段的宽度
     setWidth(width: number = 1) {
         this.width = width; // 更新宽度
+        return this;
     }
 
     // 设置是否创建并分配材质
     setCreateAndAssignMaterial(createAndAssignMaterial = true) {
         this.createAndAssignMaterial = createAndAssignMaterial; // 更新标志
+        return this;
     }
 
     // 设置是否启用尺寸衰减
     setSizeAttenuation(sizeAttenuation = false) {
         this.sizeAttenuation = sizeAttenuation; // 更新标志
+        return this;
     }
 
     // 设置虚线的属性
@@ -230,6 +263,7 @@ export  class Line {
         this.useDash = useDash; // 更新标志
         this.dashCount = dashCount; // 设置虚线段数
         this.dashRatio = dashRatio; // 设置虚线比率
+        return this;
     }
 
     // 构建线段并应用指定的选项

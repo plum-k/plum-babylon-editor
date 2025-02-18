@@ -33,23 +33,34 @@
     }
 </script>
 <script async type="module">
-    import {Viewer, Line} from "@plum-render/babylon-sdk";
+    import {Line, Viewer} from "@plum-render/babylon-sdk";
+    import {Pane} from "tweakpane";
 
     let viewer = await Viewer.create("app", {
         isCreateDefaultLight: true,
         isCreateDefaultEnvironment: true,
     });
 
-    const line1 = new Line({
+    const line = new Line({
         name: "line1",
         viewer
     })
+    line.setPoints([
+        -1, 8, 0,
+        0, 8, 0,
+        1, 7, 0,
+    ]).setRibbonOptions({}).setWidth(1).build();
 
-    line1.setPoints([
-        -1, 10, 0,
-        1, 10, 0
-    ])
 
+    const line2 = new Line({
+        name: "line2",
+        viewer
+    })
+    line2.setPoints([
+        -4, 8, 0,
+        0, 8, 0,
+        6, 7, 0,
+    ]).setRibbonOptions({}).setWidth(1).build();
 
 </script>
 </body>
