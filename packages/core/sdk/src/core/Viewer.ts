@@ -389,7 +389,7 @@ export class Viewer {
      */
     async debug(debugOn: boolean = true, config: IInspectorOptions = {overlay: true}) {
         if (!this.isInitDebugModule) {
-            // await Promise.all([import("@babylonjs/core/Debug/debugLayer"), import("@babylonjs/inspector")])
+            await Promise.all([import("@babylonjs/core/Debug/debugLayer"), import("@babylonjs/inspector")])
         }
         this.isInitDebugModule = true
         if (debugOn) {
@@ -579,7 +579,7 @@ export class Viewer {
         }
     }
 
-    debug() {
+    debug1() {
         // 射线帮助
         // BABYLON.RayHelper.CreateAndShow(ray, scene, BABYLON.Color3.White())
     }

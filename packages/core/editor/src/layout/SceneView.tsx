@@ -2,7 +2,14 @@ import {createRef, DragEventHandler, Fragment, RefObject, useEffect} from "react
 import {useSetAppInfo, useSetViewer, useViewer} from "../store";
 import {isNil, uniqueId} from "lodash-es";
 import {useParams} from "react-router-dom";
-import {ESceneLoadType, ESceneSaveType, PlumParticle, SmokeParticle, Viewer} from "@plum-render/babylon-sdk";
+import {
+    ESceneLoadType,
+    ESceneSaveType,
+    FireParticle,
+    PlumParticle,
+    SmokeParticle,
+    Viewer
+} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 import {ImperativePanelHandle} from "react-resizable-panels";
 import {Control, PanelCollapsed} from "../component";
@@ -141,16 +148,29 @@ export function SceneView(props: ISceneViewProps) {
             case "HemisphericLight":
                 node = Light.Parse(option, scene);
                 break;
-            case "SmokeParticle":
-                node = new SmokeParticle({
+            case "FireParticle": {
+                let particle = new FireParticle({
+                    name: "FireParticle",
+                    capacity: 5,
+                    viewer: viewer!,
+                    isGpu:false,
+                    ...option
+                })
+                particle.build()
+                particle.start()
+                break;
+            }
+            case "SmokeParticle": {
+                let particle = new SmokeParticle({
                     name: "smoke",
                     capacity: 1000,
                     viewer: viewer!,
                     ...option
                 })
-                node.build()
-                node.start()
+                particle.build()
+                particle.start()
                 break;
+            }
             case "model":
                 const {rawName, name, url} = info;
                 const blob = await viewer!.ossApi!.getObject(rawName);

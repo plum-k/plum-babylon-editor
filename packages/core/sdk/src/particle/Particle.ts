@@ -11,9 +11,9 @@ import {
     Vector3
 } from "@babylonjs/core";
 import {Viewer} from "../core";
-import {defaults, defaultsDeep, isArray} from "lodash-es";
+import {defaults, defaultsDeep} from "lodash-es";
 import {isGPUParticleSystem} from "../guard/particle/isGPUParticleSystem";
-import {Tool} from "../tool";
+import {Color4Type, Tool, Vector3Type} from "../tool";
 
 
 // 定义 PlumParticle 实例的配置选项
@@ -70,32 +70,12 @@ export interface IUpdateOptions {
 }
 
 export interface ISetBoxEmitter {
-    direction1?: VectorType
-    direction2?: VectorType
-    minEmitBox?: VectorType
-    maxEmitBox?: VectorType
+    direction1?: Vector3Type
+    direction2?: Vector3Type
+    minEmitBox?: Vector3Type
+    maxEmitBox?: Vector3Type
 }
 
-type VectorType = Vector3 | number[];
-
-
-export function vectorTypeToVector3(value: VectorType) {
-    if (isArray(value)) {
-        return Vector3.FromArray(value)
-    }
-    return value;
-}
-
-// ManualEmitCount：
-// 手动发射计数可能不被所有发射器类型支持。某些发射器可能会使用自动发射机制来管理粒子的生命周期。
-// disposeOnStop：
-// 有些发射器在停止时不会自动释放资源。这意味着您可能需要手动管理粒子的清理。
-// Dual values per gradient：
-// 粒子发射器的某些属性（如大小、颜色等）只能接受单一值，而不支持双值（例如起始和结束值的梯度）。
-// Emit rate gradients：
-// 粒子的发射速率不支持梯度变化，这意味着您无法根据时间或其他因素动态地调整发射速率。
-// gpu 粒子不支持:
-//     - addSizeGradient  大小是固定的, 不支持梯度变化
 
 /**
  * 把 babylon 粒子系统的配置 按相关性分类
@@ -123,6 +103,52 @@ export class PlumParticle {
         return this.options.isGpu;
     }
 
+    //----------------------粒子大小相关-----------------------
+    /**
+     * 设置粒子系统的大小范围
+     * @param minSize 最小尺寸，默认为 1
+     * @param maxSize 最大尺寸，默认为 1
+     */
+    setSize(minSize: number = 1, maxSize: number = 1) {
+        this.particleSystem.minSize = minSize;
+        this.particleSystem.maxSize = maxSize;
+        return this;
+    }
+
+    /**
+     * 设置粒子系统的 X 轴缩放范围
+     * @param minScaleX X 轴最小缩放比例，默认为 1
+     * @param maxScaleX X 轴最大缩放比例，默认为 1
+     */
+    setScaleX(minScaleX: number = 1, maxScaleX: number = 1) {
+        this.particleSystem.minScaleX = minScaleX;
+        this.particleSystem.maxScaleX = maxScaleX;
+        return this;
+    }
+
+    /**
+     * 设置粒子系统的 Y 轴缩放范围
+     * @param minScaleY Y 轴最小缩放比例，默认为 1
+     * @param maxScaleY Y 轴最大缩放比例，默认为 1
+     */
+    setScaleY(minScaleY: number = 1, maxScaleY: number = 1) {
+        this.particleSystem.minScaleY = minScaleY;
+        this.particleSystem.maxScaleY = maxScaleY;
+        return this;
+    }
+
+    //----------------------粒子预热相关-----------------------
+    /**
+     * 预热相关设置
+     * @param preWarmCycles 预热周期数，默认为 0
+     * @param preWarmStepOffset 预热步长偏移量，默认为 0
+     */
+    setPreWarm(preWarmCycles: number = 0, preWarmStepOffset: number = 0) {
+        this.particleSystem.preWarmCycles = preWarmCycles;
+        this.particleSystem.preWarmStepOffset = preWarmStepOffset;
+        return this;
+    }
+
     /**
      * 设置粒子系统是否阻止自动启动
      * @param preventAutoStart - 一个布尔值，指示是否阻止粒子系统自动启动，默认为 false
@@ -130,8 +156,38 @@ export class PlumParticle {
     setPreventAutoStart(preventAutoStart = false) {
         // 将粒子系统的 preventAutoStart 属性设置为 true，意味着阻止粒子系统自动启动
         this.particleSystem.preventAutoStart = preventAutoStart;
+        return this;
     }
 
+    //------------------------粒子颜色相关-----------------------
+
+    /**
+     * 设置粒子纹理
+     * @param url
+     * @param invertY
+     */
+    setTexture(url: string, invertY: boolean = false) {
+        this.particleSystem.particleTexture = new Texture(url, undefined, undefined, invertY);
+        return this;
+    }
+
+    setTextureMask(value = new Color4(1, 1, 1, 1)) {
+        this.particleSystem.textureMask = value;
+        return this;
+    }
+
+    /**
+     * 颜色相关设置
+     * @param color1 起始颜色，可以是 Color4 对象或数组，默认为 [1, 1, 1, 1]
+     * @param color2 中间颜色，可以是 Color4 对象或数组，默认为 [1, 1, 1, 1]
+     * @param colorDead 消亡颜色，可以是 Color4 对象或数组，默认为 [0, 0, 0, 1]
+     */
+    setColor(color1: Color4Type = [1, 1, 1, 1], color2: Color4Type = [1, 1, 1, 1], colorDead: Color4Type = [0, 0, 0, 1]) {
+        this.particleSystem.color1 = Tool.color4FromArray(color1);
+        this.particleSystem.color2 = Tool.color4FromArray(color2);
+        this.particleSystem.colorDead = Tool.color4FromArray(colorDead);
+        return this;
+    }
 
     /**
      * 序列动画相关设置
@@ -152,118 +208,27 @@ export class PlumParticle {
         this.particleSystem.spriteCellHeight = _options.spriteCellHeight;
         this.particleSystem.spriteRandomStartCell = _options.spriteRandomStartCell;
         this.particleSystem.isAnimationSheetEnabled = true;
+        return this;
     }
 
 
+    //---------------------- 粒子噪声相关-----------------------
     /**
-     * 设置粒子系统的大小范围
-     * @param minSize 最小尺寸，默认为 1
-     * @param maxSize 最大尺寸，默认为 1
+     * 设置重力
+     * @param gravity 重力，可以是 Vector3 对象或数组，默认为 Vector3.Zero()
      */
-    setSize(minSize: number = 1, maxSize: number = 1) {
-        this.particleSystem.minSize = minSize;
-        this.particleSystem.maxSize = maxSize;
+    setGravity(gravity: Vector3Type = Vector3.Zero()) {
+        this.particleSystem.gravity = Tool.toVector3(gravity);
+        return this;
     }
 
     /**
-     * 设置粒子系统的 X 轴缩放范围
-     * @param minScaleX X 轴最小缩放比例，默认为 1
-     * @param maxScaleX X 轴最大缩放比例，默认为 1
+     * 设置噪声强度
+     * @param noiseStrength 噪声强度，可以是 Vector3 对象或数组，默认为 new Vector3(10, 10, 10)
      */
-    setScaleX(minScaleX: number = 1, maxScaleX: number = 1) {
-        this.particleSystem.minScaleX = minScaleX;
-        this.particleSystem.maxScaleX = maxScaleX;
-    }
-
-    /**
-     * 设置粒子系统的 Y 轴缩放范围
-     * @param minScaleY Y 轴最小缩放比例，默认为 1
-     * @param maxScaleY Y 轴最大缩放比例，默认为 1
-     */
-    setScaleY(minScaleY: number = 1, maxScaleY: number = 1) {
-        this.particleSystem.minScaleY = minScaleY;
-        this.particleSystem.maxScaleY = maxScaleY;
-    }
-
-
-    /**
-     * 生命周期相关设置
-     * @param minLifeTime 最小生命周期，默认为 1
-     * @param maxLifeTime 最大生命周期，默认为 1
-     */
-    setLifeTime(minLifeTime: number = 1, maxLifeTime: number = 1) {
-        this.particleSystem.minLifeTime = minLifeTime;
-        this.particleSystem.maxLifeTime = maxLifeTime;
-    }
-
-
-    /**
-     * 发射功率相关设置
-     * @param minEmitPower 最小发射功率，默认为 1
-     * @param maxEmitPower 最大发射功率，默认为 1
-     */
-    setEmitPower(minEmitPower: number = 1, maxEmitPower: number = 1) {
-        this.particleSystem.minEmitPower = minEmitPower;
-        this.particleSystem.maxEmitPower = maxEmitPower;
-    }
-
-
-    /**
-     * 角速度相关设置
-     * @param minAngularSpeed 最小角速度，默认为 0
-     * @param maxAngularSpeed 最大角速度，默认为 0
-     */
-    setAngularSpeed(minAngularSpeed: number = 0, maxAngularSpeed: number = 0) {
-        this.particleSystem.minAngularSpeed = minAngularSpeed;
-        this.particleSystem.maxAngularSpeed = maxAngularSpeed;
-    }
-
-    /**
-     * 初始旋转相关设置
-     * @param minInitialRotation 最小初始旋转角度，默认为 0
-     * @param maxInitialRotation 最大初始旋转角度，默认为 0
-     */
-    setInitialRotation(minInitialRotation: number = 0, maxInitialRotation: number = 0) {
-        this.particleSystem.minInitialRotation = minInitialRotation;
-        this.particleSystem.maxInitialRotation = maxInitialRotation;
-    }
-
-
-    /**
-     * 预热相关设置
-     * @param preWarmCycles 预热周期数，默认为 0
-     * @param preWarmStepOffset 预热步长偏移量，默认为 0
-     */
-    setPreWarm(preWarmCycles: number = 0, preWarmStepOffset: number = 0) {
-        this.particleSystem.preWarmCycles = preWarmCycles;
-        this.particleSystem.preWarmStepOffset = preWarmStepOffset;
-    }
-
-
-    /**
-     * 颜色相关设置
-     * @param color1 起始颜色，可以是 Color4 对象或数组，默认为 [1, 1, 1, 1]
-     * @param color2 中间颜色，可以是 Color4 对象或数组，默认为 [1, 1, 1, 1]
-     * @param colorDead 消亡颜色，可以是 Color4 对象或数组，默认为 [0, 0, 0, 1]
-     */
-    setColor(color1: Color4 | number[] = Color4.FromArray([1, 1, 1, 1]), color2: Color4 | number[] = Color4.FromArray([1, 1, 1, 1]), colorDead: Color4 | number[] = Color4.FromArray([0, 0, 0, 1])) {
-        if (Array.isArray(color1)) {
-            this.particleSystem.color1 = Color4.FromArray(color1);
-        } else {
-            this.particleSystem.color1 = color1;
-        }
-
-        if (Array.isArray(color2)) {
-            this.particleSystem.color2 = Color4.FromArray(color2);
-        } else {
-            this.particleSystem.color2 = color2;
-        }
-
-        if (Array.isArray(colorDead)) {
-            this.particleSystem.colorDead = Color4.FromArray(colorDead);
-        } else {
-            this.particleSystem.colorDead = colorDead;
-        }
+    setNoiseStrength(noiseStrength: Vector3Type = new Vector3(10, 10, 10)) {
+        this.particleSystem.gravity = Tool.toVector3(noiseStrength);
+        return this;
     }
 
 
@@ -286,16 +251,18 @@ export class PlumParticle {
         this.noiseTexture.octaves = _options.octaves;
         this.noiseTexture.persistence = _options.persistence;
         this.noiseTexture.animationSpeedFactor = _options.animationSpeedFactor;
+        return this;
     }
 
+    //----------------------粒子发射器相关-----------------------
+
     /**
-     * 设置广告牌选项
-     * @param billboardMode 广告牌模式，默认为 1
-     * @param isBillboardBased 是否基于广告牌，默认为 true
+     * 设置发射器位置
+     * @param emitterPosition 发射器的位置，类型为 Vector3，默认为 Vector3.Zero()
      */
-    setBillboardOptions(billboardMode: number = Constants.PARTICLES_BILLBOARDMODE_ALL, isBillboardBased: boolean = true) {
-        this.particleSystem.billboardMode = billboardMode;
-        this.particleSystem.isBillboardBased = isBillboardBased;
+    setPosition(emitterPosition: Vector3Type = Vector3.Zero()) {
+        this.particleSystem.emitter = Tool.toVector3(emitterPosition);
+        return this;
     }
 
     /**
@@ -304,16 +271,13 @@ export class PlumParticle {
      * @param angle 圆锥发射器的角度，默认为 0.6
      * @param directionRandomizer 圆锥发射器的方向随机化因子，默认为 0
      */
-    setConeEmitter(
-        radius: number = 1,
-        angle: number = Math.PI,
-        directionRandomizer: number = 0
-    ) {
+    setConeEmitter(radius: number = 1, angle: number = Math.PI, directionRandomizer: number = 0) {
         this.particleSystem.particleEmitterType = new ConeParticleEmitter(
             radius,
             angle,
             directionRandomizer
         );
+        return this;
     }
 
     /**
@@ -322,53 +286,143 @@ export class PlumParticle {
      */
     setBoxEmitter(options: ISetBoxEmitter) {
         const _options = defaults(options, {
-            direction1: new Vector3(0, 1.0, 0),
-            direction2: new Vector3(0, 1.0, 0),
+            direction1: new Vector3(0, 1, 0),
+            direction2: new Vector3(0, 1, 0),
             minEmitBox: new Vector3(-0.5, -0.5, -0.5),
             maxEmitBox: new Vector3(0.5, 0.5, 0.5),
         })
         let boxParticleEmitter = new BoxParticleEmitter();
-        boxParticleEmitter.direction1 = vectorTypeToVector3(_options.direction1);
-        boxParticleEmitter.direction2 = vectorTypeToVector3(_options.direction2);
-        boxParticleEmitter.minEmitBox = vectorTypeToVector3(_options.minEmitBox);
-        boxParticleEmitter.maxEmitBox = vectorTypeToVector3(_options.maxEmitBox);
-        this.particleSystem.particleEmitterType = boxParticleEmitter
+        boxParticleEmitter.direction1 = Tool.toVector3(_options.direction1);
+        boxParticleEmitter.direction2 = Tool.toVector3(_options.direction2);
+        boxParticleEmitter.minEmitBox = Tool.toVector3(_options.minEmitBox);
+        boxParticleEmitter.maxEmitBox = Tool.toVector3(_options.maxEmitBox);
+        this.particleSystem.particleEmitterType = boxParticleEmitter;
+        return this;
     }
 
+    //----------------------- 粒子渐变相关 -----------------------
     /**
-     * 设置发射器位置
-     * @param emitterPosition 发射器的位置，类型为 Vector3，默认为 Vector3.Zero()
+     * 为粒子系统添加颜色渐变
+     * @param gradients 颜色渐变数组，每个元素是一个包含两个元素的数组，第一个元素是渐变位置（0 - 1之间），第二个元素是 Color4 对象或颜色数组（RGBA）
      */
-    setPosition(emitterPosition: Vector3 = Vector3.Zero()) {
-        this.particleSystem.emitter = emitterPosition;
-    }
-
-    /**
-     * 设置重力
-     * @param gravity 重力，可以是 Vector3 对象或数组，默认为 Vector3.Zero()
-     */
-    setGravity(gravity: Vector3 | number[] = Vector3.Zero()) {
-        if (Array.isArray(gravity)) {
-            this.particleSystem.gravity = Vector3.FromArray(gravity);
-        } else {
-            this.particleSystem.gravity = gravity;
+    addColorGradients(gradients: [number, Color4 | number[], (Color4 | number[])?][]) {
+        for (const [gradient, color1, color2] of gradients) {
+            if (isGPUParticleSystem(this.particleSystem)) {
+                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1));
+            } else {
+                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1), Tool.color4FromArray(color2));
+            }
         }
+        return this;
+    }
+
+    /**
+     * 为粒子系统添加大小渐变
+     * @param gradients
+     */
+    addSizeGradients(gradients: [number, number, number?][]) {
+        if (isGPUParticleSystem(this.particleSystem)) {
+            for (const [gradient, factor] of gradients) {
+                this.particleSystem.addSizeGradient(gradient, factor);
+            }
+        } else {
+            for (const [gradient, factor, factor2] of gradients) {
+                this.particleSystem.addSizeGradient(gradient, factor, factor2);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 设置粒子渐变
+     * @param gradients
+     */
+    addRampGradients(gradients: [number, number[]][]) {
+        if (isGPUParticleSystem(this.particleSystem)) {
+            // todo gpu 粒子不支持
+        } else {
+            for (const [gradient, color] of gradients) {
+                this.particleSystem.addRampGradient(gradient, Tool.color3FromArray(color));
+            }
+        }
+        this.particleSystem.useRampGradients = true;
+        return this;
+    }
+
+    /**
+     * 设置粒子颜色重映射渐变
+     * @param gradients
+     */
+    addColorRemapGradients(gradients: [number, number, number][]) {
+        if (isGPUParticleSystem(this.particleSystem)) {
+            // todo gpu 粒子不支持
+        } else {
+            for (const [gradient, min, max] of gradients) {
+                this.particleSystem.addColorRemapGradient(gradient, min, max);
+            }
+        }
+        return this;
+    }
+
+    //----------------------- 速度相关-----------------
+
+    /**
+     * 设置粒子的发射速率
+     * @param emitRate - 每秒发射的粒子数量，默认为 10。
+     * 如果不传递该参数，将使用默认值。
+     */
+    setEmitRate(emitRate: number = 10) {
+        this.particleSystem.emitRate = emitRate;
+        return this;
+    }
+
+    /**
+     * 生命周期相关设置
+     * @param minLifeTime 最小生命周期，默认为 1
+     * @param maxLifeTime 最大生命周期，默认为 1
+     */
+    setLifeTime(minLifeTime: number = 1, maxLifeTime: number = 1) {
+        this.particleSystem.minLifeTime = minLifeTime;
+        this.particleSystem.maxLifeTime = maxLifeTime;
+        return this;
     }
 
 
     /**
-     * 设置噪声强度
-     * @param noiseStrength 噪声强度，可以是 Vector3 对象或数组，默认为 new Vector3(10, 10, 10)
+     * 发射功率相关设置
+     * @param minEmitPower 最小发射功率，默认为 1
+     * @param maxEmitPower 最大发射功率，默认为 1
      */
-    setNoiseStrength(noiseStrength: Vector3 | number[] = new Vector3(10, 10, 10)) {
-        if (Array.isArray(noiseStrength)) {
-            this.particleSystem.noiseStrength = Vector3.FromArray(noiseStrength);
-        } else {
-            this.particleSystem.noiseStrength = noiseStrength;
-        }
+    setEmitPower(minEmitPower: number = 1, maxEmitPower: number = 1) {
+        this.particleSystem.minEmitPower = minEmitPower;
+        this.particleSystem.maxEmitPower = maxEmitPower;
+        return this;
+    }
+
+    /**
+     * 角速度相关设置
+     * @param minAngularSpeed 最小角速度，默认为 0
+     * @param maxAngularSpeed 最大角速度，默认为 0
+     */
+    setAngularSpeed(minAngularSpeed: number = 0, maxAngularSpeed: number = 0) {
+        this.particleSystem.minAngularSpeed = minAngularSpeed;
+        this.particleSystem.maxAngularSpeed = maxAngularSpeed;
+        return this;
+    }
+
+    /**
+     * 初始旋转相关设置
+     * @param minInitialRotation 最小初始旋转角度，默认为 0
+     * @param maxInitialRotation 最大初始旋转角度，默认为 0
+     */
+    setInitialRotation(minInitialRotation: number = 0, maxInitialRotation: number = 0) {
+        this.particleSystem.minInitialRotation = minInitialRotation;
+        this.particleSystem.maxInitialRotation = maxInitialRotation;
+        return this;
     }
 
 
+    //----------------------- 渲染相关-----------------
     /**
      * 设置更新选项
      * @param options
@@ -382,6 +436,7 @@ export class PlumParticle {
         this.particleSystem.updateSpeed = _options.updateSpeed;
         this.particleSystem.targetStopDuration = _options.targetStopDuration;
         this.particleSystem.disposeOnStop = _options.disposeOnStop;
+        return this;
     }
 
 
@@ -393,65 +448,35 @@ export class PlumParticle {
     setRender(blendMode: number = BaseParticleSystem.BLENDMODE_ONEONE, forceDepthWrite: boolean = false) {
         this.particleSystem.blendMode = blendMode;
         this.particleSystem.forceDepthWrite = forceDepthWrite;
+        return this;
     }
 
-
     /**
-     * 设置粒子纹理
-     * @param url
+     * 设置广告牌选项
+     * @param billboardMode 广告牌模式，默认为 1
+     * @param isBillboardBased 是否基于广告牌，默认为 true
      */
-    setTexture(url: string) {
-        this.particleSystem.particleTexture = new Texture(url);
+    setBillboardOptions(billboardMode: number = Constants.PARTICLES_BILLBOARDMODE_ALL, isBillboardBased: boolean = true) {
+        this.particleSystem.billboardMode = billboardMode;
+        this.particleSystem.isBillboardBased = isBillboardBased;
+        return this;
     }
 
-    setTextureMask(value = new Color4(1.0, 1.0, 1.0, 1.0)) {
-        this.particleSystem.textureMask = value;
-    }
+    //--------------------------
 
-
-    /**
-     * 为粒子系统添加颜色渐变
-     * @param gradients 颜色渐变数组，每个元素是一个包含两个元素的数组，第一个元素是渐变位置（0 - 1之间），第二个元素是 Color4 对象或颜色数组（RGBA）
-     */
-    addColorGradients(gradients: [number, Color4 | number[], (Color4 | number[])?][]) {
-        for (const [gradient, color1, color2] of gradients) {
-            if (isGPUParticleSystem(this.particleSystem)) {
-                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1));
-            } else {
-                this.particleSystem.addColorGradient(gradient, Tool.color4FromArray(color1), Tool.color4FromArray(color2));
-            }
-        }
-    }
-
-    /**
-     * 为粒子系统添加大小渐变
-     * @param gradients
-     */
-    addSizeGradients(gradients: [number, number, number?][]) {
-        if (isGPUParticleSystem(this.particleSystem)) {
-
-        } else {
-            for (const [gradient, factor, factor2] of gradients) {
-                this.particleSystem.addSizeGradient(gradient, factor, factor2);
-            }
-        }
-    }
-
-    /**
-     * 设置粒子的发射速率
-     * @param emitRate - 每秒发射的粒子数量，默认为 10。
-     * 如果不传递该参数，将使用默认值。
-     */
-    setEmitRate(emitRate: number = 10) {
-        this.particleSystem.emitRate = emitRate;
+    setAnimation(beginAnimationOnStart: boolean = false, beginAnimationFrom: number = 0, beginAnimationTo: number = 60, beginAnimationLoop: boolean = false) {
+        this.particleSystem.beginAnimationOnStart = beginAnimationOnStart;
+        this.particleSystem.beginAnimationFrom = beginAnimationFrom;
+        this.particleSystem.beginAnimationTo = beginAnimationTo;
+        this.particleSystem.beginAnimationLoop = beginAnimationLoop;
     }
 
 
     /**
-     * 组转粒子
+     * 组装粒子
      */
     build() {
-
+        return this;
     }
 
     /**
@@ -459,6 +484,6 @@ export class PlumParticle {
      */
     start(delay: number = 0) {
         this.particleSystem.start(delay);
+        return this;
     }
-
 }

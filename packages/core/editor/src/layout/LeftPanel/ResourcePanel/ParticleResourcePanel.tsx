@@ -8,13 +8,7 @@ export function ParticleResourcePanel() {
             label: '火焰',
             option: {},
             icon: 'icon-huo',
-            type: "SmokeParticle-GPU"
-        },
-        {
-            label: '火焰',
-            option: {},
-            icon: 'icon-huo',
-            type: "SmokeParticle"
+            type: "FireParticle"
         },
         {
             label: '烟雾-CPU',

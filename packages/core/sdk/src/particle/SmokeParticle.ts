@@ -1,8 +1,8 @@
 import {IPlumParticle, PlumParticle} from "./Particle";
 import {Color4, Vector3} from "@babylonjs/core";
+import {defaults} from "lodash-es";
 
-export interface ISmokeParticle {
-    name: string;
+export interface ISmokeParticle extends IPlumParticle {
 }
 
 
@@ -11,7 +11,11 @@ export interface ISmokeParticle {
  */
 export class SmokeParticle extends PlumParticle {
     constructor(options: IPlumParticle) {
-        super(options);
+        const _options = defaults(options, {
+            capacity: 1000,
+            name: "SmokeParticle"
+        })
+        super(_options);
     }
 
     build() {
