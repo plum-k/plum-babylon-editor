@@ -11,6 +11,7 @@ import "../../styles/sceneTree.css";
 import {Node, TransformNode} from "@babylonjs/core";
 
 export interface ITreeNode {
+    node: Node;
     title: string;
     name: string;
     uniqueId: number;
@@ -28,8 +29,8 @@ const getTree = (objects: Array<Node>) => {
         const children = node.getChildren()
         const visible = NodeTool.getVisibleNode(node)
         const isShowVisibleIcon = !isTransformNode(node);
-
         let nodeInfo: ITreeNode = {
+            node: node,
             title: name,
             name: name,
             uniqueId: uniqueId,
@@ -71,7 +72,6 @@ export function SceneTree() {
                 }
             })
             viewer?.editor.editorEventManager.objectSelected.subscribe((node) => {
-                console.log("选择对象", node)
                 setSelectObject3D(node)
                 if (node) {
                     setExpandedKeys((prevState) => {
@@ -189,7 +189,6 @@ export function SceneTree() {
 
     // 更新展开的节点
     const onExpand: TreeProps["onExpand"] = (expandedKeysValue, info) => {
-        console.log(info)
         if (info.expanded) {
             setExpandedKeys(expandedKeysValue as number[]);
             // 如果节点被展开，则向 expandedKeys 数组添加该节点的 key
@@ -227,11 +226,13 @@ export function SceneTree() {
         if (viewer) {
             const node = viewer.getNodeByUniqueId(key);
             if (node) {
+                const visible = NodeTool.getVisibleNode(node)
                 viewer.editor.setValueExecute({
                     object: node,
                     attributePath: ["isVisible"],
-                    newValue: value
+                    newValue: !visible
                 })
+                viewer?.editor.editorEventManager.sceneGraphChanged.next(true)
             }
         }
     }
@@ -250,7 +251,6 @@ export function SceneTree() {
     const [rightKey, setRightKey] = useState<number>(-1)
 
     const onRightClick: TreeProps["onRightClick"] = (info) => {
-        console.log(info)
         const {event, node} = info;
         const {key} = node;
         const sceneNode = viewer?.getNodeByUniqueId(key as number);
@@ -327,7 +327,8 @@ export function SceneTree() {
                 showLine
                 showIcon
                 icon={(props) => {
-                    let {visible, isShowVisibleIcon, uniqueId} = props as unknown as ITreeNode;
+                    let {isShowVisibleIcon, uniqueId,node} = props as unknown as ITreeNode;
+                    const visible = NodeTool.getVisibleNode(node)
                     // if (isShowVisibleIcon) {
                     return visible ? <EyeOutlined onClick={() => handleVisible(uniqueId, false)}/> :
                         <EyeInvisibleOutlined onClick={() => handleVisible(uniqueId, true)}/>

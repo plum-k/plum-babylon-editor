@@ -1,5 +1,12 @@
-import {Breadcrumb, Button, Flex, Form, Input, Modal} from "antd";
-import {FileFilled, FolderAddOutlined, FolderFilled, HomeOutlined, RedoOutlined} from "@ant-design/icons";
+import {Breadcrumb, Flex, Form, Input, Modal, Upload} from "antd";
+import {
+    FileFilled,
+    FolderAddOutlined,
+    FolderFilled,
+    HomeOutlined,
+    RedoOutlined,
+    UploadOutlined
+} from "@ant-design/icons";
 import {useViewer} from "../../../../store";
 import {CSSProperties, FC, Fragment, PropsWithChildren, useEffect, useMemo, useState} from "react";
 import {EFolder, IFileInfo} from "../../../../interface";
@@ -7,6 +14,7 @@ import {useToken} from "../../../../hooks";
 import {ListObjectResult} from "ali-oss";
 import {BreadcrumbItemType} from "antd/es/breadcrumb/Breadcrumb";
 import {findIndex} from "lodash-es";
+import {toast} from "react-toastify";
 
 // oss 数据整理
 function getInfo(basePath: string, res: ListObjectResult) {
@@ -47,14 +55,23 @@ const CubeFlex: FC<CubeFlexProps> = (props) => {
     )
 }
 
-export function ModelAsset() {
+
+export interface IAssetPanelProps {
+    baseName: string;
+    activeKey: string;
+}
+
+export function AssetPanel(props: IAssetPanelProps) {
+    const {baseName, activeKey} = props;
+
     const viewer = useViewer()
     const token = useToken()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
     const [folders, setFolders] = useState<IFileInfo[]>([]);
     const [fileInfo, setFileInfo] = useState<IFileInfo>({
-        rawName: "models/"
+        rawName: baseName
+        // rawName: "models/"
     } as IFileInfo);
     const [dirList, setDirList] = useState<IFileInfo[]>([]);
 
@@ -62,6 +79,7 @@ export function ModelAsset() {
         setIsModalOpen(true);
     };
     const getFolder = (info: IFileInfo = fileInfo) => {
+        console.log("请求1111111111111")
         if (!viewer) return;
         const oss = viewer!.ossApi!;
         const {rawName} = info;
@@ -74,8 +92,17 @@ export function ModelAsset() {
         })
     }
     useEffect(() => {
+        console.log("baseName", baseName)
         getFolder(fileInfo);
     }, []);
+
+    useEffect(() => {
+        console.log("activeKey", activeKey)
+        if (activeKey === baseName) {
+            getFolder(fileInfo);
+        }
+    }, [activeKey]);
+
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -140,6 +167,24 @@ export function ModelAsset() {
         }
         return list
     }, [dirList])
+    //---------------------- 文件上传 ----------------------
+
+    const [fileList, setFileList] = useState([]);
+    const beforeUpload = (file: any, fileList: any) => {
+        // setFileList(fileList);
+        return false;
+    }
+    const handleChange = ({file, fileList}: { file: any; fileList: any }) => {
+        // setFileList(fileList);
+        if (!viewer) return;
+        const oss = viewer!.ossApi!;
+        const name = `${fileInfo.rawName}${file.name}`;
+        const fileToast = toast("上传中", {position: 'top-right',});
+        oss.put(name, file).then((res) => {
+            toast.update(fileToast, {render: "上传成功", isLoading: false, autoClose: 1000});
+            console.log(res)
+        })
+    }
     return (
         <Fragment>
             <Modal
@@ -159,6 +204,11 @@ export function ModelAsset() {
                 </Form>
             </Modal>
             <Flex>
+                <Upload showUploadList={false} beforeUpload={beforeUpload} onChange={handleChange}>
+                    <CubeFlex>
+                        <UploadOutlined/>
+                    </CubeFlex>
+                </Upload>
                 <CubeFlex>
                     <FolderAddOutlined onClick={showModal}/>
                 </CubeFlex>
@@ -177,7 +227,6 @@ export function ModelAsset() {
                 color: token.colorTextBase,
             }}
                  className={"w-full h-full p-[10px]"}>
-
                 <div className="overflow-auto h-full mt-[5px]">
                     <div className="flex gap-2 flex-wrap">
                         {folders.map((item, index) => {
@@ -193,7 +242,7 @@ export function ModelAsset() {
                                     <div className="folder-icon text-[2em] mt-[10px]">
                                         <FolderFilled/>
                                     </div>
-                                    <div className="mt-[5px] text-[1em]">{item.name}</div>
+                                    <div className="mt-[5px] text-[1em] truncate overflow-hidden whitespace-nowrap">{item.name}</div>
                                 </div>
                             }
                             return <div
@@ -207,7 +256,7 @@ export function ModelAsset() {
                                 <div className="folder-icon text-[2em] mt-[10px]">
                                     <FileFilled/>
                                 </div>
-                                <div className="mt-[5px] text-[1em]">{item.name}</div>
+                                <div className="mt-[5px] text-[1em] truncate overflow-hidden whitespace-nowrap">{item.name}</div>
                             </div>
                         })}
                     </div>

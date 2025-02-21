@@ -1,4 +1,4 @@
-import {Color3, Color4, Vector3} from "@babylonjs/core";
+import {Color3, Color4, Vector3,Tools} from "@babylonjs/core";
 
 export type Vector3Type = Vector3 | number[];
 export type Color3Type = Color3 | number[];

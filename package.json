@@ -6,7 +6,7 @@
   },
   "scripts": {
     "remove": "bun run remove.ts",
-    "update-pack": "ncu -u -ws"
+    "update-pack": "ncu -u -ws && bun install"
   },
   "workspaces": [
     "packages/core/*",

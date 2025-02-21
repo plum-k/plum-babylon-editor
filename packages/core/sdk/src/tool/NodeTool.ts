@@ -8,7 +8,7 @@ import {
     Vector3,
     VertexBuffer
 } from "@babylonjs/core";
-import {isAbstractMesh, isCamera, isLight} from "../guard";
+import {isAbstractMesh, isCamera, isLight, isMesh} from "../guard";
 import {NormalMaterial} from "@babylonjs/materials";
 
 export class NodeTool {
@@ -59,7 +59,7 @@ export class NodeTool {
      * @param node 节点
      */
     static getVisibleNode(node: Node) {
-        if (isAbstractMesh(node)) {
+        if (isMesh(node)) {
             return node.isVisible
         } else if (isCamera(node)) {
             return node.isEnabled();
