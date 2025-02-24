@@ -584,4 +584,11 @@ export class Viewer {
         // BABYLON.RayHelper.CreateAndShow(ray, scene, BABYLON.Color3.White())
     }
 
+    //-------------------- 粒子管理--------------------
+
+    addParticle(option) {
+        const particle = new Particle(option)
+        this.particleManager.addParticle(particle)
+        return particle
+    }
 }

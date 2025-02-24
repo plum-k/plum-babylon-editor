@@ -1,4 +1,4 @@
-import AddAppModalForm from "../component/Home/AddAppModalForm.tsx";
+import AddAppModalForm from "../component/home/AddAppModalForm.tsx";
 import {PropsWithChildren, useEffect, useMemo, useState} from "react";
 import {Card} from "../component";
 import {IApplication} from "../interface";
@@ -6,7 +6,7 @@ import {ApplicationApi} from "../api";
 import {Breadcrumb, Button, Flex} from "antd";
 import {BreadcrumbItemType} from "antd/es/breadcrumb/Breadcrumb";
 import {HomeOutlined} from "@ant-design/icons";
-import EditAppModalForm from "../component/Home/EditAppModalForm.tsx";
+import EditAppModalForm from "../component/home/EditAppModalForm.tsx";
 import {findIndex} from "lodash-es";
 
 export default function Home() {

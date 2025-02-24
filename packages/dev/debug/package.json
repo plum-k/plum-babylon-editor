@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@babylonjs/havok": "^1.3.10",
-    "@babylonjs/core": "^7.49.0",
+    "@babylonjs/core": "^7.50.0",
     "@babylonjs/addons": "workspace:*",
-    "@babylonjs/inspector": "7.49.0",
-    "@babylonjs/loaders": "^7.49.0",
-    "@babylonjs/materials": "^7.49.0",
-    "@babylonjs/serializers": "^7.49.0"
+    "@babylonjs/inspector": "7.50.0",
+    "@babylonjs/loaders": "^7.50.0",
+    "@babylonjs/materials": "^7.50.0",
+    "@babylonjs/serializers": "^7.50.0"
   },
   "devDependencies": {
     "vite-plugin-static-copy": "^2.2.0",
