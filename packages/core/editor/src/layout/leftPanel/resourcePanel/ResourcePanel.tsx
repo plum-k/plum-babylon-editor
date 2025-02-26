@@ -1,7 +1,7 @@
 import {Tabs} from "antd";
-import {BaseResourcePanel} from "./ResourcePanel/BaseResourcePanel.tsx";
-import {ParticleResourcePanel} from "./ResourcePanel/ParticleResourcePanel.tsx";
-import {AssetLibrary} from "./ResourcePanel/assetLibrary/AssetLibrary.tsx";
+import {BaseResourcePanel} from "./resourcePanel/BaseResourcePanel.tsx";
+import {ParticleResourcePanel} from "./resourcePanel/ParticleResourcePanel.tsx";
+import {AssetLibrary} from "./resourcePanel/assetLibrary/AssetLibrary.tsx";
 
 
 export function ResourcePanel() {

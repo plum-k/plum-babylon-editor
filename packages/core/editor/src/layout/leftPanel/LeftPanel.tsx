@@ -1,6 +1,6 @@
 import {Splitter} from 'antd';
-import {ResourcePanel} from "./ResourcePanel.tsx";
 import {SceneTree} from "./SceneTree.tsx";
+import {ResourcePanel} from "./resourcePanel";
 
 export function LeftPanel() {
     return (

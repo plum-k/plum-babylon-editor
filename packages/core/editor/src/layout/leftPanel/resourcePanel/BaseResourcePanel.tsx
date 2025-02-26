@@ -3,7 +3,6 @@ import {DragCard} from "./DragCard";
 import {IDragInfo} from "../../../interface/IDragInfo.ts";
 import {Mesh} from "@babylonjs/core";
 
-
 export function BaseResourcePanel() {
     const geometryList: IDragInfo[] = [
         {
