@@ -1,11 +1,11 @@
 import HavokPhysics from "@babylonjs/havok";
 import {HavokPlugin, PhysicsViewer, TransformNode, Vector3} from "@babylonjs/core";
-import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
+import {Component, IComponentOptions} from "../core/Component";
 
-export interface IPhysicsOptions extends IBasePlumOptions {
+export interface IPhysicsOptions extends IComponentOptions {
 }
 
-export class Physics extends BasePlum {
+export class Physics extends Component {
 
     constructor(options: IPhysicsOptions) {
         super(options);

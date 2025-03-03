@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions} from "./BasePlum";
+import {Component, IComponentOptions} from "./Component";
 import {isArcRotateCamera} from "../guard";
 import {
     AbstractMesh,
@@ -16,11 +16,11 @@ import {isNil} from "lodash-es";
 import {PlumArcRotateCamera} from "../camera";
 
 
-export interface ICameraControlsOptions extends IBasePlumOptions {
+export interface ICameraControlsOptions extends IComponentOptions {
 }
 
 
-export class CameraControls extends BasePlum {
+export class CameraControls extends Component {
     debugBox: Mesh | null = null;
     debugCameraObserver: Nullable<Observer<any>> = null;
 

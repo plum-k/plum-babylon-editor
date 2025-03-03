@@ -1,4 +1,4 @@
-export * from "./BasePlum";
+export * from "./Component";
 export * from "./CameraControls";
 export * from "./DrawLine";
 export * from "./LightManager";

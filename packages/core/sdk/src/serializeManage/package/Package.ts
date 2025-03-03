@@ -1,13 +1,13 @@
-import {BasePlum, IBasePlumOptions} from "../../core/BasePlum";
+import {Component, IComponentOptions} from "../../core/Component";
 
-export interface IPlumSceneSerializerOptions extends IBasePlumOptions {
+export interface IPlumSceneSerializerOptions extends IComponentOptions {
 }
 
 
 /**
  * 序列化和反序列化场景
  */
-export abstract class Package extends BasePlum {
+export abstract class Package extends Component {
 
     static Type = "plumSceneSerializer";
 

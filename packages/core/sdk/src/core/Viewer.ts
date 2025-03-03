@@ -309,7 +309,6 @@ export class Viewer {
         this.postProcessManager = new PlumPostProcessManager({viewer: this});
         this.environmentManage = new EnvironmentManage({viewer: this})
 
-
         this.resize();
 
         // 监听窗口大小变化

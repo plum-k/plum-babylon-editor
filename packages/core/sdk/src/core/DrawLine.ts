@@ -1,13 +1,13 @@
 import {MeshBuilder, Vector3} from "@babylonjs/core";
-import {BasePlum, IBasePlumOptions} from "./BasePlum";
+import {Component, IComponentOptions} from "./Component";
 import {isNil} from "lodash-es";
 
 
-export interface IDrawLineOptions extends IBasePlumOptions {
+export interface IDrawLineOptions extends IComponentOptions {
 }
 
 
-export class DrawLine extends BasePlum {
+export class DrawLine extends Component {
     constructor(options: IDrawLineOptions) {
         super(options);
         const {viewer} = options;

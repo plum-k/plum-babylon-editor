@@ -1,13 +1,13 @@
 import {fromEvent, Subject} from 'rxjs';
-import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
+import {Component, IComponentOptions} from "../core/Component";
 import {isNil} from "lodash-es";
 import {KeyboardEventTypes, PointerEventTypes, PointerInfo} from "@babylonjs/core";
 
-export interface IEventManagerOptions extends IBasePlumOptions {
+export interface IEventManagerOptions extends IComponentOptions {
 }
 
 
-export class EventManager extends BasePlum {
+export class EventManager extends Component {
     resizeSubject = new Subject<UIEvent>();
 
     pointerDownSubject = new Subject<PointerInfo>();

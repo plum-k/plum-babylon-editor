@@ -1,7 +1,7 @@
-import {BasePlum, IBasePlumOptions,} from "../core/BasePlum";
+import {Component, IComponentOptions,} from "../core/Component";
 import {BaseTexture, Color3, CubeTexture, FilesInput, HDRCubeTexture, Mesh, Nullable, Scene} from "@babylonjs/core";
 
-export interface IEnvironmentManageOptions extends IBasePlumOptions {
+export interface IEnvironmentManageOptions extends IComponentOptions {
 }
 
 export interface IUpdateFogOptions {
@@ -27,7 +27,7 @@ export const presetsEnvironmentObj = {
 
 export type PresetsType = keyof typeof presetsEnvironmentObj
 
-export class EnvironmentManage extends BasePlum {
+export class EnvironmentManage extends Component {
     hDRCubeTexture: Nullable<HDRCubeTexture> = null;
     skyboxMesh: Nullable<Mesh> = null;
 

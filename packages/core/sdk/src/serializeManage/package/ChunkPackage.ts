@@ -1,14 +1,14 @@
 import {chunk, isNil, split} from "lodash-es";
 import {BlobReader, BlobWriter, Entry, Uint8ArrayWriter, ZipReader, ZipWriter} from "@zip.js/zip.js";
 import {Package} from "./Package";
-import {ESceneLoadType, ESceneSaveType, IBasePlumOptions} from "../../core";
+import {ESceneLoadType, ESceneSaveType, IComponentOptions} from "../../core";
 import {SerializerTool} from "../SerializerTool";
 import {SceneSerializeObject} from "../SerializeJsonType";
 import {ChunkDeserialize} from "../deserialize";
 import {SerializeViewer} from "../serialize";
 import axios, {AxiosProgressEvent} from 'axios';
 
-export interface IChunkSerializeOptions extends IBasePlumOptions {
+export interface IChunkSerializeOptions extends IComponentOptions {
 }
 
 
@@ -160,8 +160,6 @@ export class ChunkSerialize extends Package {
         await babylonChunkFileLoader.loadAsync(this.viewer.scene, sceneInfo, "")
         this.viewer.setInitState()
     }
-
-
     /**
      * 获取远程场景文件, 可加载离线场景
      */

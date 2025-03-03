@@ -1,4 +1,4 @@
-import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
+import {Component, IComponentOptions} from "../core/Component";
 import {FilesInput, Node, Nullable, UtilityLayerRenderer} from "@babylonjs/core";
 import {History} from "./History"
 import {
@@ -31,10 +31,10 @@ import {Select} from "./Select";
 import {EditorEventManager} from "./EditorEventManager";
 import {loadFiles, loadItemList} from "../tool";
 
-export interface IEditorOptions extends IBasePlumOptions {
+export interface IEditorOptions extends IComponentOptions {
 }
 
-export class Editor extends BasePlum {
+export class Editor extends Component {
     history: History;
     geometries = new Map<string, any>();
     //-------------------选择

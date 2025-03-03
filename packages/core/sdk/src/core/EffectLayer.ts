@@ -1,11 +1,11 @@
-import {BasePlum, IBasePlumOptions} from "./BasePlum";
+import {Component, IComponentOptions} from "./Component";
 import {GlowLayer, HighlightLayer} from "@babylonjs/core";
 
-export interface IEffectLayer extends IBasePlumOptions {
+export interface IEffectLayer extends IComponentOptions {
 }
 
 
-export class EffectLayer extends BasePlum {
+export class EffectLayer extends Component {
     highlightLayer: HighlightLayer
     glowLayer: GlowLayer;
 

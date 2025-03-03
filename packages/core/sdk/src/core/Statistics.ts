@@ -1,7 +1,7 @@
-import {BasePlum, IBasePlumOptions} from "./BasePlum";
+import {Component, IComponentOptions} from "./Component";
 import {EngineInstrumentation, SceneInstrumentation} from "@babylonjs/core";
 
-export interface IStatisticsOptions extends IBasePlumOptions {
+export interface IStatisticsOptions extends IComponentOptions {
 }
 
 export interface SceneStatistics {
@@ -57,7 +57,7 @@ export interface SceneStatistics {
     driverInfo: string; // 驱动信息
 }
 
-export class Statistics extends BasePlum {
+export class Statistics extends Component {
     // 总数量统计
     totalMeshes = 0; // 总网格数量
     activeMeshes = 0; // 活动网格数量

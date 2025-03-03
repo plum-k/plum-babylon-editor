@@ -1,11 +1,11 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import {BasePlum, IBasePlumOptions} from "../core/BasePlum";
+import {Component, IComponentOptions} from "../core/Component";
 import {Node, Nullable, PBRMaterial} from "@babylonjs/core";
 import {PropertyPath} from "lodash-es";
 import {PlumMeshAssetTask} from "../manager";
 
 
-export interface IEditorEventManagerOptions extends IBasePlumOptions {
+export interface IEditorEventManagerOptions extends IComponentOptions {
 }
 
 export interface ISelectObjectChanged {
@@ -20,7 +20,7 @@ export interface ISelectMaterialChanged {
     attributePath: PropertyPath
 }
 
-export class EditorEventManager extends BasePlum {
+export class EditorEventManager extends Component {
 
     // 场景变化事件
     sceneGraphChanged = new BehaviorSubject(false);

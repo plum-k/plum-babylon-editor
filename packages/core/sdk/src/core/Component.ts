@@ -1,11 +1,11 @@
 import {defaultsDeep} from "lodash-es";
 import {Viewer} from "./Viewer";
 
-export interface IBasePlumOptions {
+export interface IComponentOptions {
     viewer: Viewer;
 }
 
-export class BasePlum<T extends IBasePlumOptions = IBasePlumOptions> {
+export class Component<T extends IComponentOptions = IComponentOptions> {
     options: T;
     viewer: Viewer;
 
