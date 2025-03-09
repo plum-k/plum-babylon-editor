@@ -93,6 +93,10 @@ export interface IViewerOptions {
      */
     packagePath?: string;
     /**
+     * 基础路径
+     */
+    ossBaseUrl?: string;
+    /**
      * 包的类型
      * - "part": 渐进式加载
      * - "chunk": 切片包
@@ -174,7 +178,9 @@ export class Viewer {
     #useLogarithmicDepth: boolean = true;
 
     constructor(container: string | HTMLDivElement, options ?: IViewerOptions) {
-        this.options = defaultsDeep({}, options);
+        this.options = defaultsDeep({
+            ossBaseUrl: "babylon",
+        }, options);
         this.#useLogarithmicDepth = this.options.useLogarithmicDepth ?? true;
         this.initContainer(container);
         this.initCanvas();

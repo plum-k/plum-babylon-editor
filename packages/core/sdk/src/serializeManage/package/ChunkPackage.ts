@@ -31,7 +31,7 @@ export class ChunkSerialize extends Package {
         })
         const options = this.viewer.options;
         const {appId, packagePath} = options;
-        let Key = `${appId}/${appId}.${ChunkSerialize.Type}`
+        let Key = `${this.viewer.options.ossBaseUrl}/scene/${appId}/${appId}.${ChunkSerialize.Type}`
         if (isNil(appId)) {
             throw new Error("appId 为空");
         }
@@ -90,9 +90,9 @@ export class ChunkSerialize extends Package {
 
         const zipWriter = new ZipWriter(new BlobWriter());
 
-        const sceneInfo = this.packSceneInfo(sceneObject);
+        const viewerInfo = this.packviewerInfo(sceneObject);
 
-        await zipWriter.add("sceneInfo.bin", sceneInfo, {
+        await zipWriter.add("viewerInfo.bin", viewerInfo, {
             onprogress: (progress: number, total: number) => {
                 this.viewer.sceneSaveProgressSubject.next({
                     type: ESceneSaveType.Zip,
@@ -135,15 +135,15 @@ export class ChunkSerialize extends Package {
         const zipReader = new ZipReader(zipFileReader);
         const entries = await zipReader.getEntries();
 
-        let sceneInfo = {} as SceneSerializeObject
+        let viewerInfo = {} as SceneSerializeObject
 
         let materials: Array<any> = []
         let vertexData: Array<any> = []
 
         for (let i = 0; i < entries.length; i++) {
             let entry = entries[i];
-            if (entry.filename === "sceneInfo.bin" && entry.getData) {
-                sceneInfo = await this.unPackSceneInfo(entry);
+            if (entry.filename === "viewerInfo.bin" && entry.getData) {
+                viewerInfo = await this.unPackviewerInfo(entry);
             }
             if (entry.filename === "vertexData.zip" && entry.getData) {
                 vertexData = await this.unPackMaterialsOrVertexData(entry, "vertexData");
@@ -153,11 +153,11 @@ export class ChunkSerialize extends Package {
             }
         }
         await zipReader.close();
-        sceneInfo.materials = materials;
-        sceneInfo.geometries.vertexData = vertexData;
-        console.log("还原场景数据", sceneInfo)
+        viewerInfo.materials = materials;
+        viewerInfo.geometries.vertexData = vertexData;
+        console.log("还原场景数据", viewerInfo)
         const babylonChunkFileLoader = new ChunkDeserialize(this.viewer);
-        await babylonChunkFileLoader.loadAsync(this.viewer.scene, sceneInfo, "")
+        await babylonChunkFileLoader.loadAsync(this.viewer.scene, viewerInfo, "")
         this.viewer.setInitState()
     }
     /**
@@ -174,13 +174,13 @@ export class ChunkSerialize extends Package {
         })
     }
 
-    packSceneInfo(sceneObject: SceneSerializeObject) {
+    packviewerInfo(sceneObject: SceneSerializeObject) {
         sceneObject.geometries.vertexData = [];
         sceneObject.materials = [];
         return SerializerTool.createUint8ArrayReaderPack(sceneObject);
     }
 
-    async unPackSceneInfo(entry: Entry) {
+    async unPackviewerInfo(entry: Entry) {
         const uint8ArrayWriter = await entry.getData!(new Uint8ArrayWriter(), {
             onprogress: (progress: number, total: number) => {
                 // this.sceneLoadProgressSubject.next({
@@ -273,7 +273,7 @@ export class ChunkSerialize extends Package {
     uploadPack(blob: Blob) {
         const appId = this.viewer.options.appId;
         if (!isNil(this.viewer.ossApi)) {
-            const name = `${appId}/${appId}.${ChunkSerialize.Type}`;
+            let name = `${this.viewer.options.ossBaseUrl}/scene/${appId}/${appId}.${ChunkSerialize.Type}`
             this.viewer.ossApi.put(name, blob).then((data) => {
                 console.log(data)
                 this.viewer.sceneSaveProgressSubject.next({
