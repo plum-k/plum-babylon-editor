@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "build:watch": "concurrently \"vite build --watch\" \"http-server ./dist -p 4000 -c-1 --cors\"",
+    "build:watch": "concurrently \"vite build --watch\" \"http-server ./dist -p 5000 -c-1 --cors\"",
     "build:tsc": "tsc --project tsconfig.json",
     "build:all": "bun run build && bun run build:tsc"
   },

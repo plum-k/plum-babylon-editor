@@ -40,7 +40,7 @@ export default defineConfig((env) => {
     return {
         server: {
             host: '0.0.0.0',
-            port: 4020,
+            port: 5050,
         },
         plugins: [vue(),
             viteStaticCopy({

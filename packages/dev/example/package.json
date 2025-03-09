@@ -11,13 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babylonjs/havok": "^1.3.10",
-    "@babylonjs/core": "^7.52.2",
-    "@babylonjs/addons": "workspace:*",
-    "@babylonjs/inspector": "7.52.2",
-    "@babylonjs/loaders": "^7.52.2",
-    "@babylonjs/materials": "^7.52.2",
-    "@babylonjs/serializers": "^7.52.2",
     "@vueuse/core": "^12.8.2",
     "monaco-editor": "^0.52.2",
     "naive-ui": "^2.41.0",

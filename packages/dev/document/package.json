@@ -1,10 +1,10 @@
 {
-  "name": "document",
+  "name": "@plum-render/babylon-document",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start --port 4030",
+    "start": "docusaurus start --port 5040",
     "generate-typedoc": "docusaurus generate-typedoc",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
