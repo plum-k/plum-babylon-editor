@@ -3,6 +3,7 @@ import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColu
 export enum EAppType {
     DIR = "DIR",
     BABYLON = "BABYLON",
+    THREE = "THREE",
 }
 
 @Entity()
