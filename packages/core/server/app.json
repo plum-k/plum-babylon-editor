@@ -1,6 +1,6 @@
 {
   "apps": {
-    "name": "server",
+    "name": "babylon-server",
     "script": "./dist/main.js",
     "env": {
       "CONFIG_FILE": "main-node.yaml"
