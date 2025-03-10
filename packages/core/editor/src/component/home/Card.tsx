@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import {useMemo} from "react";
 import {EAppType, IApplication} from "../../interface";
 import {ApplicationApi} from "../../api";
-import {useLocation} from "react-router-dom";
+import {useLocation} from "react-router";
 
 export interface CardProps {
     item: IApplication;

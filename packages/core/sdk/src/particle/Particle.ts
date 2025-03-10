@@ -322,9 +322,10 @@ export class PlumParticle {
      */
     addSizeGradients(gradients: [number, number, number?][]) {
         if (isGPUParticleSystem(this.particleSystem)) {
-            for (const [gradient, factor] of gradients) {
-                this.particleSystem.addSizeGradient(gradient, factor);
-            }
+            // todo gpu 粒子不支持
+            // for (const [gradient, factor] of gradients) {
+            //     this.particleSystem.addSizeGradient(gradient, factor);
+            // }
         } else {
             for (const [gradient, factor, factor2] of gradients) {
                 this.particleSystem.addSizeGradient(gradient, factor, factor2);

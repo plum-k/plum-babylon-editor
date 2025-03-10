@@ -29,6 +29,7 @@ import {FollowCameraAttribute} from "./FollowCameraAttribute.tsx";
 import {FreeCameraAttribute} from "./FreeCameraAttribute.tsx";
 import {DirectionalLightAttribute, HemisphericLightAttribute, PointLightAttribute, SpotLightAttribute} from "./lights";
 import {EmptyState} from "../../Empty.tsx";
+import {Quaternion} from "@babylonjs/core/Maths/math.vector";
 
 
 export function NodeAttribute() {
@@ -135,8 +136,6 @@ export function NodeAttribute() {
             })
             isSet = true;
         } else if (name[0] === "rotation") {
-            console.log("_selectObject3D.rotationQuaternion", _selectObject3D.rotationQuaternion)
-            const oldQuaternion = _selectObject3D.rotationQuaternion!.clone();
             const x = form.getFieldValue(["rotation", "x"]);
             const y = form.getFieldValue(["rotation", "y"]);
             const z = form.getFieldValue(["rotation", "z"]);
@@ -145,6 +144,12 @@ export function NodeAttribute() {
                 Tools.ToRadians(y),
                 Tools.ToRadians(z)
             );
+            let oldQuaternion = new Quaternion();
+            if (_selectObject3D.rotationQuaternion === null) {
+                oldQuaternion = _selectObject3D.rotation.toQuaternion();
+            } else {
+                oldQuaternion = _selectObject3D.rotationQuaternion.clone();
+            }
             const newQuaternion = v3.toQuaternion();
             viewer?.editor.setObjectQuaternionCommand({
                 source: "Form",

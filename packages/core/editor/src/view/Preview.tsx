@@ -1,5 +1,5 @@
 import {createRef, useEffect} from "react";
-import {useParams} from "react-router-dom";
+import {useParams} from "react-router";
 import {ESceneLoadType, ESceneSaveType, Viewer} from "@plum-render/babylon-sdk";
 import {type Id, toast} from "react-toastify";
 

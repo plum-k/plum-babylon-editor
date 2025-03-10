@@ -80,20 +80,19 @@ export function PhysicsAttribute() {
         const firstName = name[0] as string;
         console.log(`${name}: ${value}`)
 
-        if (isMesh(selectObject3D) && viewer) {
+        if (viewer && isMesh(selectObject3D) && selectObject3D.physicsBody) {
             if (firstName === "mass") {
-                selectObject3D.physicsBody!.setMassProperties({mass: value});
+                selectObject3D.physicsBody.setMassProperties({mass: value});
             }
             if (firstName === "friction") {
-                selectObject3D.physicsBody!.shape!.material!.friction = value;
-                setProxyPhysicsBody({...proxyPhysicsBody, friction: value})
+                selectObject3D.physicsBody.shape!.material!.friction = value;
             }
             if (firstName === "restitution") {
-                selectObject3D.physicsBody!.shape!.material!.restitution = value;
+                selectObject3D.physicsBody.shape!.material!.restitution = value;
                 setProxyPhysicsBody({...proxyPhysicsBody, restitution: value})
             }
             if (firstName === "staticFriction") {
-                selectObject3D.physicsBody!.shape!.material!.staticFriction = value;
+                selectObject3D.physicsBody.shape!.material!.staticFriction = value;
                 setProxyPhysicsBody({...proxyPhysicsBody, staticFriction: value})
             }
             if (firstName === "motionType") {
@@ -102,10 +101,10 @@ export function PhysicsAttribute() {
             if (firstName === "shapeType") {
                 setProxyPhysicsBody({...proxyPhysicsBody, shapeType: value})
             }
-            let obj = {}
-            set(obj, firstName, value)
-            setProxyPhysicsBody({...proxyPhysicsBody, ...obj})
         }
+        let obj = {}
+        set(obj, firstName, value)
+        setProxyPhysicsBody({...proxyPhysicsBody, ...obj})
     }
 
 
@@ -143,8 +142,9 @@ export function PhysicsAttribute() {
         }
     }
 
-    const onCreatePhysics = () => {
+    const onCreatePhysics = async () => {
         if (isExtendsTransformNode(selectObject3D) && viewer) {
+            await viewer.physics.init();
             console.log("创建物理", proxyPhysicsBody)
             const physicsAggregate = new PhysicsAggregate(selectObject3D, proxyPhysicsBody.shapeType, {...proxyPhysicsBody}, viewer.scene);
             selectObject3D.reservedDataStore.physicsAggregate = physicsAggregate

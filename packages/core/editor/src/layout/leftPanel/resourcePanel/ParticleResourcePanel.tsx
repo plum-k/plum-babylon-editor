@@ -5,14 +5,26 @@ import {IDragInfo} from "../../../interface/IDragInfo.ts";
 export function ParticleResourcePanel() {
     const particleList: IDragInfo[] = [
         {
-            label: '火焰',
-            option: {},
+            label: '火焰-CPU',
+            option: {
+                isGpu: false
+            },
+            icon: 'icon-huo',
+            type: "FireParticle"
+        },
+        {
+            label: '火焰-GPU',
+            option: {
+                isGpu: true
+            },
             icon: 'icon-huo',
             type: "FireParticle"
         },
         {
             label: '烟雾-CPU',
-            option: {},
+            option: {
+                isGpu: false
+            },
             icon: 'icon-yanwu',
             type: "SmokeParticle"
         },

@@ -30,7 +30,6 @@ export function HeaderTool() {
 
     // 截屏操作
     const createScreenshot = () => {
-        debugger
         if (viewer && appInfo) {
             Tools.CreateScreenshot(viewer.scene.getEngine(), viewer.scene.activeCamera!, {precision: 1}, (data) => {
                 const link = document.createElement('a');

@@ -25,8 +25,8 @@ export function BaseResourcePanel() {
             type: 'Plane',
             label: '平面',
             option: {
-                height: 2,
-                width: 1,
+                height: 10,
+                width: 10,
                 sideOrientation: Mesh.DOUBLESIDE
             },
             icon: 'icon-pingmian',

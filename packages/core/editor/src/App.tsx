@@ -1,7 +1,7 @@
 import {createHashRouter, RouterProvider} from "react-router";
 import {Fragment, lazy, Suspense} from "react";
 import {AntdThemeProvider, Loading} from "./component";
-import {RouteObject} from "react-router-dom";
+import {RouteObject} from "react-router";
 
 const Home = lazy(() => import("./view/Home.tsx"))
 const Editor = lazy(() => import('./view/Editor.tsx'))

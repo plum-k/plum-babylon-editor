@@ -67,7 +67,7 @@ export class SmokeParticle extends PlumParticle {
             [1, Color4.FromArray([0.1, 0.1, 0.1, 0])],
         ])
 
-        this.addSizeGradients([[0, 1], [1, 6]])
+        this.addSizeGradients([[0, 1,2], [1, 6,7]])
 
         this.createNoiseTexture({
             name: "NoiseProceduralTexture",
@@ -77,5 +77,7 @@ export class SmokeParticle extends PlumParticle {
             persistence: 0.2,
             animationSpeedFactor: 5,
         })
+
+        return this;
     }
 }

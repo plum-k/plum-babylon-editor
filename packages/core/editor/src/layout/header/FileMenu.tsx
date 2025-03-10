@@ -1,7 +1,7 @@
 import {Button, Dropdown} from "antd";
 import {useViewer} from "../../store";
 import {ExporterTool} from "@plum-render/babylon-sdk";
-import {useParams} from "react-router-dom";
+import {useParams} from "react-router";
 import {useRef} from "react";
 import {type Id} from "react-toastify";
 import {MenuItem} from "./MenuItem.tsx";

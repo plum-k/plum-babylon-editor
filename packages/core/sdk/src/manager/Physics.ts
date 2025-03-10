@@ -7,14 +7,20 @@ export interface IPhysicsOptions extends IComponentOptions {
 
 export class Physics extends Component {
 
+
     constructor(options: IPhysicsOptions) {
         super(options);
     }
+
+    isInit = false;
 
     /**
      * 初始化物理引擎
      */
     async init(gravity: Vector3 = new Vector3(0, -9.8, 0)) {
+        if (this.isInit) {
+            return;
+        }
         const havokInstance = await HavokPhysics({
             // 设置 wasm 文件路径
             locateFile: (url: string, scriptDirectory: string) => {
@@ -23,6 +29,7 @@ export class Physics extends Component {
         });
         const hk = new HavokPlugin(true, havokInstance);
         this.scene.enablePhysics(gravity, hk);
+        this.isInit = true;
     }
 
 

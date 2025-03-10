@@ -1,7 +1,7 @@
 import {createRef, DragEventHandler, Fragment, RefObject, useEffect} from "react";
 import {useSetAppInfo, useSetViewer, useViewer} from "../store";
 import {isNil, uniqueId} from "lodash-es";
-import {useParams} from "react-router-dom";
+import {useParams} from "react-router";
 import {
     ESceneLoadType,
     ESceneSaveType,
@@ -84,7 +84,7 @@ export function SceneView(props: ISceneViewProps) {
                     }
                 }
             })
-            // 厂家保存监听
+            // 场景保存监听
             _viewer.sceneSaveProgressSubject.subscribe((event) => {
                 const {type, name, total, loaded} = event;
                 const _progress = loaded / total;
@@ -137,10 +137,17 @@ export function SceneView(props: ISceneViewProps) {
         let node: Node | PlumParticle | null = null;
         switch (info.type) {
             case "Box":
-                node = MeshBuilder.CreateBox("Box", {size: 1});
+                node = MeshBuilder.CreateBox("Box", option);
                 break;
             case "Sphere":
-                node = MeshBuilder.CreateSphere("Sphere", {diameter: 1});
+                node = MeshBuilder.CreateSphere("Sphere", option);
+                break;
+            case "Plane":
+                node = MeshBuilder.CreatePlane("Plane", option);
+                (node as Mesh).rotation.x = Math.PI / 2;
+                break;
+            case "Torus":
+                node = MeshBuilder.CreateTorus('Torus', option);
                 break;
             case "PointLight":
             case "DirectionalLight":
@@ -153,7 +160,7 @@ export function SceneView(props: ISceneViewProps) {
                     name: "FireParticle",
                     capacity: 5,
                     viewer: viewer!,
-                    isGpu:false,
+                    isGpu: false,
                     ...option
                 })
                 particle.build()
@@ -162,7 +169,7 @@ export function SceneView(props: ISceneViewProps) {
             }
             case "SmokeParticle": {
                 let particle = new SmokeParticle({
-                    name: "smoke",
+                    name: `${uniqueId(info.type)}`,
                     capacity: 1000,
                     viewer: viewer!,
                     ...option
@@ -191,8 +198,10 @@ export function SceneView(props: ISceneViewProps) {
         }
         if (node) {
             if (node instanceof Mesh) {
+                node.name = `${uniqueId(info.type)}`;
                 node.position.copyFrom(position);
             } else if (node instanceof PointLight) {
+                node.name = `${uniqueId(info.type)}`;
                 node.position.copyFrom(position);
             }
             if (node instanceof PlumParticle) {

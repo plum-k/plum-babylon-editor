@@ -1,4 +1,4 @@
-import {get} from "lodash-es";
+import {get, set} from "lodash-es";
 import {Quaternion} from "@babylonjs/core";
 import {ISetValueCommand, SetValueCommand} from "../SetValueCommand";
 import {SetObjectValueCommand} from "./SetObjectValueCommand";
@@ -19,6 +19,9 @@ export class SetObjectQuaternionCommand extends SetObjectValueCommand {
         let attribute = get(this.object, this.attributePath) as Quaternion;
         if (attribute) {
             attribute.copyFrom(this.newValue);
+        }else {
+            // rotationQuaternion 没有使用时,默认为空,直接赋值
+            set(this.object, this.attributePath, this.newValue);
         }
         this.notice()
     }
