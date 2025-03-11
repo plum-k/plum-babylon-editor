@@ -15,17 +15,17 @@ import {
 import {uniqueId} from "lodash-es";
 import {PlumGizmoManager} from "../manager";
 import {isMesh} from "../guard";
-import {ISetObjectVector3Command} from "./commands/SetObjectValueCommand/SetObjectVector3Command";
-import {ISetObjectValueCommand, SetObjectValueCommand} from "./commands/SetObjectValueCommand/SetObjectValueCommand";
-import {SetPositionCommand} from "./commands/SetObjectValueCommand/SetPositionCommand";
-import {SetRotationCommand} from "./commands/SetObjectValueCommand/SetRotationCommand";
-import {SetScaleCommand} from "./commands/SetObjectValueCommand/SetScaleCommand";
+import {ISetObjectVector3Command} from "./commands/setObjectValueCommand/SetObjectVector3Command";
+import {ISetObjectValueCommand, SetObjectValueCommand} from "./commands/setObjectValueCommand/SetObjectValueCommand";
+import {SetPositionCommand} from "./commands/setObjectValueCommand/SetPositionCommand";
+import {SetRotationCommand} from "./commands/setObjectValueCommand/SetRotationCommand";
+import {SetScaleCommand} from "./commands/setObjectValueCommand/SetScaleCommand";
 import {ISetValueCommand, SetValueCommand} from "./commands/SetValueCommand";
-import {ISetMaterialMapCommand, SetMaterialMapCommand} from "./commands/SetMaterialValueCommand/SetMaterialMapCommand";
+import {ISetMaterialMapCommand, SetMaterialMapCommand} from "./commands/setMaterialValueCommand/SetMaterialMapCommand";
 import {
     ISetObjectQuaternionCommand,
     SetObjectQuaternionCommand
-} from "./commands/SetObjectValueCommand/SetObjectQuaternionCommand";
+} from "./commands/setObjectValueCommand/SetObjectQuaternionCommand";
 import {GridTool} from "../tool/GridTool";
 import {Select} from "./Select";
 import {EditorEventManager} from "./EditorEventManager";
