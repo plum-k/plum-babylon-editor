@@ -16,6 +16,7 @@ import {Control, PanelCollapsed} from "../component";
 import {ApplicationApi} from "../api";
 import {IDragInfo} from "../interface/IDragInfo";
 import {Light, Mesh, MeshBuilder, Node, PointLight} from "@babylonjs/core";
+import { CoordinatesMode } from "../component/sidePane/CoordinatesMode";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -199,10 +200,11 @@ export function SceneView(props: ISceneViewProps) {
         if (node) {
             if (node instanceof Mesh) {
                 node.name = `${uniqueId(info.type)}`;
-                node.position.copyFrom(position);
+                // todo 平面空间转三维空间
+                // node.position.copyFrom(position);
             } else if (node instanceof PointLight) {
                 node.name = `${uniqueId(info.type)}`;
-                node.position.copyFrom(position);
+                // node.position.copyFrom(position);
             }
             if (node instanceof PlumParticle) {
                 node.setPosition(position)
@@ -218,10 +220,15 @@ export function SceneView(props: ISceneViewProps) {
 
     return (
         <Fragment>
-            <div className="viewer-container w-full h-full relative" ref={canvasContainer} onDrop={onDrop}>
-                <Control/>
-                <PanelCollapsed panelRef={leftPanelRef} direction={"left"}/>
-                <PanelCollapsed panelRef={rightPanelRef} direction={"right"}/>
+            <div className="w-full h-full relative">
+                <div className="h-[32px] flex items-center justify-end">
+                    <CoordinatesMode/>
+                </div>
+                <div className="viewer-container w-full h-[calc(100%-32px)] relative" ref={canvasContainer} onDrop={onDrop}>
+                    <Control/>
+                    <PanelCollapsed panelRef={leftPanelRef} direction={"left"}/>
+                    <PanelCollapsed panelRef={rightPanelRef} direction={"right"}/>
+                </div>
             </div>
         </Fragment>
     )

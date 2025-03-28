@@ -4,25 +4,55 @@ import {BlobWriter, TextReader, ZipWriter} from "@zip.js/zip.js";
 import {GLTF2Export, OBJExport, STLExport, USDZExportAsync} from "@babylonjs/serializers";
 
 export class ExporterTool {
-    exportOBJ(scene: Scene) {
+    /**
+     * 导出obj
+     * @param scene
+     * @param name
+     */
+    exportOBJ(scene: Scene, name: string = "scene") {
         let objString = OBJExport.OBJ(scene.meshes as Array<Mesh>);
+        let blob = new Blob([objString], {type: 'text/plain'});
+        Tools.Download(blob, `${name}.obj`);
     }
 
-    exportSTL(scene: Scene) {
-        STLExport.CreateSTL(scene.meshes as Array<Mesh>)
+    /**
+     * 导出stl
+     * @param scene
+     * @param fileName
+     * @param binary
+     */
+    exportSTL(scene: Scene, fileName: string = "scene", binary: boolean = false) {
+        STLExport.CreateSTL(scene.meshes as Array<Mesh>, true, fileName, binary)
     }
 
-    exportUSDZ(scene: Scene) {
-        USDZExportAsync(scene, {}).then((gltf) => {
+    /**
+     * 导出usdz
+     * @param scene
+     * @param fileName
+     */
+    exportUSDZ(scene: Scene,fileName: string = "scene") {
+        USDZExportAsync(scene, {}).then((data) => {
+            let blob = new Blob([data]);
+            Tools.Download(blob, `${fileName}.usdz`);
         });
     }
 
+    /**
+     * 导出gltf
+     * @param scene
+     * @param fileName
+     */
     exportGLTF(scene: Scene, fileName: string = "scene") {
         GLTF2Export.GLTFAsync(scene, fileName).then((glb) => {
             glb.downloadFiles();
         });
     }
 
+    /**
+     * 导出glb
+     * @param scene
+     * @param fileName
+     */
     exportGLB(scene: Scene, fileName: string = "scene") {
         GLTF2Export.GLBAsync(scene, fileName).then((glb) => {
             glb.downloadFiles();
@@ -119,3 +149,6 @@ export class ExporterTool {
         // Tools.Download(blob, `${fileName}.json`);
     }
 }
+
+export const defaultExporterTool = new ExporterTool();
+

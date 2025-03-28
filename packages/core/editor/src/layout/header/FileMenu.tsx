@@ -1,6 +1,6 @@
 import {Button, Dropdown} from "antd";
 import {useViewer} from "../../store";
-import {ExporterTool} from "@plum-render/babylon-sdk";
+import {defaultExporterTool} from "@plum-render/babylon-sdk";
 import {useParams} from "react-router";
 import {useRef} from "react";
 import {type Id} from "react-toastify";
@@ -40,14 +40,14 @@ export function FileMenu() {
     const downloadNative = async () => {
         const scene = viewer?.scene
         if (scene) {
-            await ExporterTool.getInstance().exportBabylon(scene)
+            await defaultExporterTool.exportBabylon(scene)
         }
     };
 
     const downloadZip = async () => {
         const scene = viewer?.scene
         if (scene) {
-            await ExporterTool.getInstance().downloadSceneBabylonZip(scene)
+            await defaultExporterTool.downloadSceneBabylonZip(scene)
         }
     };
 
@@ -61,35 +61,35 @@ export function FileMenu() {
             case FileFormat.GLB: {
                 const object = viewer?.scene
                 if (object) {
-                    ExporterTool.getInstance().exportGLB(object)
+                    defaultExporterTool.exportGLB(object)
                 }
                 break;
             }
             case FileFormat.GLTF: {
                 const object = viewer?.scene
                 if (object) {
-                    ExporterTool.getInstance().exportGLTF(object)
+                    defaultExporterTool.exportGLTF(object)
                 }
                 break;
             }
             case FileFormat.OBJ: {
                 const object = viewer?.scene
                 if (object) {
-                    ExporterTool.getInstance().exportOBJ(object)
+                    defaultExporterTool.exportOBJ(object)
                 }
                 break;
             }
             case FileFormat.STL: {
                 const object = viewer?.scene
                 if (object) {
-                    ExporterTool.getInstance().exportSTL(object)
+                    defaultExporterTool.exportSTL(object)
                 }
                 break;
             }
             case FileFormat.USDZ: {
                 const object = viewer?.scene
                 if (object) {
-                    ExporterTool.getInstance().exportUSDZ(object)
+                    defaultExporterTool.exportUSDZ(object)
                 }
                 break;
             }

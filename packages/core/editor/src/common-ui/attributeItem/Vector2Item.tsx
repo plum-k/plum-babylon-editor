@@ -4,7 +4,7 @@ import {Fragment} from "react";
 import {InputNumberItem, useItemUpdate} from "./index";
 
 export interface IVector2ItemProps extends BaseItemProps {
-
+    basePropertyName: Array<string>;
 }
 
 export function Vector2Item(props: IVector2ItemProps) {
