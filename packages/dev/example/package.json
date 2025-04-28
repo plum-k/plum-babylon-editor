@@ -11,16 +11,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^13.0.0",
+    "@vueuse/core": "^13.1.0",
     "monaco-editor": "^0.52.2",
     "naive-ui": "^2.41.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
-    "vite-plugin-static-copy": "^2.3.0",
+    "vite-plugin-static-copy": "^2.3.1",
     "@vitejs/plugin-vue": "^5.2.3",
     "typescript": "^5.8.3",
-    "vite": "^6.2.5",
-    "vue-tsc": "^2.2.8"
+    "vite": "^6.3.3",
+    "vue-tsc": "^2.2.10"
   }
 }
