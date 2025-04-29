@@ -1,2 +1,2 @@
-export * from "./SourceType"
-export * from "./ProjectionType"
+export * from "./EDataSourceFormat"
+export * from "./EProjection"
