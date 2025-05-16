@@ -138,6 +138,14 @@ export class Coordinates extends Vector3 {
         return this.z;
     }
 
+    set longitude(value) {
+        this.x = value;
+    }
+
+    set latitude(value) {
+        this.y = value;
+    }
+
     set altitude(value) {
         this.z = value;
     }
@@ -203,47 +211,6 @@ export class Coordinates extends Vector3 {
         return v0.distanceTo(v1);
     }
 
-    /**
-     * Multiplies this coordinate (with an implicit 1 in the 4th dimension)
-     * by `mat`, and divides by perspective.
-     *
-     * @param mat - The matrix.
-     */
-    applyMatrix4(mat: Matrix4): this {
-        Vector3.prototype.applyMatrix4.call(this, mat);
-        return this;
-    }
-
-    /**
-     * Projects this coordinate to the specified
-     * [CRS](http://inspire.ec.europa.eu/theme/rs).
-     *
-     * @param crs - The target CRS to which the coordinate will be converted.
-     * @param target - The target to store the projected coordinate. If this not
-     * provided a new coordinate will be created.
-     *
-     * @returns The coordinate projected into the specified CRS.
-     *
-     * @example Conversion from a geographic to a geocentric reference system
-     * ```js
-     * const geographicCoords = new Coordinates('EPSG:4326',
-     *     2.33,        // longitude
-     *     48.24,       // latitude
-     *     24999549,    // altitude
-     * );
-     * const geocentricCoords = geographicCoords.as('EPSG:4978');
-     * ```
-     *
-     * @example Conversion from a geocentric to a geographic reference system
-     * ```js
-     * const geocentricCoords = new Coordinates('EPSG:4978',
-     *     20885167,    // x
-     *     849862,      // y
-     *     23385912,    // z
-     * );
-     * const geographicCoords = geocentricCoords.as('EPSG:4326');
-     * ```
-     */
     as(crs: string, target = new Coordinates(crs)): Coordinates {
         if (this.crs == crs) {
             target.copy(this);
