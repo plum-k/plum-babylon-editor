@@ -1,5 +1,5 @@
 {
-  "name": "@plum-render/babylon-sdk",
+  "name": "@plum-render/babylon-map",
   "version": "0.0.0",
   "main": "src/index.ts",
   "type": "module",

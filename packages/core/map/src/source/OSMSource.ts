@@ -13,10 +13,7 @@ export class OSMSource extends Source {
         super(options);
     }
 
-
     getUrl(x: number, y: number, z: number): string {
         return `https://tile.openstreetmap.org/{z}/{x}/{y}.png`
     }
-
-
 }
