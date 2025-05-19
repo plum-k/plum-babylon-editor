@@ -8,11 +8,11 @@ export enum EPSGCode {
     MERCATOR = 'EPSG:3857'    // Web Mercator 投影（用于网络地图）
 }
 
-// 定义地心坐标系                                 地心坐标系       以wgs84为基准面   单位为米
+// 定义地心坐标系         地心坐标系  以wgs84为基准面   单位为米
 // 就是 三维笛卡尔（米） 原点: 地球质心
 proj4.defs(EPSGCode.GEOCENTRIC, '+proj=geocent +datum=WGS84 +units=m +no_defs');
 // 轴顺序  [经度, 纬度] ->  [纬度, 经度] = latitude, longitude
-proj4.defs(EPSGCode.WGS84).axis = 'neu';
+// proj4.defs(EPSGCode.WGS84).axis = 'neu';
 
 /**
  * 单位类型枚举

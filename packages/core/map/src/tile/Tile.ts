@@ -35,7 +35,7 @@ function getTileName(x: number, y: number, z: number): string {
 /**
  * 瓦片类，表示地图的一个瓦片
  */
-export class Tile{
+export class Tile {
     /**
      * 瓦片X坐标
      */
@@ -50,8 +50,8 @@ export class Tile{
      * 瓦片缩放级别
      */
     z: number;
-    private tileMesh: TileMesh;
-    private name: string;
+    tileMesh: TileMesh;
+    name: string;
 
 
     /**
@@ -77,7 +77,6 @@ export class Tile{
     private initialize(): void {
         // 在这里实现瓦片的初始化逻辑
         // 例如：加载纹理、创建网格等
-
         if (this.source) {
             const url = this.source.getUrl(this.x, this.y, this.z);
             // 使用URL加载纹理或其他资源

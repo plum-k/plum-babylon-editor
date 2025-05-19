@@ -1,11 +1,8 @@
 import proj4 from 'proj4';
 import {Coordinates} from './Coordinates';
-import {Tools, Vector3,Ray} from '@babylonjs/core';
+import {Tools, Vector3, Ray} from '@babylonjs/core';
+import {Tool} from "../tool/Tool";
 
-/**
- * Length of the semi-axes of the WGS84 ellipsoid.
- * @internal
- */
 export const ellipsoidSizes = new Vector3(
     proj4.WGS84.a,
     proj4.WGS84.a,
@@ -13,29 +10,15 @@ export const ellipsoidSizes = new Vector3(
 
 const normal = new Vector3();
 
-export class Ellipsoid {
-    /**
-     * Length of the semi-axes of the ellipsoid.
-     */
-    size: Vector3;
-    /**
-     * Eccentricity of the ellipsoid.
-     */
-    eccentricity: number;
+export  class Ellipsoid {
 
-    private _radiiSquared: Vector3;
-    private _invRadiiSquared: Vector3;
+    size: Vector3 = new Vector3();
+    eccentricity: number = 0
 
-    /**
-     * @param size - Length of the semi-axes of the ellipsoid. Defaults to those
-     * defined by the WGS84 ellipsoid.
-     */
+    private _radiiSquared: Vector3 = new Vector3();
+    private _invRadiiSquared: Vector3 = new Vector3();
+
     constructor(size: Vector3 = ellipsoidSizes) {
-        this.size = new Vector3();
-        this._radiiSquared = new Vector3();
-        this._invRadiiSquared = new Vector3();
-        this.eccentricity = 0;
-
         this.setSize(size);
     }
 
@@ -85,7 +68,7 @@ export class Ellipsoid {
     setSize(size: Vector3): this {
         this.size.set(size.x, size.y, size.z);
 
-        this._radiiSquared.multiplyVectors(size, size);
+        Tool.multiplyVectors(this._radiiSquared,size,size)
 
         this._invRadiiSquared.x = (size.x === 0) ? 0 : 1 / this._radiiSquared.x;
         this._invRadiiSquared.y = (size.y === 0) ? 0 : 1 / this._radiiSquared.y;
@@ -151,7 +134,7 @@ export class Ellipsoid {
             position.z * Math.sin(phi) -
             a * Math.sqrt(1 - e * Math.sin(phi) * Math.sin(phi));
 
-        return target.setFromValues(
+        return target.set(
             Tools.ToDegrees(theta),
             Tools.ToDegrees(phi),
             h,
@@ -256,3 +239,4 @@ export class Ellipsoid {
     }
 }
 
+export const DefaultEllipsoid = new Ellipsoid();

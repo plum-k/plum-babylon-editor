@@ -1,5 +1,4 @@
-import {Tile} from "./Tile";
-import {Mesh} from "@babylonjs/core";
+import {Tile} from "../tile/Tile";
 
 export interface IMapOptions {
 
@@ -11,10 +10,7 @@ export class Map {
     rootTile = new Tile({})
 
     constructor(options: IMapOptions) {
-        super("map");
         this.options = options;
-
-
 
     }
 

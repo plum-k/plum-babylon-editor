@@ -1,10 +1,10 @@
-import { Euler, MathUtils, Matrix4, Quaternion, Vector3 } from 'three';
 import proj4 from 'proj4';
 import type { ProjectionDefinition } from 'proj4';
-import Coordinates from './Coordinates';
+import {Coordinates} from './Coordinates';
+import {Matrix, Quaternion, Vector3} from '@babylonjs/core';
 
 const DEG2RAD = MathUtils.DEG2RAD;
-const matrix = new Matrix4();
+const matrix = new Matrix();
 const north = new Vector3();
 const east = new Vector3();
 const axis = new Vector3().set(0, 0, 1);
