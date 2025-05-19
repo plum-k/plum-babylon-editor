@@ -1,7 +1,7 @@
 import {Coordinates} from './Coordinates';
-import {CRS} from './CRS';
-import {Vector2, Vector3, BoundingBox, Vector4, Matrix} from '@babylonjs/core';
-import {EPSGCode} from "./CRS";
+import {CRS, EPSGCode} from './CRS';
+import {BoundingBox, Matrix, Vector2, Vector3, Vector4} from '@babylonjs/core';
+import {EarthHalfCircumference} from "./const";
 
 const _dim = new Vector2();
 const _dim2 = new Vector2();
@@ -31,12 +31,50 @@ export interface ExtentLike {
     readonly north: number;
 }
 
+/**
+ *                 北极 (90°N)
+ *                    ↑
+ *                    ●
+ *                    |
+ *        西经边界(-180°)───────●───────东经边界(180°)
+ *                    |         │         |
+ *                    |         │         |
+ *                    ●         ●         ●
+ *                    |         │         |
+ *                    |         │         |
+ *                 赤道 (0°)
+ *                    |         │         |
+ *                    |         │         |
+ *                    ●         ●         ●
+ *                    |         │         |
+ *                    |         │         |
+ *        西经边界(-180°)───────●───────东经边界(180°)
+ *                    |
+ *                    ●
+ *                    ↓
+ *                 南极 (-90°S)
+ *
+ *                          北纬边界（North） +y
+ *                              ↑
+ *                              ●（90°N）
+ *                              |
+ *                              |
+ *       -x  西经边界（West）←──────●──────→东经边界（East）  +x
+ *          （-180°）            │        （180°）
+ *                              |
+ *                              |
+ *                              ●（-90°S）
+ *                              ↓
+ *                           南纬边界（South）-y
+ *
+ * 西北 东南  -+ +-
+ */
 export class Extent extends Vector4 {
     readonly isExtent: true = true;
     crs: string = EPSGCode.WGS84
 
-    constructor(crs: string, west = 0, east = 0, south = 0, north = 0) {
-        super(west, east, south, north);
+    constructor(crs: string, west = 0, north = 0, east = 0, south = 0,) {
+        super(west, north, east, south,);
         this.crs = crs;
     }
 
@@ -45,43 +83,45 @@ export class Extent extends Vector4 {
         return this.x;
     }
 
+    /** 范围的北纬边界（纬度值） */
+    get north() {
+        return this.y;
+    }
+
     /** 范围的东经边界（经度值） */
     get east() {
-        return this.x;
+        return this.z;
     }
 
     /** 范围的南纬边界（纬度值） */
     get south() {
-        return this.x;
+        return this.w;
     }
 
-    /** 范围的北纬边界（纬度值） */
-    get north() {
-        return this.x;
-    }
 
     /** 设置范围的西经边界（经度值） */
     set west(value: number) {
         this.x = value;
     }
 
+    /** 设置范围的北纬边界（纬度值） */
+    set north(value: number) {
+        this.y = value;
+    }
+
     /** 设置范围的东经边界（经度值） */
     set east(value: number) {
-        this.x = value;
+        this.z = value;
     }
 
     /** 设置范围的南纬边界（纬度值） */
     set south(value: number) {
-        this.x = value;
+        this.w = value;
     }
 
-    /** 设置范围的北纬边界（纬度值） */
-    set north(value: number) {
-        this.x = value;
-    }
 
     clone() {
-        return new Extent(this.crs, this.west, this.east, this.south, this.north);
+        return new Extent(this.crs, this.west, this.north, this.east, this.south);
     }
 
     as(crs: string, target: Extent = new Extent(EPSGCode.WGS84)) {
@@ -592,4 +632,31 @@ export class Extent extends Vector4 {
 }
 
 _extent = new Extent(EPSGCode.WGS84);
+
+
+// 3857 的 投影范围
+const EPSG_3857_Projected_Extent = new Extent(EPSGCode.MERCATOR,
+    -EarthHalfCircumference,
+    EarthHalfCircumference,
+    EarthHalfCircumference,
+    -EarthHalfCircumference,
+);
+
+// 3857的经纬度范围
+const EPSG_3857_WORLD_Extent = new Extent(EPSGCode.MERCATOR,
+    -180,
+    85,
+    180,
+    -85
+);
+
+console.log('EPSG_3857_Projected_Extent', EPSG_3857_Projected_Extent)
+console.log('EPSG_3857_WORLD_Extent', EPSG_3857_WORLD_Extent)
+
+
+
+
+
+
+
 

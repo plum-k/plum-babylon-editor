@@ -3,13 +3,15 @@ import type { ProjectionDefinition } from 'proj4';
 import {Coordinates} from './Coordinates';
 import {Matrix, Quaternion, Vector3} from '@babylonjs/core';
 
-const DEG2RAD = MathUtils.DEG2RAD;
+const DEG2RAD = ()=>{
+
+}
 const matrix = new Matrix();
 const north = new Vector3();
 const east = new Vector3();
 const axis = new Vector3().set(0, 0, 1);
 const coord = new Coordinates('EPSG:4326', 0, 0, 0);
-const euler = new Euler();
+const euler = new Vector3();
 const quat = new Quaternion();
 
 interface EulerAngles {

@@ -7,6 +7,7 @@ export const ellipsoidSizes = new Vector3(
     proj4.WGS84.a,
     proj4.WGS84.a,
     proj4.WGS84.b);
+console.log("ellipsoidSizes0",ellipsoidSizes)
 
 const normal = new Vector3();
 

@@ -17,6 +17,7 @@ import {ApplicationApi} from "../api";
 import {IDragInfo} from "../interface/IDragInfo";
 import {Light, Mesh, MeshBuilder, Node, PointLight} from "@babylonjs/core";
 import { CoordinatesMode } from "../component/sidePane/CoordinatesMode";
+import {ViewMap} from "@plum-render/babylon-map";
 
 export interface ISceneViewProps {
     leftPanelRef: RefObject<ImperativePanelHandle | null>
@@ -121,7 +122,22 @@ export function SceneView(props: ISceneViewProps) {
                 // testMesh(_viewer,"scene.glb")
                 // testPhysics(_viewer)
                 // tesProjection(_viewer)
+                initMap();
             })
+
+            const initMap = ()=>{
+                const viewMap  = new ViewMap({
+                    engine: _viewer.engine,
+                    scene: _viewer.scene,
+                });
+
+                _viewer.scene.onAfterRenderObservable.add(()=>{
+
+                    viewMap.render()
+
+                })
+
+            }
         }
 
     }, [canvasContainer])

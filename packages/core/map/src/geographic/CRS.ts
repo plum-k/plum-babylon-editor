@@ -1,6 +1,5 @@
-import proj4 from 'proj4';
-
 import type {ProjectionDefinition} from 'proj4';
+import proj4 from 'proj4';
 
 export enum EPSGCode {
     WGS84 = 'EPSG:4326',          // WGS84 经纬度坐标系
@@ -13,6 +12,7 @@ export enum EPSGCode {
 proj4.defs(EPSGCode.GEOCENTRIC, '+proj=geocent +datum=WGS84 +units=m +no_defs');
 // 轴顺序  [经度, 纬度] ->  [纬度, 经度] = latitude, longitude
 // proj4.defs(EPSGCode.WGS84).axis = 'neu';
+
 
 /**
  * 单位类型枚举
