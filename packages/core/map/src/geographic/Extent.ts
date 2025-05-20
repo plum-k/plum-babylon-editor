@@ -1,6 +1,6 @@
 import {Coordinates} from './Coordinates';
 import {CRS, EPSGCode} from './CRS';
-import {BoundingBox, Matrix, Vector2, Vector3, Vector4} from '@babylonjs/core';
+import {BoundingBox, Matrix, Vector2, Vector3, Vector4, VertexData} from '@babylonjs/core';
 import {EarthHalfCircumference} from "./const";
 
 const _dim = new Vector2();
@@ -53,6 +53,7 @@ export interface ExtentLike {
  *                    ●
  *                    ↓
  *                 南极 (-90°S)
+ *
  *
  *                          北纬边界（North） +y
  *                              ↑
@@ -117,6 +118,51 @@ export class Extent extends Vector4 {
     /** 设置范围的南纬边界（纬度值） */
     set south(value: number) {
         this.w = value;
+    }
+
+    // 获取西北点（西经, 北纬）
+    getNorthWestPoint() {
+        return new Vector2(this.west, this.north);
+    }
+
+    // 获取西南点（西经, 南纬）
+    getSouthWestPoint() {
+        return new Vector2(this.west, this.south);
+
+    }
+
+    // 获取东北点（东经, 北纬）
+    getNorthEastPoint() {
+        return new Vector2(this.east, this.north);
+    }
+
+    // 获取东南点（东经, 南纬）
+    getSouthEastPoint() {
+        return new Vector2(this.east, this.south);
+    }
+
+    buildVertexData() {
+        const northWest = boundingBox.getNorthWestPoint();   // 西北点：(-180, 90)
+        const southWest = boundingBox.getSouthWestPoint();   // 西南点：(-180, -90)
+        const northEast = boundingBox.getNorthEastPoint();   // 东北点：(180, 90)
+     const southEast = boundingBox.getSouthEastPoint();   // 东南点：(180, -90)
+
+        const positions = [
+            northWest.x, northWest.y, 0,   // 左上
+            northEast.x, northEast.y, 0,  //  右上
+            southEast.x, southEast.y, 0,    // 右下
+            southWest.x, southWest.y, 0,   // 左下
+        ];
+        const indices = [
+            0, 1, 2, // 三角面1：左上→右上→右下
+            0, 2, 3  // 三角面2：左上→右下→左下
+        ];
+
+        const vertexData = new VertexData();
+        vertexData.positions = positions;
+        vertexData.indices = indices;
+        vertexData.applyToMesh(this);
+        return vertexData;
     }
 
 

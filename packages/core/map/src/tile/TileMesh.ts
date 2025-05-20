@@ -1,56 +1,23 @@
-import {Mesh} from "@babylonjs/core";
+import {Mesh, Plane, VertexData} from "@babylonjs/core";
+import {Extent} from "../geographic";
 
-/**
- * 瓦片选项接口
- */
-export interface ITileOptions {
-
-}
-
-/**
- * 生成瓦片名称
- * @param x X坐标
- * @param y Y坐标
- * @param z 缩放级别
- * @returns 瓦片名称
- */
 function getTileName(x: number, y: number, z: number): string {
     return `tile_${z}_${x}_${y}`;
 }
+
 export interface ITileMeshOptions {
-    // name: string;
-    /**
-     * 瓦片X坐标
-     */
     x: number;
-
-    /**
-     * 瓦片Y坐标
-     */
     y: number;
-
-    /**
-     * 瓦片缩放级别
-     */
     z: number;
+    extent: Extent;
 }
 
-
 export class TileMesh extends Mesh {
-    /**
-     * 瓦片X坐标
-     */
-    x: number;
+    x: number = 0;
+    y: number = 0;
+    z: number = 0;
+    extent: Extent;
 
-    /**
-     * 瓦片Y坐标
-     */
-    y: number;
-
-    /**
-     * 瓦片缩放级别
-     */
-    z: number;
     constructor(options: ITileMeshOptions) {
         super("");
         this.name = getTileName(options.x, options.y, options.z);
@@ -58,19 +25,36 @@ export class TileMesh extends Mesh {
         this.x = options.x;
         this.y = options.y;
         this.z = options.z;
-        this.initialize();
+        this.extent = options.extent;
+        this.buildMesh();
+    }
+
+    /**
+     * 只在视锥中渲染
+     * @param frustumPlanes
+     */
+    isRender(frustumPlanes: Plane[]) {
+        const isInFrustum = this.isInFrustum(frustumPlanes);
+
+        return isInFrustum
     }
 
 
     /**
-     * 初始化瓦片
+     * 是否有子节点
      */
-    private initialize(): void {
-        // 在这里实现瓦片的初始化逻辑
-        // 例如：加载纹理、创建网格等
-        if (this.source) {
-            const url = this.source.getUrl(this.x, this.y, this.z);
-            // 使用URL加载纹理或其他资源
-        }
+    hasChildTile() {
+        const hasChildren = this.getChildren().length > 0;
+        return hasChildren;
+    }
+
+    /**
+     * 生成网格
+     */
+    buildMesh() {
+        const vertexData = this.extent.buildVertexData();
+        vertexData.applyToMesh(this);
+        console.log(vertexData);
+
     }
 }

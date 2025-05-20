@@ -131,12 +131,9 @@ export function SceneView(props: ISceneViewProps) {
                     scene: _viewer.scene,
                 });
 
-                _viewer.scene.onAfterRenderObservable.add(()=>{
-
+                _viewer.scene.onAfterRenderObservable.addOnce(()=>{
                     viewMap.render()
-
                 })
-
             }
         }
 
